@@ -7,6 +7,7 @@
 - Fixed editable dropdown selected text visibility and the Inventory low-stock count binding that could throw at runtime.
 - Corrected cash and bank transaction type values used when posting sales and purchases.
 - Added a first-run, operator-focused user guide and a PRS coverage review with known gaps.
+- Added a project update and deployment readiness report; production deployment remains gated on PRS completion and full acceptance.
 
 ## Initial repository import
 

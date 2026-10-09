@@ -52,6 +52,7 @@ The application database is stored at `%LOCALAPPDATA%\SOFT2027\soft2027.db`, sep
 
 - [User guide](docs/USER_GUIDE.md): first run and common workflows.
 - [PRS coverage and known gaps](docs/PRS_COMPLIANCE.md): implementation coverage review and remaining requirements.
+- [Project update and deployment readiness report](docs/PROJECT_UPDATE_REPORT.md): current status, verification, and release gates.
 - [Database schema](docs/DATABASE_SCHEMA.sql): SQLite schema reference.
 - [Business rules](docs/BUSINESS_RULES.md): transaction and pricing rules.
 
