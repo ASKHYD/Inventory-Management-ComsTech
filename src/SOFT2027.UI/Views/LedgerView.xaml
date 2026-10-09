@@ -1,0 +1,13 @@
+<UserControl x:Class="SOFT2027.UI.Views.LedgerView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
+    <Grid Margin="28"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+        <StackPanel><TextBlock Text="{Binding Title}" FontSize="26" FontWeight="Bold"/><TextBlock Text="Select an account to review its transactions and running balance." Foreground="{StaticResource MutedBrush}" Margin="0,6,0,16"/></StackPanel>
+        <Grid Grid.Row="1" Margin="0,0,0,14"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <ComboBox ItemsSource="{Binding Parties}" SelectedItem="{Binding SelectedParty}" DisplayMemberPath="Name" Height="40" AutomationProperties.Name="Choose ledger account"/>
+            <Button Grid.Column="1" Content="Refresh Accounts" Command="{Binding LoadCommand}" Margin="8,0" Padding="14,0"/>
+            <Button Grid.Column="2" Content="View Ledger" Command="{Binding LoadLedgerCommand}" Padding="18,0"/>
+        </Grid>
+        <Grid Grid.Row="2"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><TextBlock Text="{Binding BalanceText}" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Entries}" AutoGenerateColumns="True" AutoGeneratingColumn="LedgerGrid_AutoGeneratingColumn" IsReadOnly="True" CanUserAddRows="False" AutomationProperties.Name="Account transaction history"/>
+        </Grid>
+    </Grid>
+</UserControl>

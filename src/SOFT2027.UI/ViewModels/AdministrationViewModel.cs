@@ -1,0 +1,84 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using SOFT2027.Core.Entities;
+using SOFT2027.Core.Interfaces;
+using SOFT2027.Presentation.Commands;
+
+namespace SOFT2027.Presentation.ViewModels;
+
+public sealed class AdministrationViewModel : ViewModelBase
+{
+    private readonly IAdminUserRepository _users;
+    private readonly IAuditLogRepository _audit;
+    private readonly IAdminSession _session;
+    private string _username = string.Empty, _fullName = string.Empty, _password = string.Empty;
+    private AdminUserSummary? _selectedUser;
+
+    public AdministrationViewModel(IAdminUserRepository users, IAuditLogRepository audit, IAdminSession session)
+    {
+        _users = users; _audit = audit; _session = session;
+        LoadUsersCommand = new AsyncRelayCommand(LoadUsersAsync);
+        LoadAuditCommand = new AsyncRelayCommand(LoadAuditAsync);
+        CreateUserCommand = new AsyncRelayCommand(CreateUserAsync);
+        ToggleUserCommand = new AsyncRelayCommand(ToggleUserAsync);
+        ResetPasswordCommand = new AsyncRelayCommand(ResetPasswordAsync);
+    }
+    public ObservableCollection<AdminUserSummary> Users { get; } = new();
+    public ObservableCollection<AuditLogEntry> AuditEntries { get; } = new();
+    public string Username { get => _username; set => SetProperty(ref _username, value); }
+    public string FullName { get => _fullName; set => SetProperty(ref _fullName, value); }
+    public string Password { get => _password; set => SetProperty(ref _password, value); }
+    public AdminUserSummary? SelectedUser { get => _selectedUser; set => SetProperty(ref _selectedUser, value); }
+    public AsyncRelayCommand LoadUsersCommand { get; }
+    public AsyncRelayCommand LoadAuditCommand { get; }
+    public AsyncRelayCommand CreateUserCommand { get; }
+    public AsyncRelayCommand ToggleUserCommand { get; }
+    public AsyncRelayCommand ResetPasswordCommand { get; }
+
+    public async Task LoadUsersAsync()
+    {
+        try { Users.Clear(); foreach (var item in await _users.GetAllAsync()) Users.Add(item); }
+        catch (Exception ex) { SetError($"Could not load administrators. {ex.Message}"); }
+    }
+    public async Task LoadAuditAsync()
+    {
+        try { AuditEntries.Clear(); foreach (var item in await _audit.GetRecentAsync()) AuditEntries.Add(item); }
+        catch (Exception ex) { SetError($"Could not load the activity history. {ex.Message}"); }
+    }
+    private async Task CreateUserAsync()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(Username) || Username.Trim().Length < 3) throw new InvalidOperationException("Enter a username with at least 3 characters.");
+            if (string.IsNullOrWhiteSpace(FullName)) throw new InvalidOperationException("Enter the administrator's full name.");
+            if (Password.Length < 10) throw new InvalidOperationException("Choose a password with at least 10 characters.");
+            await _users.CreateAdminAsync(Username, FullName, Password, _session.AdminId);
+            Username = FullName = Password = string.Empty;
+            await LoadUsersAsync(); await LoadAuditAsync(); Announce("Administrator added.");
+        }
+        catch (Exception ex) { SetError(ex.Message); }
+    }
+    private async Task ToggleUserAsync()
+    {
+        try
+        {
+            if (SelectedUser == null) throw new InvalidOperationException("Select an administrator first.");
+            if (SelectedUser.AdminId == _session.AdminId && SelectedUser.Status == "Active") throw new InvalidOperationException("You cannot deactivate the account you are using.");
+            await _users.SetStatusAsync(SelectedUser.AdminId, SelectedUser.Status != "Active", _session.AdminId);
+            await LoadUsersAsync(); await LoadAuditAsync(); Announce("Administrator access updated.");
+        }
+        catch (Exception ex) { SetError(ex.Message); }
+    }
+    private async Task ResetPasswordAsync()
+    {
+        try
+        {
+            if (SelectedUser == null) throw new InvalidOperationException("Select an administrator first.");
+            if (Password.Length < 10) throw new InvalidOperationException("Enter a new password with at least 10 characters.");
+            await _users.ResetPasswordAsync(SelectedUser.AdminId, Password, _session.AdminId);
+            Password = string.Empty; await LoadAuditAsync(); Announce("Administrator password reset.");
+        }
+        catch (Exception ex) { SetError(ex.Message); }
+    }
+}

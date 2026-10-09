@@ -1,0 +1,60 @@
+<UserControl x:Class="SOFT2027.UI.Views.CashBankView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SOFT2027.Presentation.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:CashBankViewModel}"
+             Background="Transparent" Loaded="View_Loaded">
+    <Border Style="{StaticResource CardBorderStyle}" Padding="24" Margin="0,0,0,16">
+        <Grid>
+            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Cash &amp; Bank" FontSize="22" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                    <TextBlock Text="Balances and recorded activity for cash and bank accounts." FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="Refresh balances" Command="{Binding LoadCommand}" Height="36" Padding="14,0" VerticalAlignment="Center" />
+            </Grid>
+            <DockPanel Grid.Row="1" Margin="0,0,0,14">
+                <Border Background="{StaticResource BlueLightBrush}" CornerRadius="7" Padding="14,10" Margin="0,0,10,0">
+                    <StackPanel><TextBlock Text="CASH BALANCE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource MutedBrush}" /><TextBlock Text="{Binding CashBalance, StringFormat=N2}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" /></StackPanel>
+                </Border>
+                <Border Background="{StaticResource GreenLightBrush}" CornerRadius="7" Padding="14,10">
+                    <StackPanel><TextBlock Text="BANK BALANCE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource MutedBrush}" /><TextBlock Text="{Binding BankBalance, StringFormat=N2}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource GreenBrush}" /></StackPanel>
+                </Border>
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource RedBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="14,0,0,0" VerticalAlignment="Center" AutomationProperties.LiveSetting="Assertive" />
+            </DockPanel>
+            <TabControl Grid.Row="2">
+                <TabItem Header="Cash transactions">
+                    <DataGrid ItemsSource="{Binding CashTransactions}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" HeadersVisibility="Column" RowHeaderWidth="0" Margin="0,8,0,0" AutomationProperties.Name="Cash activity">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="DATE" Binding="{Binding TransactionDate, StringFormat=g}" Width="155" />
+                            <DataGridTextColumn Header="TYPE" Binding="{Binding TransactionType}" Width="110" />
+                            <DataGridTextColumn Header="REFERENCE" Binding="{Binding ReferenceNumber}" Width="150" />
+                            <DataGridTextColumn Header="DESCRIPTION" Binding="{Binding Description}" Width="*" />
+                            <DataGridTextColumn Header="MONEY IN" Binding="{Binding Debit, StringFormat=N2}" Width="110" />
+                            <DataGridTextColumn Header="MONEY OUT" Binding="{Binding Credit, StringFormat=N2}" Width="110" />
+                            <DataGridTextColumn Header="BALANCE" Binding="{Binding RunningBalance, StringFormat=N2}" Width="120" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Bank transactions">
+                    <DataGrid ItemsSource="{Binding BankTransactions}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" HeadersVisibility="Column" RowHeaderWidth="0" Margin="0,8,0,0" AutomationProperties.Name="Bank activity">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="DATE" Binding="{Binding TransactionDate, StringFormat=g}" Width="155" />
+                            <DataGridTextColumn Header="TYPE" Binding="{Binding TransactionType}" Width="110" />
+                            <DataGridTextColumn Header="REFERENCE" Binding="{Binding ReferenceNumber}" Width="150" />
+                            <DataGridTextColumn Header="DESCRIPTION" Binding="{Binding Description}" Width="*" />
+                            <DataGridTextColumn Header="MONEY IN" Binding="{Binding Debit, StringFormat=N2}" Width="110" />
+                            <DataGridTextColumn Header="MONEY OUT" Binding="{Binding Credit, StringFormat=N2}" Width="110" />
+                            <DataGridTextColumn Header="BALANCE" Binding="{Binding RunningBalance, StringFormat=N2}" Width="120" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Border>
+</UserControl>

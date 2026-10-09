@@ -1,0 +1,462 @@
+<UserControl x:Class="SOFT2027.UI.Views.ReportsDashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SOFT2027.Presentation.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:ReportsDashboardViewModel}"
+             Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Focusable="False">
+        <StackPanel Margin="0,0,0,24">
+
+            <!-- ================================================================= -->
+            <!-- 1. TOP DATE-FILTER CARD (.card with controls & loading indicator)  -->
+            <!-- ================================================================= -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    Padding="20,16"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <!-- Start Date -->
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <!-- End Date -->
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <!-- Generate Button -->
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <!-- Error Message & Live Announcement -->
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Start Date -->
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Start Date:"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0" />
+                            <DatePicker SelectedDate="{Binding StartDate}"
+                                        Height="38"
+                                        AutomationProperties.Name="Start Date" />
+                        </StackPanel>
+
+                        <!-- End Date -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="End Date:"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0" />
+                            <DatePicker SelectedDate="{Binding EndDate}"
+                                        Height="38"
+                                        AutomationProperties.Name="End Date" />
+                        </StackPanel>
+
+                        <!-- Generate Reports Button -->
+                        <Button Grid.Column="4"
+                                Command="{Binding LoadReportsCommand}"
+                                Content="Generate Reports"
+                                Style="{StaticResource BtnPrimaryStyle}"
+                                Height="38"
+                                Padding="20,8"
+                                AutomationProperties.Name="Generate Reports" />
+
+                        <!-- Error Reporting with Accessibility Announcement -->
+                        <TextBlock Grid.Column="6"
+                                   Text="{Binding ErrorMessage}"
+                                   Foreground="{StaticResource RedBrush}"
+                                   FontWeight="SemiBold"
+                                   FontSize="13.5"
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"
+                                   AutomationProperties.LiveSetting="Assertive"
+                                   AutomationProperties.Name="{Binding StatusAnnouncement}" />
+                    </Grid>
+
+                    <!-- Loading Progress Indicator (Triggered by IsLoading) -->
+                    <ProgressBar IsIndeterminate="True"
+                                 Height="3"
+                                 Margin="0,14,0,0"
+                                 Foreground="{StaticResource BlueBrush}"
+                                 Background="{StaticResource SurfaceSubtleBrush}"
+                                 BorderThickness="0">
+                        <ProgressBar.Style>
+                            <Style TargetType="ProgressBar">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ProgressBar.Style>
+                    </ProgressBar>
+                </StackPanel>
+            </Border>
+
+            <!-- ================================================================= -->
+            <!-- 2. PROFIT & LOSS KPI CARDS (.kpi-grid 4 columns)                  -->
+            <!-- ================================================================= -->
+            <TextBlock Text="Profit &amp; Loss Summary"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource NavyBrush}"
+                       Margin="0,0,0,12" />
+
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- KPI 1: Total Revenue -->
+                <Border Grid.Column="0"
+                        Style="{StaticResource CardBorderStyle}"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="TOTAL REVENUE"
+                                   FontSize="11.5"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding ProfitAndLoss.TotalRevenue, StringFormat=C}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextBrush}" />
+                        <TextBlock Text="Gross Sales Revenue"
+                                   FontSize="12"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- KPI 2: Cost of Goods Sold (COGS) -->
+                <Border Grid.Column="2"
+                        Style="{StaticResource CardBorderStyle}"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="COST OF GOODS SOLD (COGS)"
+                                   FontSize="11.5"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding ProfitAndLoss.CostOfGoodsSold, StringFormat=C}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource RedBrush}" />
+                        <TextBlock Text="Historical Inventory Cost"
+                                   FontSize="12"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- KPI 3: Gross Profit -->
+                <Border Grid.Column="4"
+                        Style="{StaticResource CardBorderStyle}"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="GROSS PROFIT"
+                                   FontSize="11.5"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding ProfitAndLoss.GrossProfit, StringFormat=C}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource GreenBrush}" />
+                        <TextBlock Text="{Binding ProfitAndLoss.GrossMarginPercentage, StringFormat='{}{0:N1}% Gross Margin'}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource GreenDarkBrush}"
+                                   Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- KPI 4: Net Profit -->
+                <Border Grid.Column="6"
+                        Style="{StaticResource CardBorderStyle}"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="NET PROFIT"
+                                   FontSize="11.5"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding ProfitAndLoss.NetProfit, StringFormat=C}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource NavyBrush}" />
+                        <TextBlock Text="{Binding ProfitAndLoss.NetMarginPercentage, StringFormat='{}{0:N1}% Net Margin'}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource BlueBrush}"
+                                   Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ================================================================= -->
+            <!-- 3. INVENTORY ASSET VALUATION KPI CARDS (.kpi-grid 3 columns)      -->
+            <!-- ================================================================= -->
+            <TextBlock Text="Inventory Asset Valuation"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource NavyBrush}"
+                       Margin="0,0,0,12" />
+
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- KPI 1: Total Warehouse Cost Value -->
+                <Border Grid.Column="0"
+                        Style="{StaticResource CardBorderStyle}"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="TOTAL WAREHOUSE COST VALUE"
+                                   FontSize="11.5"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding StockValuation.TotalValuation, StringFormat=C}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource BlueBrush}" />
+                        <TextBlock Text="Valuation at Purchase Cost"
+                                   FontSize="12"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- KPI 2: Potential Retail Value -->
+                <Border Grid.Column="2"
+                        Style="{StaticResource CardBorderStyle}"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="POTENTIAL RETAIL VALUE"
+                                   FontSize="11.5"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding StockValuation.TotalPotentialRetailValue, StringFormat=C}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource GreenBrush}" />
+                        <TextBlock Text="Potential Value at Standard Sale Price"
+                                   FontSize="12"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- KPI 3: Active Product Items -->
+                <Border Grid.Column="4"
+                        Style="{StaticResource CardBorderStyle}"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="ACTIVE PRODUCT ITEMS"
+                                   FontSize="11.5"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding StockValuation.TotalItemsCount}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource NavyBrush}" />
+                        <TextBlock Text="Active SKUs in Catalog"
+                                   FontSize="12"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ================================================================= -->
+            <!-- 4. DETAIL TABLES: Operating Expenses & Stock Valuation Items       -->
+            <!-- ================================================================= -->
+
+            <!-- Table 1: Operating Expenses by Category -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    Padding="20"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Operating Expenses by Category"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource NavyBrush}"
+                               Margin="0,0,0,12" />
+
+                    <DataGrid ItemsSource="{Binding ProfitAndLoss.ExpensesByCategory}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              RowHeaderWidth="0"
+                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                        <DataGrid.Columns>
+                            <!-- Category Name -->
+                            <DataGridTextColumn Header="EXPENSE CATEGORY"
+                                                Binding="{Binding CategoryName}"
+                                                Width="*" />
+
+                            <!-- Total Amount (Numeric Right Aligned) -->
+                            <DataGridTextColumn Header="TOTAL AMOUNT"
+                                                Binding="{Binding TotalAmount, StringFormat=C}"
+                                                Width="220">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- Table 2: Stock Valuation Items -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    Padding="20"
+                    Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Stock Valuation Items"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource NavyBrush}"
+                               Margin="0,0,0,12" />
+
+                    <DataGrid ItemsSource="{Binding StockValuation.Items}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              RowHeaderWidth="0"
+                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                        <DataGrid.Columns>
+                            <!-- Product Code -->
+                            <DataGridTextColumn Header="CODE"
+                                                Binding="{Binding ProductCode}"
+                                                Width="110" />
+
+                            <!-- Product Name -->
+                            <DataGridTextColumn Header="PRODUCT NAME"
+                                                Binding="{Binding ProductName}"
+                                                Width="*" />
+
+                            <!-- Current Stock -->
+                            <DataGridTextColumn Header="STOCK UNITS"
+                                                Binding="{Binding CurrentStock}"
+                                                Width="110">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <!-- Unit Cost -->
+                            <DataGridTextColumn Header="UNIT COST"
+                                                Binding="{Binding UnitCost, StringFormat=C}"
+                                                Width="130">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <!-- Total Valuation -->
+                            <DataGridTextColumn Header="TOTAL VALUATION"
+                                                Binding="{Binding TotalValuation, StringFormat=C}"
+                                                Width="150">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <!-- Retail Price -->
+                            <DataGridTextColumn Header="RETAIL PRICE"
+                                                Binding="{Binding DefaultSalePrice, StringFormat=C}"
+                                                Width="130">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <!-- Potential Retail Value -->
+                            <DataGridTextColumn Header="POTENTIAL VALUE"
+                                                Binding="{Binding PotentialRetailValue, StringFormat=C}"
+                                                Width="150">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

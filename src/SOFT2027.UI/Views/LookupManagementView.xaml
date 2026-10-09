@@ -1,0 +1,12 @@
+<UserControl x:Class="SOFT2027.UI.Views.LookupManagementView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
+    <Grid Margin="28"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <StackPanel><TextBlock Text="Categories, Brands &amp; Units" FontSize="26" FontWeight="Bold"/><TextBlock Text="Maintain the lists used to organize products. Items assigned to products must be unassigned before deletion." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,6,0,16"/></StackPanel>
+        <Grid Grid.Row="1" Margin="0,0,0,12"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="240"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TextBlock Text="LIST" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,10,0"/><ComboBox Grid.Column="1" ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" Height="38"/>
+            <Button Grid.Column="2" Content="Add" Command="{Binding AddCommand}" Margin="10,0" Padding="18,0"/><Button Grid.Column="3" Content="Refresh" Command="{Binding LoadCommand}" Padding="18,0"/>
+        </Grid>
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AutoGenerateColumns="True" AutoGeneratingColumn="LookupGrid_AutoGeneratingColumn" CanUserAddRows="False" AutomationProperties.Name="Product categories brands or units"/>
+        <StackPanel Grid.Row="3" Margin="0,12,0,0"><StackPanel Orientation="Horizontal"><Button Content="Save Changes" Command="{Binding SaveCommand}" Padding="18,9" Margin="0,0,8,0"/><Button Content="Delete Selected" Click="DeleteSelected_Click" Padding="18,9"/></StackPanel>
+            <TextBlock Text="{Binding StatusAnnouncement}" Foreground="{StaticResource GreenBrush}" Margin="0,8,0,0"/><ItemsControl ItemsSource="{Binding Errors}"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Foreground="{StaticResource RedBrush}" TextWrapping="Wrap" Margin="0,4"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl></StackPanel>
+    </Grid>
+</UserControl>
