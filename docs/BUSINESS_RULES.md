@@ -34,9 +34,9 @@ The system operates as an intelligent business assistant to minimize repetitive 
 - Configured in the `Products` master table.
 - Stores baseline cost and selling references:
   * `BasePurchasePrice`: Standard purchase cost.
-  * `PurchasePercentage`: Standard expected purchase discount or margin.
+  * `PurchasePercentage`: Configured supplier purchase percentage retained as a reference value. It is not applied to a line total; only `DiscountPercentage` reduces the gross amount.
   * `DefaultSalePrice`: Standard wholesale selling price.
-  * `SellingPercentage`: Standard default markup or margin percentage.
+  * `SellingPercentage`: Markup over unit cost, calculated as `(DefaultSalePrice - BasePurchasePrice) / BasePurchasePrice * 100`. This is a markup-on-cost percentage, not gross margin. A zero/negative cost produces 0%.
 - **Trigger:** Used whenever a customer or supplier transacts an item for the very first time (no prior transactional history exists).
 
 ### 1.2 Tier 2: Supplier/Product Pricing Memory
@@ -89,18 +89,28 @@ $$\text{DiscountAmount} = \text{GrossLineTotal} \times \left(\frac{\text{Discoun
 $$\text{NetLineTotal} = \text{GrossLineTotal} - \text{DiscountAmount}$$
 
 ### 3.2 Invoice Subtotal & Net Total
-$$\text{SubTotal} = \sum_{i=1}^{n} \text{NetLineTotal}_i$$
-$$\text{InvoiceNetTotal} = \text{SubTotal} - \text{InvoiceHeaderDiscount}$$
+$$\text{SubTotal} = \sum_{i=1}^{n} \text{GrossLineTotal}_i$$
+$$\text{DiscountAmount} = \sum_{i=1}^{n} \text{LineDiscount}_i + \text{InvoiceHeaderDiscount}$$
+$$\text{InvoiceNetTotal} = \text{SubTotal} - \text{DiscountAmount}$$
 $$\text{RemainingBalance} = \text{InvoiceNetTotal} - \text{PaidAmount}$$
 
 ### 3.3 Historical Cost & Profit Immutability
 To guarantee that past profit figures remain permanent and tamper-proof:
-1. Every line item in `SaleItems` captures two price snapshots at the exact moment of sale:
+1. Every line item in `SaleItems` captures product identity and price snapshots at the exact moment of sale:
+   * `ProductCodeAtSale` and `ProductNameAtSale`: The product identity shown when the invoice is reprinted.
    * `HistoricalSalePrice`: The price charged to the customer.
    * `HistoricalCostPrice`: The inventory cost of the product at that time (from the batch or product master).
 2. Profitability is strictly evaluated as:
    $$\text{GrossProfit}_{\text{Item}} = (\text{HistoricalSalePrice} - \text{HistoricalCostPrice}) \times \text{Quantity} - \text{DiscountAmount}$$
 3. **Immutability Invariant:** If `Products.DefaultSalePrice` or `Products.BasePurchasePrice` is subsequently modified in the Master catalog, existing rows in `SaleItems` and `Sales` are **never updated**. Past financial reports remain mathematically unchanged.
+4. Purchase lines similarly retain `ProductCodeAtPurchase`, `ProductNameAtPurchase`, `HistoricalPurchasePrice`, and their discount/line totals. Reprints use these item snapshots. On upgrade, pre-existing rows are populated with the product names and codes available in the catalog at migration time; older pre-migration names cannot be recovered if already changed.
+
+### 3.4 Price-memory selection and default-price changes
+- Selecting a party/product pair with history initially restores the full most-recent rate, applicable percentage, line discount, transaction date, quantity and invoice/bill reference. `Use previous` reapplies those saved terms.
+- `Use default` restores the current product default rate and its applicable markup/purchase reference percentage, and clears any prior transaction's discount. It does not change the saved master defaults.
+- `Enter new price` allows a manual rate and records the chosen rate and discount on the posted transaction. Successful postings are appended to the pair's price history, so the next transaction uses the latest posted terms. A cancelled or failed posting does not create price history.
+- Changing a product's default purchase or sale rate affects future transactions that choose `Use default`; posted documents, their historical rates, and historical costs are immutable.
+- Prices, purchase reference percentage and minimum stock must be zero or higher. Line discount is from 0% through 100%. `PurchasePercentage` is informational and is not an extra discount; `SellingPercentage` is explicitly markup over cost and may be negative when a sale is below cost. This prevents confusing markup with gross margin.
 
 ---
 

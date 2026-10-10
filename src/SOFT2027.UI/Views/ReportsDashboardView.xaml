@@ -6,12 +6,9 @@
              xmlns:vm="clr-namespace:SOFT2027.Presentation.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:ReportsDashboardViewModel}"
-             Background="Transparent">
+             Background="Transparent" Loaded="ReportsDashboardView_OnLoaded" DataContextChanged="ReportsDashboardView_OnDataContextChanged">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled"
-                  Focusable="False">
-        <StackPanel Margin="0,0,0,24">
+    <StackPanel Margin="0,0,0,24">
 
             <!-- ================================================================= -->
             <!-- 1. TOP DATE-FILTER CARD (.card with controls & loading indicator)  -->
@@ -96,6 +93,32 @@
                             </Style>
                         </ProgressBar.Style>
                     </ProgressBar>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}" Padding="20" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Operating Dashboard" FontSize="19" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,0,0,4" />
+                    <TextBlock Text="Today's figures use today's calendar date; trends and recent activity use the selected period. Balances and stock are current persisted values." Foreground="{StaticResource MutedBrush}" Margin="0,0,0,14" />
+                    <UniformGrid Columns="4" Rows="2" Margin="0,0,0,14">
+                        <StackPanel Margin="8"><TextBlock Text="TODAY'S SALES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding TodaySales, StringFormat='PKR {0:N2}'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="8"><TextBlock Text="TODAY'S PURCHASES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding TodayPurchases, StringFormat='PKR {0:N2}'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="8"><TextBlock Text="PERIOD SALES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding PeriodSales, StringFormat='PKR {0:N2}'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="8"><TextBlock Text="PERIOD PURCHASES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding PeriodPurchases, StringFormat='PKR {0:N2}'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="8"><TextBlock Text="RECEIVABLES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding OutstandingReceivables, StringFormat='PKR {0:N2}'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="8"><TextBlock Text="PAYABLES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding OutstandingPayables, StringFormat='PKR {0:N2}'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="8"><TextBlock Text="INVENTORY AT COST" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding StockValuation.TotalValuation, StringFormat='PKR {0:N2}'}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="8"><TextBlock Text="LOW-STOCK ITEMS" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding LowStockItemCount}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource RedBrush}"/></StackPanel>
+                    </UniformGrid>
+                    <TextBlock Text="Sales and purchase trend · selected period" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding DashboardTrends}" Margin="0,0,0,12" />
+                    <TextBlock Text="No sales or purchases in the selected period." Foreground="{StaticResource MutedBrush}" Margin="0,0,0,12">
+                        <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding HasDashboardTrends}" Value="False"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="Recent activity · selected period" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding DashboardRecentActivity}">
+                        <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding Text}" Tag="{Binding Module}" Click="DashboardActivity_Click" HorizontalContentAlignment="Left" Padding="8,5" Margin="0,2" /></DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </Border>
 
@@ -307,8 +330,7 @@
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               HeadersVisibility="Column"
-                              RowHeaderWidth="0"
-                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                              RowHeaderWidth="0">
                         <DataGrid.Columns>
                             <!-- Category Name -->
                             <DataGridTextColumn Header="EXPENSE CATEGORY"
@@ -353,8 +375,7 @@
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               HeadersVisibility="Column"
-                              RowHeaderWidth="0"
-                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                              RowHeaderWidth="0">
                         <DataGrid.Columns>
                             <!-- Product Code -->
                             <DataGridTextColumn Header="CODE"
@@ -457,6 +478,24 @@
                 </StackPanel>
             </Border>
 
-        </StackPanel>
-    </ScrollViewer>
+            <Border Style="{StaticResource CardBorderStyle}" Padding="20" Margin="0,16,0,20">
+                <StackPanel>
+                    <TextBlock Text="Operational Reports" FontSize="18" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,0,0,12" />
+                    <WrapPanel Margin="0,0,0,12">
+                        <ComboBox Width="260" Height="36" Margin="0,0,10,8" ItemsSource="{Binding ReportChoices}" SelectedItem="{Binding SelectedReport}" DisplayMemberPath="Name" AutomationProperties.Name="Report type" />
+                        <ComboBox Width="210" Height="36" Margin="0,0,10,8" ItemsSource="{Binding Customers}" SelectedItem="{Binding FilterCustomer}" DisplayMemberPath="CustomerName" SelectedValuePath="CustomerId" IsEditable="True" Text="Customer (optional)" />
+                        <ComboBox Width="210" Height="36" Margin="0,0,10,8" ItemsSource="{Binding Suppliers}" SelectedItem="{Binding FilterSupplier}" DisplayMemberPath="SupplierName" IsEditable="True" Text="Supplier (optional)" />
+                        <ComboBox Width="220" Height="36" Margin="0,0,10,8" ItemsSource="{Binding Products}" SelectedItem="{Binding FilterProduct}" DisplayMemberPath="ProductName" IsEditable="True" Text="Product (optional)" />
+                        <ComboBox Width="190" Height="36" Margin="0,0,10,8" ItemsSource="{Binding Categories}" SelectedItem="{Binding FilterCategory}" DisplayMemberPath="Name" IsEditable="True" Text="Category (optional)" />
+                        <ComboBox Width="190" Height="36" Margin="0,0,10,8" ItemsSource="{Binding ExpenseCategories}" SelectedItem="{Binding FilterExpenseCategory}" IsEditable="True" Text="Expense category (optional)" />
+                        <Button Content="Run report" Command="{Binding GenerateOperationalReportCommand}" Style="{StaticResource BtnPrimaryStyle}" Height="36" Padding="18,6" Margin="0,0,10,8" />
+                        <Button Content="Export CSV" Click="ExportOperationalReport_OnClick" Style="{StaticResource BtnPrimaryStyle}" Height="36" Padding="18,6" Margin="0,0,0,8" />
+                    </WrapPanel>
+                    <TextBlock Text="{Binding OperationalReport.Title}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" Margin="0,0,0,8" />
+                    <TextBlock x:Name="ReportEmptyState" Text="Run a report to see results. No rows match the selected filters." Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8" />
+                    <DataGrid x:Name="OperationalReportGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column" RowHeaderWidth="0" MinHeight="130" MaxHeight="440" />
+                </StackPanel>
+            </Border>
+
+    </StackPanel>
 </UserControl>

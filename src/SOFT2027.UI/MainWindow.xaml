@@ -12,20 +12,98 @@
         MinHeight="560" MinWidth="980"
         WindowStartupLocation="CenterScreen"
         PreviewKeyDown="MainWindow_PreviewKeyDown"
+        PreviewMouseWheel="MainWindow_PreviewMouseWheel"
         WindowStyle="None"
         Background="{StaticResource BackgroundBrush}">
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="60" CornerRadius="0" GlassFrameThickness="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
+        <WindowChrome CaptionHeight="68" CornerRadius="0" GlassFrameThickness="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
     <Window.Resources>
+        <Style x:Key="TopbarIconButtonStyle" TargetType="Button" BasedOn="{StaticResource BtnStyle}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#F1F5F9" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#E2E8F0" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#F5F8FC" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#B7CBE0" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="TopbarProfileButtonStyle" TargetType="Button" BasedOn="{StaticResource TopbarIconButtonStyle}">
+            <Setter Property="Width" Value="Auto" />
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="Padding" Value="7,4" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="9"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#F1F5F9" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#E2E8F0" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#F7FAFD" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#D5E1ED" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style x:Key="WindowControlButtonStyle" TargetType="Button" BasedOn="{StaticResource BtnStyle}">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Height" Value="34" />
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="38" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="FontSize" Value="13" />
@@ -33,32 +111,52 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                              TextElement.Foreground="{TemplateBinding Foreground}" />
-                        </Border>
+                        <Grid>
+                            <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="5">
+                                <ContentPresenter x:Name="WindowButtonContentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                  TextElement.Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                            <Border x:Name="FocusRing" Background="Transparent" BorderBrush="Transparent"
+                                    BorderThickness="1" CornerRadius="5" IsHitTestVisible="False" />
+                        </Grid>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#EAF2F9" />
-                                <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#D6E5F2" />
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="FocusRing" Property="BorderBrush" Value="{StaticResource BlueBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F1F5F9" />
+                    <Setter Property="Foreground" Value="#172B4D" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#D6E5F2" />
+                    <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{StaticResource FaintBrush}" />
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style x:Key="WindowCloseButtonStyle" TargetType="Button" BasedOn="{StaticResource WindowControlButtonStyle}">
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#DC2626" />
-                    <Setter Property="Foreground" Value="#FFFFFF" />
+                    <Setter Property="Background" Value="#FEF2F2" />
+                    <Setter Property="Foreground" Value="#B42318" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
                     <Setter Property="Background" Value="#B91C1C" />
                     <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{StaticResource FaintBrush}" />
+                    <Setter Property="Cursor" Value="Arrow" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -189,7 +287,7 @@
                     </Border>
 
                     <!-- NAVIGATION MENU -->
-                    <ScrollViewer Grid.Row="1"
+                    <ScrollViewer x:Name="NavigationScrollViewer" Grid.Row="1"
                                   VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled"
                                   Focusable="False">
@@ -347,13 +445,9 @@
 
                             <Button Content="Help &amp; Tour"
                                     Click="ShowTourButton_Click"
+                                    Style="{StaticResource SidebarActionButtonStyle}"
                                     Margin="0,12,0,2"
-                                    Padding="18,7"
-                                    Background="{StaticResource SidebarHoverBrush}"
-                                    Foreground="White"
-                                    BorderBrush="{StaticResource SidebarBorderBrush}"
                                     BorderThickness="1"
-                                    Cursor="Hand"
                                     ToolTip="Replay the getting-started tour"
                                     AutomationProperties.Name="Open help and app tour" />
 
@@ -383,17 +477,17 @@
             <!-- MAIN VIEWPORT (Topbar + Content Area) -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60" /> <!-- Top Bar (60px) -->
+                    <RowDefinition Height="68" /> <!-- Header toolbar -->
                     <RowDefinition Height="*" />  <!-- Main Workspace -->
                 </Grid.RowDefinitions>
 
                 <!-- TOPBAR (WindowChrome caption area with HitTestVisible interactive controls) -->
                 <Border Grid.Row="0"
-                        Height="60"
+                        Height="68"
                         Background="#FFFFFF"
                         BorderBrush="{StaticResource BorderBrush}"
                         BorderThickness="0,0,0,1"
-                        Padding="20,0"
+                        Padding="24,0"
                         SnapsToDevicePixels="True">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -403,114 +497,220 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Title -->
-                        <TextBlock Grid.Column="0"
-                                   Text="Ali Traders — Wholesale &amp; Distribution ERP"
-                                   MaxWidth="360"
-                                   TextTrimming="CharacterEllipsis"
-                                   FontSize="16.5"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   VerticalAlignment="Center" />
+                        <!-- Compact brand block -->
+                        <StackPanel Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,20,0"
+                                    MaxWidth="205">
+                            <TextBlock Text="Ali Traders"
+                                       FontSize="19"
+                                       FontWeight="SemiBold"
+                                       Foreground="#172B4D"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="Wholesale &amp; Distribution ERP"
+                                       Margin="0,1,0,0"
+                                       FontSize="11.5"
+                                       Foreground="#64748B"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
 
-                        <!-- Right Controls Panel (HitTestVisible in Chrome) -->
+                        <!-- Flexible search stays centered and yields space to essential actions. -->
+                        <Border Grid.Column="1"
+                                BorderThickness="1"
+                                CornerRadius="9"
+                                Padding="12,0"
+                                Margin="8,0"
+                                MinWidth="110"
+                                MaxWidth="440"
+                                Height="42"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                SnapsToDevicePixels="True">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#F8FAFC" />
+                                    <Setter Property="BorderBrush" Value="#E2E8F0" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsKeyboardFocused, ElementName=GlobalSearchBox}" Value="True">
+                                            <Setter Property="Background" Value="#FFFFFF" />
+                                            <Setter Property="BorderBrush" Value="#2563EB" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Path Grid.Column="0"
+                                      Data="{StaticResource IconSearchGeometry}"
+                                      Stroke="#64748B"
+                                      StrokeThickness="1.8"
+                                      Width="15" Height="15"
+                                      Margin="0,0,10,0"
+                                      VerticalAlignment="Center" />
+                                <TextBox x:Name="GlobalSearchBox" Grid.Column="1"
+                                         Text=""
+                                         ToolTip="Search products, customers, or suppliers. Press Enter to open a match."
+                                         BorderThickness="0" Background="Transparent"
+                                         Foreground="#172B4D"
+                                         FontSize="13" VerticalAlignment="Center"
+                                         KeyDown="GlobalSearchBox_KeyDown"
+                                         AutomationProperties.Name="Search products, customers, or suppliers" />
+                                <TextBlock Grid.Column="1" Text="Search products, customers, suppliers…"
+                                           Foreground="#64748B" FontSize="12.5"
+                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           IsHitTestVisible="False">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=GlobalSearchBox}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <Border Grid.Column="2"
+                                        Background="#FFFFFF"
+                                        BorderBrush="#E2E8F0"
+                                        BorderThickness="1"
+                                        CornerRadius="5"
+                                        Padding="5,2"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="Ctrl K"
+                                               FontSize="10.5"
+                                               Foreground="#64748B"
+                                               FontWeight="SemiBold" />
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Toolbar actions -->
                         <StackPanel Grid.Column="2"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
 
-                            <!-- Global Search Box -->
-                            <Border Background="{StaticResource BackgroundBrush}"
-                                    BorderBrush="{StaticResource BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="6"
-                                    Padding="10,7"
-                                    Margin="0,0,14,0"
-                                    Width="220"
-                                    MinWidth="150"
-                                    WindowChrome.IsHitTestVisibleInChrome="True"
-                                    SnapsToDevicePixels="True">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Path Grid.Column="0"
-                                          Data="{StaticResource IconSearchGeometry}"
-                                          Stroke="{StaticResource MutedBrush}"
-                                          StrokeThickness="1.8"
-                                          Width="14" Height="14"
-                                          Margin="0,0,8,0"
-                                          VerticalAlignment="Center" />
-                                    <TextBox x:Name="GlobalSearchBox" Grid.Column="1"
-                                             Text=""
-                                             ToolTip="Search products, customers, and suppliers; press Enter"
-                                             BorderThickness="0" Background="Transparent"
-                                             Foreground="{StaticResource TextBrush}"
-                                             FontSize="12" VerticalAlignment="Center"
-                                             KeyDown="GlobalSearchBox_KeyDown"
-                                             AutomationProperties.Name="Search products, customers, or suppliers" />
-                                    <TextBlock Grid.Column="1" Text="Search products, customers, suppliers"
-                                               Foreground="{StaticResource MutedBrush}" FontSize="12"
-                                               VerticalAlignment="Center" IsHitTestVisible="False">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Text, ElementName=GlobalSearchBox}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <Border Grid.Column="2"
-                                            Background="#FFFFFF"
-                                            BorderBrush="{StaticResource BorderDarkBrush}"
-                                            BorderThickness="1"
-                                            CornerRadius="4"
-                                            Padding="4,1"
-                                            Margin="8,0,0,0"
-                                            VerticalAlignment="Center">
-                                        <TextBlock Text="Ctrl K"
-                                                   FontSize="10"
-                                                   Foreground="{StaticResource MutedBrush}"
-                                                   FontWeight="SemiBold" />
-                                    </Border>
-                                </Grid>
-                            </Border>
-
                             <!-- Notification Bell -->
-                            <Button Click="OpenInventoryFromNotifications_Click"
-                                  ToolTip="Open stock levels and low-stock alerts"
-                                  AutomationProperties.Name="Open stock levels and low-stock alerts"
-                                  Background="Transparent" BorderThickness="0" Padding="0"
-                                  Margin="0,0,14,0"
-                                  VerticalAlignment="Center"
-                                  Cursor="Hand"
-                                  WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Border Width="34" Height="34"
-                                        CornerRadius="6"
-                                        Background="Transparent">
+                            <Button x:Name="NotificationButton"
+                                    Click="NotificationButton_Click"
+                                    ToolTip="View notifications"
+                                    AutomationProperties.Name="Open notifications"
+                                    Margin="0,0,12,0"
+                                    VerticalAlignment="Center"
+                                    Cursor="Hand"
+                                    WindowChrome.IsHitTestVisibleInChrome="True"
+                                    Style="{StaticResource TopbarIconButtonStyle}">
+                                <Grid Width="38" Height="38">
                                     <Path Data="{StaticResource IconBellGeometry}"
                                           Stroke="{StaticResource MutedBrush}"
                                           StrokeThickness="1.8"
                                           Width="18" Height="18"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center" />
-                                </Border>
+                                    <Border x:Name="NotificationBadge"
+                                            Width="8" Height="8"
+                                            CornerRadius="4"
+                                            Background="{StaticResource RedBrush}"
+                                            BorderBrush="#FFFFFF"
+                                            BorderThickness="1"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Margin="0,5,7,0"
+                                            Visibility="Collapsed" />
+                                </Grid>
                             </Button>
 
-                            <!-- User Chip -->
-                            <Button Command="{Binding LogoutCommand}"
-                                    Background="Transparent" BorderThickness="0" Padding="6,4"
+                            <Popup x:Name="NotificationPopup"
+                                   PlacementTarget="{Binding ElementName=NotificationButton}"
+                                   Placement="Bottom"
+                                   HorizontalOffset="-174"
+                                   VerticalOffset="8"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Fade">
+                                <Border Width="300"
+                                        Padding="16"
+                                        Background="#FFFFFF"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="9"
+                                        Effect="{StaticResource CardDropShadow}"
+                                        SnapsToDevicePixels="True">
+                                    <StackPanel>
+                                        <TextBlock Text="NOTIFICATIONS"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource MutedBrush}" />
+                                        <TextBlock x:Name="NotificationSummaryText"
+                                                   Text="Checking stock alerts…"
+                                                   Margin="0,6,0,3"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextBrush}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock x:Name="NotificationDetailText"
+                                                   Text="Current stock alerts from your saved product records."
+                                                   Margin="0,0,0,10"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource MutedBrush}"
+                                                   TextWrapping="Wrap" />
+                                        <ItemsControl x:Name="LowStockItemsControl" Visibility="Collapsed">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Padding="9,7"
+                                                            Margin="0,2"
+                                                            Background="#FFF8F0"
+                                                            BorderBrush="#F5E3C8"
+                                                            BorderThickness="1"
+                                                            CornerRadius="6">
+                                                        <DockPanel LastChildFill="True">
+                                                            <TextBlock DockPanel.Dock="Right"
+                                                                       Text="{Binding CurrentStock, StringFormat={}{0:0.##}}"
+                                                                       Margin="10,0,0,0"
+                                                                       Foreground="#9A5B0A"
+                                                                       FontSize="11"
+                                                                       VerticalAlignment="Center" />
+                                                            <TextBlock Text="{Binding ProductName}"
+                                                                       Foreground="{StaticResource TextBrush}"
+                                                                       FontSize="12"
+                                                                       TextTrimming="CharacterEllipsis"
+                                                                       VerticalAlignment="Center" />
+                                                        </DockPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Button x:Name="ViewInventoryFromNotificationsButton"
+                                                Content="Review inventory"
+                                                Click="OpenInventoryFromNotifications_Click"
+                                                HorizontalContentAlignment="Center"
+                                                Margin="0,10,0,0"
+                                                Padding="10,7"
+                                                MinHeight="36"
+                                                Style="{StaticResource BtnPrimaryStyle}"
+                                                Visibility="Collapsed" />
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+
+                            <!-- User profile menu: opening the profile never signs out by itself. -->
+                            <Button x:Name="UserProfileButton"
+                                    Click="UserProfileButton_Click"
+                                    Background="Transparent" BorderBrush="Transparent" BorderThickness="1" Padding="8,5"
                                     Cursor="Hand" VerticalAlignment="Center" Margin="0,0,12,0"
                                     WindowChrome.IsHitTestVisibleInChrome="True"
-                                    ToolTip="Sign out" AutomationProperties.Name="Sign out of SOFT2027">
+                                    ToolTip="Account options" AutomationProperties.Name="Open administrator account menu"
+                                    Style="{StaticResource TopbarProfileButtonStyle}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Border Width="32" Height="32"
-                                            CornerRadius="16"
+                                    <Border Width="34" Height="34"
+                                            CornerRadius="17"
                                             Background="{StaticResource BlueBrush}"
                                             Margin="0,0,8,0">
                                         <TextBlock Text="{Binding UserInitials}"
@@ -520,7 +720,7 @@
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center" />
                                     </Border>
-                                    <StackPanel VerticalAlignment="Center" Margin="0,0,6,0" MaxWidth="130">
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,6,0" MaxWidth="94">
                                         <TextBlock Text="{Binding UserDisplayName}"
                                                    FontWeight="Bold"
                                                    FontSize="12.5"
@@ -538,16 +738,68 @@
                                 </StackPanel>
                             </Button>
 
+                            <Popup x:Name="ProfileMenuPopup"
+                                   PlacementTarget="{Binding ElementName=UserProfileButton}"
+                                   Placement="Bottom"
+                                   HorizontalOffset="-54"
+                                   VerticalOffset="8"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Fade"
+                                   DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                <Border Width="230"
+                                        Padding="16"
+                                        Background="#FFFFFF"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Effect="{StaticResource CardDropShadow}"
+                                        SnapsToDevicePixels="True">
+                                    <StackPanel>
+                                        <TextBlock Text="ACCOUNT"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource MutedBrush}" />
+                                        <TextBlock Text="{Binding UserDisplayName}"
+                                                   Margin="0,5,0,1"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextBrush}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="Administrator"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource MutedBrush}" />
+                                        <Border Height="1"
+                                                Margin="0,13,0,9"
+                                                Background="{StaticResource BorderBrush}" />
+                                        <Button Content="Sign out"
+                                                Click="SignOutButton_Click"
+                                                HorizontalContentAlignment="Left"
+                                                Padding="10,8"
+                                                MinHeight="38"
+                                                Background="#FFF7F7"
+                                                BorderBrush="#F4D2D2"
+                                                Foreground="#B42318"
+                                                FontSize="13"
+                                                AutomationProperties.Name="Sign out of SOFT2027" />
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+
                         </StackPanel>
 
-                        <!-- Window Control Buttons (Minimize, Maximize, Close) -->
-                        <StackPanel Grid.Column="3"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Center"
-                                    WindowChrome.IsHitTestVisibleInChrome="True">
+                        <!-- Window controls remain visually separate from application actions. -->
+                        <Border Grid.Column="3"
+                                Margin="8,0,0,0"
+                                Padding="12,0,0,0"
+                                BorderBrush="#E2E8F0"
+                                BorderThickness="1,0,0,0"
+                                VerticalAlignment="Stretch"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <!-- Minimize -->
                             <Button Click="MinimizeButton_Click"
-                                    Width="36" Height="34"
+                                    Width="38" Height="38"
                                     Content="—"
                                     FontSize="12"
                                     Cursor="Hand"
@@ -558,7 +810,7 @@
 
                             <!-- Maximize -->
                             <Button Click="MaximizeButton_Click"
-                                    Width="36" Height="34"
+                                    Width="38" Height="38"
                                     Style="{StaticResource WindowMaximizeButtonStyle}"
                                     FontSize="13"
                                     Cursor="Hand"
@@ -567,7 +819,7 @@
 
                             <!-- Close -->
                             <Button Click="CloseButton_Click"
-                                    Width="36" Height="34"
+                                    Width="38" Height="38"
                                     Content="✕"
                                     FontSize="12"
                                     Cursor="Hand"
@@ -575,12 +827,13 @@
                                     ToolTip="Close Window"
                                     AutomationProperties.Name="Close Window"
                                     Style="{StaticResource WindowCloseButtonStyle}" />
-                        </StackPanel>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Border>
 
                 <!-- MAIN WORKSPACE: ScrollViewer wrapping ContentControl restores mouse wheel scrolling -->
-                <ScrollViewer Grid.Row="1"
+                <ScrollViewer x:Name="MainWorkspaceScrollViewer" Grid.Row="1"
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled"
                               Padding="24"

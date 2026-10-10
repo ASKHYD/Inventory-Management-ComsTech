@@ -15,7 +15,7 @@ SOFT2027 is an offline-first Windows desktop inventory and wholesale management 
 
 ## Requirements
 
-- Windows 10 or later, 64-bit.
+- Windows 10 version 21H2 or Windows 11, 64-bit. See [Microsoft's .NET on Windows support matrix](https://learn.microsoft.com/dotnet/core/install/windows) for supported OS editions and servicing status.
 - For development: .NET 8 SDK.
 - The published self-contained executable does not require a separate .NET installation.
 
@@ -30,7 +30,7 @@ dotnet run --project src/SOFT2027.UI/SOFT2027.UI.csproj
 
 On first launch, create the primary administrator account in the setup screen. There is no default username or password.
 
-## Build a Windows executable
+## Build a Windows x64 portable package
 
 ```powershell
 dotnet publish src/SOFT2027.UI/SOFT2027.UI.csproj `
@@ -39,10 +39,13 @@ dotnet publish src/SOFT2027.UI/SOFT2027.UI.csproj `
   --self-contained true `
   -p:PublishSingleFile=true `
   -p:IncludeNativeLibrariesForSelfExtract=true `
-  -o publish
+  -p:Version=1.0.0-rc.2 `
+  -o publish/win-x64
 ```
 
-Run `publish\SOFT2027.UI.exe`. Alternatively, on a machine with PowerShell script execution enabled for the current process, run `publish.ps1` from the repository root.
+Run `publish\win-x64-rc.2\SOFT2027.UI.exe`. The release candidate archive is `publish\SOFT2027-1.0.0-rc.2-win-x64-portable.zip`. From the repository root, `publish.ps1` builds the same folder and archive. The app is self-contained and does not require a separately installed .NET runtime.
+
+Extract the portable folder to a stable path. Start Menu and optional desktop shortcuts can be created by running `Create-Shortcuts.ps1`, or by using Windows' **Create shortcut** action on the executable. Updates replace only the extracted application folder; application data is stored separately. This is a portable package, not an MSI installer.
 
 ## Data and backups
 
@@ -55,6 +58,8 @@ The application database is stored at `%LOCALAPPDATA%\SOFT2027\soft2027.db`, sep
 - [Project update and deployment readiness report](docs/PROJECT_UPDATE_REPORT.md): current status, verification, and release gates.
 - [Database schema](docs/DATABASE_SCHEMA.sql): SQLite schema reference.
 - [Business rules](docs/BUSINESS_RULES.md): transaction and pricing rules.
+- [Installation and handover](docs/INSTALLATION_AND_HANDOVER.md): portable setup, updates, uninstall, recovery, and release checklist.
+- [Final test report](docs/FINAL_TEST_REPORT.md): automated results and outstanding manual acceptance scenarios.
 
 ## Verification
 

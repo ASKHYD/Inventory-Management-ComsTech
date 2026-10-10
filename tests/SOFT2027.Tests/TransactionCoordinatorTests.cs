@@ -438,6 +438,86 @@ namespace SOFT2027.Tests
         }
 
         [Fact]
+        public async Task PostSaleAsync_ShouldRejectNegativeStockWithoutLeavingAnyPartialRecords()
+        {
+            var sale = new Sale
+            {
+                InvoiceNumber = "INV-NEG-STOCK", CustomerId = _testCustomerId, SaleDate = DateTime.UtcNow,
+                SubTotal = 5100m, NetTotal = 5100m, PaidAmount = 0m, RemainingBalance = 5100m,
+                PaymentType = "Credit", Status = "Completed", AdminId = _testAdminId
+            };
+            sale.Items.Add(new SaleItem { ProductId = _testProductId, Quantity = 51m, HistoricalSalePrice = 100m, HistoricalCostPrice = 80m, LineTotal = 5100m });
+
+            Func<Task> act = () => _sut.PostSaleAsync(sale);
+            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*negative*");
+
+            using var connection = _factory.CreateConnection();
+            connection.Open();
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Sales WHERE InvoiceNumber='INV-NEG-STOCK';")).Should().Be(0);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT CurrentStock FROM Products WHERE ProductId=@Id", new { Id = _testProductId })).Should().Be(50m);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM StockMovements WHERE ReferenceNumber='INV-NEG-STOCK';")).Should().Be(0);
+        }
+
+        [Fact]
+        public async Task SaleReturns_ShouldSupportRepeatedPartialReturnsAndRejectExcessWithoutMutation()
+        {
+            var sale = new Sale
+            {
+                InvoiceNumber = "INV-RETURN-E2E", CustomerId = _testCustomerId, SaleDate = DateTime.UtcNow,
+                SubTotal = 300m, NetTotal = 300m, PaidAmount = 100m, RemainingBalance = 200m,
+                PaymentType = "Split", Status = "Completed", AdminId = _testAdminId
+            };
+            sale.Items.Add(new SaleItem { ProductId = _testProductId, Quantity = 3m, HistoricalSalePrice = 100m, HistoricalCostPrice = 80m, LineTotal = 300m });
+            await _sut.PostSaleAsync(sale);
+
+            var first = new ReturnRequest { IsSaleReturn = true, OriginalInvoiceNumber = sale.InvoiceNumber, ReturnNumber = "SR-E2E-1", AdminId = _testAdminId };
+            first.Items.Add(new ReturnRequestLine { ProductId = _testProductId, Quantity = 1m, RefundRate = 100m });
+            await _sut.PostReturnAsync(first);
+            var second = new ReturnRequest { IsSaleReturn = true, OriginalInvoiceNumber = sale.InvoiceNumber, ReturnNumber = "SR-E2E-2", AdminId = _testAdminId };
+            second.Items.Add(new ReturnRequestLine { ProductId = _testProductId, Quantity = 2m, RefundRate = 100m });
+            await _sut.PostReturnAsync(second);
+
+            var excess = new ReturnRequest { IsSaleReturn = true, OriginalInvoiceNumber = sale.InvoiceNumber, ReturnNumber = "SR-E2E-3", AdminId = _testAdminId };
+            excess.Items.Add(new ReturnRequestLine { ProductId = _testProductId, Quantity = 0.25m, RefundRate = 100m });
+            Func<Task> act = () => _sut.PostReturnAsync(excess);
+            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*exceeds the remaining quantity*");
+
+            using var connection = _factory.CreateConnection();
+            connection.Open();
+            (await connection.ExecuteScalarAsync<decimal>("SELECT CurrentStock FROM Products WHERE ProductId=@Id", new { Id = _testProductId })).Should().Be(50m);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT OutstandingBalance FROM Customers WHERE CustomerId=@Id", new { Id = _testCustomerId })).Should().Be(-100m);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM SalesReturns WHERE OriginalSaleId=(SELECT SaleId FROM Sales WHERE InvoiceNumber=@Invoice)", new { Invoice = sale.InvoiceNumber })).Should().Be(2);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM AuditLogs WHERE RecordReference IN ('SR-E2E-1','SR-E2E-2','SR-E2E-3')")).Should().Be(2);
+        }
+
+        [Fact]
+        public async Task PurchaseReturn_ShouldReduceStockAndPayableAndRejectReturnOfUnreceivedQuantity()
+        {
+            var purchase = new Purchase
+            {
+                InvoiceNumber = "PUR-RETURN-E2E", SupplierId = _testSupplierId, PurchaseDate = DateTime.UtcNow,
+                SubTotal = 400m, NetTotal = 400m, PaidAmount = 100m, RemainingBalance = 300m,
+                Status = "Received", AdminId = _testAdminId
+            };
+            purchase.Items.Add(new PurchaseItem { ProductId = _testProductId, Quantity = 4m, HistoricalPurchasePrice = 100m, LineTotal = 400m });
+            await _sut.PostPurchaseAsync(purchase);
+
+            var request = new ReturnRequest { IsSaleReturn = false, OriginalInvoiceNumber = purchase.InvoiceNumber, ReturnNumber = "PR-E2E-1", AdminId = _testAdminId };
+            request.Items.Add(new ReturnRequestLine { ProductId = _testProductId, Quantity = 1.5m, RefundRate = 100m });
+            await _sut.PostReturnAsync(request);
+            var excess = new ReturnRequest { IsSaleReturn = false, OriginalInvoiceNumber = purchase.InvoiceNumber, ReturnNumber = "PR-E2E-2", AdminId = _testAdminId };
+            excess.Items.Add(new ReturnRequestLine { ProductId = _testProductId, Quantity = 3m, RefundRate = 100m });
+            Func<Task> act = () => _sut.PostReturnAsync(excess);
+            await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*exceeds the remaining quantity*");
+
+            using var connection = _factory.CreateConnection();
+            connection.Open();
+            (await connection.ExecuteScalarAsync<decimal>("SELECT CurrentStock FROM Products WHERE ProductId=@Id", new { Id = _testProductId })).Should().Be(52.5m);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT OutstandingBalance FROM Suppliers WHERE SupplierId=@Id", new { Id = _testSupplierId })).Should().Be(150m);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM PurchaseReturns WHERE OriginalPurchaseId=(SELECT PurchaseId FROM Purchases WHERE InvoiceNumber=@Invoice)", new { Invoice = purchase.InvoiceNumber })).Should().Be(1);
+        }
+
+        [Fact]
         public async Task PostSaleAsync_ShouldRecordPricingHistorySnapshot_WithHistoricalImmutability()
         {
             // Arrange

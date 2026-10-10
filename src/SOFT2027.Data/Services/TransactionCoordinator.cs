@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -63,6 +64,8 @@ namespace SOFT2027.Data.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
+            ValidateAmounts(sale.NetTotal, sale.PaidAmount, sale.RemainingBalance, sale.Items?.Select(i => (i.Quantity, i.HistoricalSalePrice)));
+
             using var connection = _connectionFactory.CreateConnection();
             if (connection is DbConnection dbConnection)
             {
@@ -85,6 +88,8 @@ namespace SOFT2027.Data.Services
                             ?? throw new InvalidOperationException($"Product with ID {item.ProductId} not found.");
 
                         var newStock = product.CurrentStock - item.Quantity;
+                        if (newStock < 0)
+                            throw new InvalidOperationException($"Insufficient stock for product {item.ProductId}. This sale would make stock negative.");
 
                         await _productRepository.UpdateStockAsync(item.ProductId, newStock, transaction, cancellationToken).ConfigureAwait(false);
 
@@ -205,6 +210,8 @@ namespace SOFT2027.Data.Services
             }
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            ValidateAmounts(purchase.NetTotal, purchase.PaidAmount, purchase.RemainingBalance, purchase.Items?.Select(i => (i.Quantity, i.HistoricalPurchasePrice)));
 
             using var connection = _connectionFactory.CreateConnection();
             if (connection is DbConnection dbConnection)
@@ -443,6 +450,14 @@ namespace SOFT2027.Data.Services
         {
             public int SourceId { get; set; }
             public int PartyId { get; set; }
+        }
+
+        private static void ValidateAmounts(decimal netTotal, decimal paidAmount, decimal remainingBalance, System.Collections.Generic.IEnumerable<(decimal Quantity, decimal Rate)>? items)
+        {
+            if (netTotal < 0 || paidAmount < 0 || paidAmount > netTotal || remainingBalance < 0 || remainingBalance != netTotal - paidAmount)
+                throw new InvalidOperationException("Transaction totals must be non-negative and the remaining balance must equal total less paid amount.");
+            if (items == null || !items.Any() || items.Any(item => item.Quantity <= 0 || item.Rate < 0))
+                throw new InvalidOperationException("Add at least one item with a positive quantity and a non-negative rate.");
         }
 
         private sealed class ReturnInvoiceLine

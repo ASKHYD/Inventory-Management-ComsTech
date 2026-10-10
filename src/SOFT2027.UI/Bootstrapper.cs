@@ -225,17 +225,23 @@ namespace SOFT2027.UI
                 sp.GetRequiredService<ICustomerRepository>(),
                 sp.GetRequiredService<IProductRepository>(),
                 sp.GetRequiredService<ICustomerPricingHistoryRepository>(),
-                sp.GetRequiredService<IAdminSession>()));
+                sp.GetRequiredService<IAdminSession>(),
+                sp.GetRequiredService<ISalesRepository>()));
 
             container.RegisterTransient(sp => new PurchaseEntryViewModel(
                 sp.GetRequiredService<ITransactionCoordinator>(),
                 sp.GetRequiredService<ISupplierRepository>(),
                 sp.GetRequiredService<IProductRepository>(),
                 sp.GetRequiredService<ISupplierPricingHistoryRepository>(),
-                sp.GetRequiredService<IAdminSession>()));
+                sp.GetRequiredService<IAdminSession>(),
+                sp.GetRequiredService<IPurchaseRepository>()));
 
             container.RegisterTransient(sp => new ReportsDashboardViewModel(
-                sp.GetRequiredService<IReportRepository>()));
+                sp.GetRequiredService<IReportRepository>(),
+                sp.GetRequiredService<ICustomerRepository>(),
+                sp.GetRequiredService<ISupplierRepository>(),
+                sp.GetRequiredService<IProductRepository>(),
+                sp.GetRequiredService<IBusinessLookupRepository>()));
             container.RegisterTransient(sp => new InventoryViewModel(
                 sp.GetRequiredService<IProductRepository>(),
                 sp.GetRequiredService<IStockMovementRepository>(),

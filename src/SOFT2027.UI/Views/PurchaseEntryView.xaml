@@ -19,6 +19,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -27,7 +28,17 @@
                 <TextBlock Text="Choose a supplier and products, check the saved price memory, then save the bill." FontSize="13" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,0" />
             </StackPanel>
 
-            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,12">
+                <DockPanel LastChildFill="False">
+                    <TextBlock Text="Saved bill" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" />
+                    <ComboBox ItemsSource="{Binding SavedBills}" SelectedItem="{Binding SelectedSavedBill}" DisplayMemberPath="DisplayText" Width="330" Height="34" VerticalContentAlignment="Center" Tag="Recent saved purchase bills" AutomationProperties.Name="Choose a saved purchase bill from transaction history" />
+                    <TextBox Text="{Binding DocumentLookupNumber, UpdateSourceTrigger=PropertyChanged}" Width="210" Height="34" VerticalContentAlignment="Center" Tag="Enter bill number" AutomationProperties.Name="Saved purchase bill number" />
+                    <Button Content="Preview / Print" Click="PreviewBill_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Find and preview saved purchase bill" />
+                    <Button Content="Preview latest saved" Click="PreviewLatestBill_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Preview latest saved purchase bill" />
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Row="2" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,12">
                 <WrapPanel Orientation="Horizontal">
                     <StackPanel Width="195" Margin="0,0,8,10">
                         <TextBlock Text="SUPPLIER" FontSize="12.5" FontWeight="Bold" Margin="0,0,0,5" />
@@ -53,7 +64,7 @@
                 </WrapPanel>
             </Border>
 
-            <DockPanel Grid.Row="2" Margin="0,0,0,12" LastChildFill="True">
+            <DockPanel Grid.Row="3" Margin="0,0,0,12" LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Margin="0,0,12,0">
                     <Button Content="Use previous rate" Command="{Binding UsePreviousPriceCommand}" Padding="12,7" Margin="0,0,6,0" ToolTip="Use this supplier's most recent rate for the selected product" />
                     <Button Content="Use product default" Command="{Binding UseDefaultPriceCommand}" Padding="12,7" Margin="0,0,6,0" />
@@ -65,7 +76,7 @@
                 </StackPanel>
             </DockPanel>
 
-            <DataGrid Grid.Row="3" ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" RowHeaderWidth="0" MinHeight="210" AutomationProperties.Name="Purchase items">
+            <DataGrid Grid.Row="4" ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" RowHeaderWidth="0" MinHeight="210" AutomationProperties.Name="Purchase items">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="CODE" Binding="{Binding Product.ProductCode}" IsReadOnly="True" Width="110" />
                     <DataGridTextColumn Header="PRODUCT" Binding="{Binding Product.ProductName}" IsReadOnly="True" Width="*" />
@@ -89,7 +100,7 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Grid Grid.Row="4" Margin="0,16,0,0">
+            <Grid Grid.Row="5" Margin="0,16,0,0">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock Text="Product price memory is saved when this bill is posted." FontSize="12" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />

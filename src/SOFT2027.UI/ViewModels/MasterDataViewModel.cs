@@ -162,8 +162,8 @@ public sealed class MasterDataViewModel : ViewModelBase
                 {
                     if (string.IsNullOrWhiteSpace(product.ProductCode) || string.IsNullOrWhiteSpace(product.ProductName))
                         throw new InvalidOperationException("Each product needs a code and a name.");
-                    if (product.BasePurchasePrice < 0 || product.DefaultSalePrice < 0 || product.MinimumStock < 0)
-                        throw new InvalidOperationException("Prices and minimum stock cannot be negative.");
+                    if (product.BasePurchasePrice < 0 || product.DefaultSalePrice < 0 || product.MinimumStock < 0 || product.PurchasePercentage < 0)
+                        throw new InvalidOperationException("Prices, purchase reference percentage, and minimum stock cannot be negative.");
                     if (product.ProductId == 0) await _products.AddAsync(product);
                     else await _products.UpdateAsync(product);
                 }

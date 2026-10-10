@@ -264,15 +264,11 @@
                             <Button Command="{Binding LoginCommand}"
                                     Style="{StaticResource BtnPrimaryStyle}"
                                     IsDefault="True"
-                                    Background="#1F4E79"
-                                    Foreground="#FFFFFF"
-                                    BorderBrush="#16395A"
                                     BorderThickness="1"
                                     Height="42"
                                     FontSize="14"
                                     FontWeight="Bold"
                                     HorizontalAlignment="Stretch"
-                                    Cursor="Hand"
                                     AutomationProperties.Name="Sign In">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
@@ -287,10 +283,6 @@
                                                               RecognizesAccessKey="True" />
                                         </Border>
                                         <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="ButtonBorder" Property="Background" Value="#2A6096" />
-                                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#1F4E79" />
-                                            </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter TargetName="ButtonBorder" Property="Background" Value="#16395A" />
                                             </Trigger>

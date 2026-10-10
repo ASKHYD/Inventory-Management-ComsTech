@@ -84,6 +84,10 @@ namespace SOFT2027.Tests
         {
             // Arrange: Bootstrap full container pointing to test database
             var container = Bootstrapper.CreateContainer(_connectionString);
+            container.GetRequiredService<IAdminSession>().SignIn(new AdminUser
+            {
+                AdminId = 1, Username = "admin", FullName = "System Administrator", Status = "Active"
+            });
             var mainVm = container.GetRequiredService<MainViewModel>();
 
             // Act 1: Navigate to Sales Entry
@@ -95,6 +99,7 @@ namespace SOFT2027.Tests
             salesVm.SelectedProduct = new Product
             {
                 ProductId = 101,
+                ProductCode = "PROD-101",
                 ProductName = "Basmati Rice 25kg",
                 BasePurchasePrice = 100m,
                 DefaultSalePrice = 150m,
@@ -107,6 +112,26 @@ namespace SOFT2027.Tests
             salesVm.AddItemCommand.Execute(null);
             await salesVm.SaveSaleCommand.ExecuteAsync(null);
 
+            // The compact print sheet resolves saved invoices only. A later catalog edit must not rewrite the invoice rate.
+            var savedProduct = await container.GetRequiredService<IProductRepository>().GetByIdAsync(101);
+            savedProduct.Should().NotBeNull();
+            savedProduct!.DefaultSalePrice = 999m;
+            savedProduct.ProductCode = "PROD-RENAMED";
+            savedProduct.ProductName = "Renamed Basmati Rice";
+            await container.GetRequiredService<IProductRepository>().UpdateAsync(savedProduct);
+            var printSheet = await salesVm.LoadRecentInvoiceSheetAsync();
+            printSheet.Should().ContainSingle();
+            printSheet[0].Lines.Should().ContainSingle().Which.UnitPrice.Should().Be(150m);
+            printSheet[0].Lines[0].ProductCode.Should().Be("PROD-101");
+            printSheet[0].Lines[0].ProductName.Should().Be("Basmati Rice 25kg");
+            printSheet[0].Total.Should().Be(750m);
+            using (var verifyPrintConn = new SqliteConnection(_connectionString))
+            {
+                await verifyPrintConn.OpenAsync();
+                (await verifyPrintConn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Sales;")).Should().Be(1);
+                (await verifyPrintConn.ExecuteScalarAsync<decimal>("SELECT CurrentStock FROM Products WHERE ProductId=101;")).Should().Be(15m);
+            }
+
             // Act 3: Navigate to Reports Dashboard
             mainVm.NavigateToReportsCommand.Execute(null);
             var reportsVm = mainVm.CurrentViewModel.Should().BeOfType<ReportsDashboardViewModel>().Subject;
@@ -118,6 +143,11 @@ namespace SOFT2027.Tests
             reportsVm.ProfitAndLoss!.TotalRevenue.Should().Be(750m);
             reportsVm.ProfitAndLoss!.CostOfGoodsSold.Should().Be(500m);
             reportsVm.ProfitAndLoss!.GrossProfit.Should().Be(250m);
+            reportsVm.PeriodSales.Should().Be(750m);
+            reportsVm.TodaySales.Should().Be(750m);
+            reportsVm.PeriodPurchases.Should().Be(0m);
+            reportsVm.OutstandingReceivables.Should().Be(750m);
+            reportsVm.LowStockItemCount.Should().Be(0);
 
             reportsVm.StockValuation.Should().NotBeNull();
             var updatedProduct = reportsVm.StockValuation!.Items.FirstOrDefault(p => p.ProductId == 101);
@@ -130,6 +160,10 @@ namespace SOFT2027.Tests
         {
             // Arrange: Bootstrap container and prepare sales view model
             var container = Bootstrapper.CreateContainer(_connectionString);
+            container.GetRequiredService<IAdminSession>().SignIn(new AdminUser
+            {
+                AdminId = 1, Username = "admin", FullName = "System Administrator", Status = "Active"
+            });
             var salesVm = container.GetRequiredService<SalesEntryViewModel>();
 
             salesVm.SelectedCustomer = new Customer { CustomerId = 1, CustomerName = "Al-Madina Traders" };
@@ -138,7 +172,8 @@ namespace SOFT2027.Tests
                 ProductId = 101,
                 ProductName = "Basmati Rice 25kg",
                 BasePurchasePrice = 100m,
-                DefaultSalePrice = 150m
+                DefaultSalePrice = 150m,
+                CurrentStock = 20m
             };
             salesVm.Quantity = 1m;
             salesVm.UnitPrice = 150m;

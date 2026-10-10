@@ -48,6 +48,10 @@ namespace SOFT2027.Tests.ViewModels
                 .Setup(r => r.GetStockValuationAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(stockVal);
 
+            _mockReportRepo
+                .Setup(r => r.GetOperationalReportAsync(It.IsAny<OperationalReportRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new OperationalReport());
+
             await sut.LoadReportsCommand.ExecuteAsync(null);
 
             _mockReportRepo.Verify(r => r.GetProfitAndLossSummaryAsync(sut.StartDate, sut.EndDate, It.IsAny<CancellationToken>()), Times.Once);
@@ -55,6 +59,11 @@ namespace SOFT2027.Tests.ViewModels
 
             sut.ProfitAndLoss.Should().BeSameAs(pnl);
             sut.StockValuation.Should().BeSameAs(stockVal);
+            sut.PeriodSales.Should().Be(0m);
+            sut.PeriodPurchases.Should().Be(0m);
+            sut.LowStockItemCount.Should().Be(0);
+            sut.DashboardRecentActivity.Should().ContainSingle().Which.Text.Should().Contain("No sales");
+            _mockReportRepo.Verify(r => r.GetOperationalReportAsync(It.IsAny<OperationalReportRequest>(), It.IsAny<CancellationToken>()), Times.Exactly(9));
             sut.StatusAnnouncement.Should().Contain("Reports loaded successfully");
             sut.IsLoading.Should().BeFalse();
             sut.HasErrors.Should().BeFalse();

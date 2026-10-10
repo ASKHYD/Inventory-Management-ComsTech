@@ -26,6 +26,7 @@
             <Grid.RowDefinitions>
                 <!-- Row 0: View Header Title & Subtitle -->
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <!-- Row 1: Accessibility & Error Notification Banner -->
                 <RowDefinition Height="Auto" />
                 <!-- Row 2: Form Inputs Row (Responsive Wrap Layout) -->
@@ -80,7 +81,18 @@
             <!-- ================================================================= -->
             <!-- ROW 1: ACCESSIBILITY & ERROR NOTIFICATION BANNER                   -->
             <!-- ================================================================= -->
-            <TextBlock Grid.Row="1"
+            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="10" Margin="0,0,0,12">
+                <DockPanel LastChildFill="False">
+                    <TextBlock Text="Saved invoice" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" />
+                    <ComboBox ItemsSource="{Binding SavedInvoices}" SelectedItem="{Binding SelectedSavedInvoice}" DisplayMemberPath="DisplayText" Width="330" Height="34" VerticalContentAlignment="Center" Tag="Recent saved invoices" AutomationProperties.Name="Choose a saved invoice from transaction history" />
+                    <TextBox Text="{Binding DocumentLookupNumber, UpdateSourceTrigger=PropertyChanged}" Width="210" Height="34" VerticalContentAlignment="Center" Tag="Enter invoice number" AutomationProperties.Name="Saved invoice number" />
+                    <Button Content="Preview / Print" Click="PreviewInvoice_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Find and preview saved invoice" />
+                    <Button Content="Preview latest saved" Click="PreviewLatestInvoice_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Preview latest saved invoice" />
+                    <Button Content="Print recent 4-up A4" Click="PreviewRecentInvoiceSheet_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Preview up to four recent saved invoices on an A4 sheet" />
+                </DockPanel>
+            </Border>
+
+            <TextBlock Grid.Row="2"
                        Text="{Binding ErrorMessage}"
                        Foreground="{StaticResource RedBrush}"
                        FontWeight="SemiBold"
@@ -92,7 +104,7 @@
             <!-- ================================================================= -->
             <!-- ROW 2: FORM ROW (Customer & Product ComboBoxes 250px+ Height 40)   -->
             <!-- ================================================================= -->
-            <Border Grid.Row="2"
+            <Border Grid.Row="3"
                     Background="{StaticResource SurfaceSubtleBrush}"
                     BorderBrush="{StaticResource BorderBrush}"
                     BorderThickness="1"
@@ -200,7 +212,7 @@
             <!-- ================================================================= -->
             <!-- ROW 3: CLEAN DATAGRID BOUND TO Items (.tbl styling)               -->
             <!-- ================================================================= -->
-            <Border Grid.Row="3" Background="{StaticResource BlueLightBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="12" Margin="0,0,0,14">
+            <Border Grid.Row="4" Background="{StaticResource BlueLightBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="12" Margin="0,0,0,14">
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
@@ -215,13 +227,12 @@
                 </Grid>
             </Border>
 
-            <DataGrid Grid.Row="4"
+            <DataGrid Grid.Row="5"
                       ItemsSource="{Binding Items}"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       HeadersVisibility="Column"
                       RowHeaderWidth="0"
-                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
                       AutomationProperties.Name="Sales Line Items">
                 <DataGrid.Columns>
                     <!-- Product Code -->
@@ -338,7 +349,7 @@
             <!-- ================================================================= -->
             <!-- ROW 4: PROTOTYPE .inv-summary BLOCK & SAVE ACTIONS                 -->
             <!-- ================================================================= -->
-            <Grid Grid.Row="5" Margin="0,20,0,0">
+            <Grid Grid.Row="6" Margin="0,20,0,0">
                 <Grid.ColumnDefinitions>
                     <!-- Left Spacer / Informational Hint -->
                     <ColumnDefinition Width="*" MinWidth="180" />

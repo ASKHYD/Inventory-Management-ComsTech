@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SOFT2027.Core.Entities;
 using SOFT2027.Core.Interfaces;
 using SOFT2027.Presentation.Commands;
+using SOFT2027.UI.Views;
 
 namespace SOFT2027.Presentation.ViewModels;
 
@@ -15,6 +16,7 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
     private readonly IProductRepository _products;
     private readonly ISupplierPricingHistoryRepository _pricing;
     private readonly IAdminSession? _adminSession;
+    private readonly IPurchaseRepository? _purchaseRepository;
     private Supplier? _selectedSupplier;
     private Product? _selectedProduct;
     private decimal _quantity = 1m;
@@ -31,10 +33,22 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
     private string _pricingSource = "Product default";
     private string _paymentSource = "Cash";
     private int _pricingLookupVersion;
+    private string _documentLookupNumber = string.Empty;
 
     public ObservableCollection<Supplier> Suppliers { get; } = new();
     public ObservableCollection<Product> Products { get; } = new();
     public ObservableCollection<SalesLineItemViewModel> Items { get; } = new();
+    public ObservableCollection<TransactionDocumentHistoryItem> SavedBills { get; } = new();
+    private TransactionDocumentHistoryItem? _selectedSavedBill;
+    public TransactionDocumentHistoryItem? SelectedSavedBill
+    {
+        get => _selectedSavedBill;
+        set
+        {
+            if (SetProperty(ref _selectedSavedBill, value) && value != null)
+                DocumentLookupNumber = value.Number;
+        }
+    }
     public Supplier? SelectedSupplier
     {
         get => _selectedSupplier;
@@ -69,6 +83,8 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
     public string PricingSource { get => _pricingSource; private set => SetProperty(ref _pricingSource, value); }
     public string PaymentSource { get => _paymentSource; set => SetProperty(ref _paymentSource, value); }
     public string[] PaymentSources { get; } = ["Cash", "Bank"];
+    public string DocumentLookupNumber { get => _documentLookupNumber; set => SetProperty(ref _documentLookupNumber, value); }
+    public string? LastSavedDocumentNumber { get; private set; }
 
     public RelayCommand AddItemCommand { get; }
     public RelayCommand RemoveItemCommand { get; }
@@ -84,22 +100,28 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
     }
 
     public PurchaseEntryViewModel(ITransactionCoordinator transactions, ISupplierRepository suppliers, IProductRepository products, ISupplierPricingHistoryRepository pricing, IAdminSession? adminSession)
+        : this(transactions, suppliers, products, pricing, adminSession, null)
+    {
+    }
+
+    public PurchaseEntryViewModel(ITransactionCoordinator transactions, ISupplierRepository suppliers, IProductRepository products, ISupplierPricingHistoryRepository pricing, IAdminSession? adminSession, IPurchaseRepository? purchaseRepository)
     {
         _transactions = transactions ?? throw new ArgumentNullException(nameof(transactions));
         _suppliers = suppliers ?? throw new ArgumentNullException(nameof(suppliers));
         _products = products ?? throw new ArgumentNullException(nameof(products));
         _pricing = pricing ?? throw new ArgumentNullException(nameof(pricing));
         _adminSession = adminSession;
+        _purchaseRepository = purchaseRepository;
         AddItemCommand = new RelayCommand(AddItem);
         RemoveItemCommand = new RelayCommand(param => RemoveItem(param as SalesLineItemViewModel));
-        UsePreviousPriceCommand = new RelayCommand(() => ApplyMemoryPrice("previous"), () => _latestPrice.HasValue);
+        UsePreviousPriceCommand = new RelayCommand(() => ApplyMemoryPrice("previous"), () => _latestPrice != null);
         UseDefaultPriceCommand = new RelayCommand(() => ApplyMemoryPrice("default"), () => SelectedProduct != null);
-        EnterNewPriceCommand = new RelayCommand(() => { PricingSource = "New price"; Announce("Enter the negotiated rate in Unit Price. It will be remembered when this bill is saved."); });
+        EnterNewPriceCommand = new RelayCommand(() => { _pricingLookupVersion++; PricingSource = "New price"; Announce("Enter the negotiated rate in Unit Price. It will be remembered when this bill is saved."); });
         LoadCommand = new AsyncRelayCommand(LoadAsync);
         SaveCommand = new AsyncRelayCommand(SaveAsync, () => !IsBusy);
     }
 
-    private decimal? _latestPrice;
+    private SupplierProductPricingHistory? _latestPrice;
 
     private async Task LoadAsync()
     {
@@ -108,9 +130,11 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
             IsBusy = true;
             ClearErrors();
             Suppliers.Clear();
-            foreach (var row in await _suppliers.GetAllAsync()) if (row.Status == "Active") Suppliers.Add(row);
+            var allSuppliers = await _suppliers.GetAllAsync();
+            foreach (var row in allSuppliers) if (row.Status == "Active") Suppliers.Add(row);
             Products.Clear();
             foreach (var row in await _products.GetAllAsync()) if (row.Status == "Active") Products.Add(row);
+            await LoadSavedBillHistoryAsync(allSuppliers);
             if (Suppliers.Count == 0 || Products.Count == 0)
             {
                 var missing = new System.Collections.Generic.List<string>();
@@ -124,6 +148,24 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
         finally { IsBusy = false; }
     }
 
+    private async Task LoadSavedBillHistoryAsync(IReadOnlyList<Supplier> suppliers)
+    {
+        SavedBills.Clear();
+        if (_purchaseRepository == null) return;
+        var entries = new System.Collections.Generic.List<(Purchase Purchase, string Party)>();
+        foreach (var supplier in suppliers)
+            foreach (var purchase in await _purchaseRepository.GetBySupplierIdAsync(supplier.SupplierId))
+                if (!string.Equals(purchase.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)) entries.Add((purchase, supplier.SupplierName));
+        foreach (var entry in entries.OrderByDescending(x => x.Purchase.PurchaseDate))
+            SavedBills.Add(new TransactionDocumentHistoryItem
+            {
+                Number = entry.Purchase.InvoiceNumber,
+                Date = entry.Purchase.PurchaseDate,
+                Total = entry.Purchase.NetTotal,
+                DisplayText = $"{entry.Purchase.InvoiceNumber}  ·  {entry.Purchase.PurchaseDate:d}  ·  {entry.Party}  ·  {entry.Purchase.NetTotal:N2}"
+            });
+    }
+
     private async Task LoadPairPricingAsync()
     {
         var version = ++_pricingLookupVersion;
@@ -135,6 +177,7 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
         if (product == null) return;
         UnitPrice = product.BasePurchasePrice;
         PurchasePercentage = product.PurchasePercentage;
+        DiscountPercentage = 0m;
         PricingSource = "Product default";
         if (supplier == null) { PricingMessage = "Select a supplier to check their previous rate for this product."; return; }
         try
@@ -146,12 +189,12 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
                 PricingMessage = "No earlier purchase found for this pair. The product default rate is shown.";
                 return;
             }
-            _latestPrice = prior.PurchasePrice;
+            _latestPrice = prior;
             UnitPrice = prior.PurchasePrice;
             PurchasePercentage = prior.PurchasePercentage;
             DiscountPercentage = prior.DiscountPercentage;
             PricingSource = "Previous supplier rate";
-            PricingMessage = $"Last rate {prior.PurchasePrice:N2} on {prior.TransactionDate:d} · {prior.InvoiceNumber} · {prior.Quantity:N2} units";
+            PricingMessage = $"Last rate {prior.PurchasePrice:N2} · purchase % {prior.PurchasePercentage:N2} · discount {prior.DiscountPercentage:N2}% · {prior.TransactionDate:d} · {prior.InvoiceNumber} · {prior.Quantity:N2} units";
             UsePreviousPriceCommand.RaiseCanExecuteChanged();
         }
         catch (Exception ex) { PricingMessage = "Could not retrieve pricing history. You can enter the rate manually."; SetError(ex.Message); }
@@ -160,22 +203,26 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
     private void ApplyMemoryPrice(string choice)
     {
         if (SelectedProduct == null) return;
-        if (choice == "previous" && _latestPrice.HasValue)
+        _pricingLookupVersion++;
+        if (choice == "previous" && _latestPrice != null)
         {
-            UnitPrice = _latestPrice.Value;
+            UnitPrice = _latestPrice.PurchasePrice;
+            PurchasePercentage = _latestPrice.PurchasePercentage;
+            DiscountPercentage = _latestPrice.DiscountPercentage;
             PricingSource = "Previous supplier rate";
         }
         else
         {
             UnitPrice = SelectedProduct.BasePurchasePrice;
             PurchasePercentage = SelectedProduct.PurchasePercentage;
+            DiscountPercentage = 0m;
             PricingSource = "Product default";
         }
     }
 
     private void AddItem()
     {
-        if (SelectedProduct == null) { SetError("Choose a product before adding it to the bill."); return; }
+        if (SelectedProduct == null) { SetError("Choose a product from the dropdown list before adding it to the bill. Typed text alone does not select a product."); return; }
         if (Quantity <= 0 || UnitPrice < 0 || DiscountPercentage is < 0 or > 100)
         { SetError("Quantity must be above zero. Price must be zero or higher, and discount must be between 0 and 100%."); return; }
         var item = new SalesLineItemViewModel
@@ -242,6 +289,8 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
                 Items = Items.Select(item => new PurchaseItem
                 {
                     ProductId = item.ProductId,
+                    ProductCodeAtPurchase = item.Product?.ProductCode ?? string.Empty,
+                    ProductNameAtPurchase = item.Product?.ProductName ?? item.ProductName,
                     Quantity = item.Quantity,
                     HistoricalPurchasePrice = item.UnitPrice,
                     PurchasePercentage = item.SellingPercentage,
@@ -250,6 +299,8 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
                 }).ToList()
             };
             await _transactions.PostPurchaseAsync(purchase);
+            LastSavedDocumentNumber = purchase.InvoiceNumber;
+            DocumentLookupNumber = purchase.InvoiceNumber;
             Announce($"Purchase {purchase.InvoiceNumber} saved. Stock and supplier balance were updated.");
             foreach (var item in Items) item.LineTotalChanged -= RecalculateTotals;
             Items.Clear();
@@ -260,5 +311,36 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
         }
         catch (Exception ex) { SetError($"The purchase was not saved. {ex.Message}"); }
         finally { IsBusy = false; }
+    }
+
+    public async Task<TransactionDocumentData> LoadDocumentForPreviewAsync(string invoiceNumber)
+    {
+        if (_purchaseRepository == null) throw new InvalidOperationException("Saved purchase lookup is not available.");
+        if (string.IsNullOrWhiteSpace(invoiceNumber)) throw new InvalidOperationException("Enter a saved purchase bill number.");
+        var purchase = await _purchaseRepository.GetByInvoiceNumberAsync(invoiceNumber.Trim())
+            ?? throw new InvalidOperationException($"Purchase bill {invoiceNumber.Trim()} was not found.");
+        var supplier = await _suppliers.GetByIdAsync(purchase.SupplierId);
+        if (supplier == null) throw new InvalidOperationException("The supplier for this bill could not be found.");
+        var lines = new System.Collections.Generic.List<TransactionDocumentLine>();
+        foreach (var item in purchase.Items)
+        {
+            var product = await _products.GetByIdAsync(item.ProductId);
+            lines.Add(new TransactionDocumentLine
+            {
+                ProductCode = string.IsNullOrWhiteSpace(item.ProductCodeAtPurchase) ? product?.ProductCode ?? item.ProductId.ToString() : item.ProductCodeAtPurchase,
+                ProductName = string.IsNullOrWhiteSpace(item.ProductNameAtPurchase) ? product?.ProductName ?? "Product no longer available" : item.ProductNameAtPurchase,
+                Quantity = item.Quantity,
+                UnitPrice = item.HistoricalPurchasePrice,
+                DiscountPercentage = item.DiscountPercentage,
+                LineTotal = item.LineTotal
+            });
+        }
+        return new TransactionDocumentData
+        {
+            Title = "Purchase Bill", Number = purchase.InvoiceNumber, Date = purchase.PurchaseDate,
+            PartyLabel = "Supplier", PartyName = supplier.SupplierName, PartyCode = supplier.SupplierCode, ContactPerson = supplier.ContactPerson, Phone = supplier.Phone, Address = supplier.Address,
+            Lines = lines, SubTotal = purchase.SubTotal, Discount = purchase.DiscountAmount, Total = purchase.NetTotal,
+            Paid = purchase.PaidAmount, Balance = purchase.RemainingBalance, PaymentSource = purchase.PaymentSource, Remarks = purchase.Remarks
+        };
     }
 }

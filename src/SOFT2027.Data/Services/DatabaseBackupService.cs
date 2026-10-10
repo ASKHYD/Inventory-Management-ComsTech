@@ -61,6 +61,20 @@ public sealed class DatabaseBackupService : IDatabaseBackupService
             if (Convert.ToInt32(await command.ExecuteScalarAsync(cancellationToken)) == 0)
                 throw new InvalidOperationException("This file is not a complete SOFT2027 database backup.");
         }
+        await using (var integrityCommand = source.CreateCommand())
+        {
+            integrityCommand.CommandText = "PRAGMA integrity_check;";
+            var integrity = Convert.ToString(await integrityCommand.ExecuteScalarAsync(cancellationToken));
+            if (!string.Equals(integrity, "ok", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("The selected backup failed SQLite's integrity check and was not restored.");
+        }
+        await using (var foreignKeyCommand = source.CreateCommand())
+        {
+            foreignKeyCommand.CommandText = "PRAGMA foreign_key_check;";
+            await using var foreignKeyErrors = await foreignKeyCommand.ExecuteReaderAsync(cancellationToken);
+            if (await foreignKeyErrors.ReadAsync(cancellationToken))
+                throw new InvalidOperationException("The selected backup contains broken foreign-key references and was not restored.");
+        }
         try
         {
             source.BackupDatabase(live);
