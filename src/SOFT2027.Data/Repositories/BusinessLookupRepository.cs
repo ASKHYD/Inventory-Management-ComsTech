@@ -48,6 +48,8 @@ public sealed class BusinessLookupRepository : IBusinessLookupRepository
     }
     public async Task DeleteAsync(string kind, int id, CancellationToken cancellationToken = default)
     {
+        if (_session?.IsAdministrator != true)
+            throw new InvalidOperationException("Only an administrator can permanently delete category, brand, or unit records. Employees may still edit these records.");
         var m = GetMapping(kind);
         using var connection = _factory.CreateConnection();
         if (connection is DbConnection db) await db.OpenAsync(cancellationToken);

@@ -48,7 +48,8 @@ Open **Current Stock & Movements** to review stock and recent movements. Select 
 
 ## 7. Administration and data safety
 
-- Use **Administration** to manage administrator accounts and review recorded activity.
+- In **Administration & Activity**, administrators can create employee or administrator accounts, activate or deactivate them, reset passwords, and review the activity log. Existing installations keep their current accounts as administrators after the role migration.
+- Employee accounts can use operational screens, but cannot open Administration or Backup & Restore, and permanent deletion of category, brand, or unit records is restricted to administrators. Sales, purchases, returns, stock adjustments, receipts, payments, expenses, and master-data changes are recorded under the signed-in user's name in the activity log.
 - Use **Backup & Restore** to create a database backup before major changes or updates. Restore asks for confirmation, validates the backup, and creates a safety copy before replacing current business data.
 - If a restore fails, keep the current database and backups in place; check the error and select another verified backup. Safety copies are under `%LOCALAPPDATA%\SOFT2027\Backups`.
 - Keep a copy of the database backup somewhere other than the computer running SOFT2027.

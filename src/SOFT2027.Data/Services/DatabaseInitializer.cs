@@ -81,6 +81,7 @@ namespace SOFT2027.Data.Services
             await EnsureSnapshotColumnAsync(connection, "SaleItems", "ProductNameAtSale", cancellationToken).ConfigureAwait(false);
             await EnsureSnapshotColumnAsync(connection, "PurchaseItems", "ProductCodeAtPurchase", cancellationToken).ConfigureAwait(false);
             await EnsureSnapshotColumnAsync(connection, "PurchaseItems", "ProductNameAtPurchase", cancellationToken).ConfigureAwait(false);
+            await EnsureRoleColumnAsync(connection, cancellationToken).ConfigureAwait(false);
             await connection.ExecuteAsync(new CommandDefinition(@"
                 UPDATE SaleItems SET
                     ProductCodeAtSale=COALESCE((SELECT ProductCode FROM Products WHERE Products.ProductId=SaleItems.ProductId), '')
@@ -101,6 +102,13 @@ namespace SOFT2027.Data.Services
             var columns = await connection.QueryAsync<SchemaColumn>(new CommandDefinition($"PRAGMA table_info({table});", cancellationToken: cancellationToken)).ConfigureAwait(false);
             if (!columns.Any(item => string.Equals(item.Name, column, StringComparison.OrdinalIgnoreCase)))
                 await connection.ExecuteAsync(new CommandDefinition($"ALTER TABLE {table} ADD COLUMN {column} TEXT NOT NULL DEFAULT '';", cancellationToken: cancellationToken)).ConfigureAwait(false);
+        }
+
+        private static async Task EnsureRoleColumnAsync(System.Data.IDbConnection connection, CancellationToken cancellationToken)
+        {
+            var columns = await connection.QueryAsync<SchemaColumn>(new CommandDefinition("PRAGMA table_info(AdminUsers);", cancellationToken: cancellationToken)).ConfigureAwait(false);
+            if (!columns.Any(item => string.Equals(item.Name, "Role", StringComparison.OrdinalIgnoreCase)))
+                await connection.ExecuteAsync(new CommandDefinition("ALTER TABLE AdminUsers ADD COLUMN Role TEXT NOT NULL DEFAULT 'Administrator';", cancellationToken: cancellationToken)).ConfigureAwait(false);
         }
 
         private sealed class SchemaColumn { public string Name { get; set; } = string.Empty; }

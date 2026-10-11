@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using SOFT2027.Core.Entities;
@@ -19,6 +21,9 @@ public sealed class MasterDataViewModel : ViewModelBase
     private readonly ICustomerRepository _customers;
     private readonly ISupplierRepository _suppliers;
     private readonly IBusinessLookupRepository? _lookups;
+    private readonly IAuditLogRepository? _audit;
+    private readonly IAdminSession? _session;
+    private readonly Dictionary<string, string> _originalSnapshots = new(StringComparer.Ordinal);
     private string _searchText = string.Empty;
     private object? _selectedRecord;
     private bool _isBusy;
@@ -74,7 +79,7 @@ public sealed class MasterDataViewModel : ViewModelBase
     public RelayCommand AddCommand { get; }
     public RelayCommand ToggleStatusCommand { get; }
 
-    public MasterDataViewModel(string section, IProductRepository products, ICustomerRepository customers, ISupplierRepository suppliers, IBusinessLookupRepository? lookups = null)
+    public MasterDataViewModel(string section, IProductRepository products, ICustomerRepository customers, ISupplierRepository suppliers, IBusinessLookupRepository? lookups = null, IAuditLogRepository? audit = null, IAdminSession? session = null)
     {
         _section = section is "Products" or "Customers" or "Suppliers"
             ? section
@@ -83,6 +88,8 @@ public sealed class MasterDataViewModel : ViewModelBase
         _customers = customers;
         _suppliers = suppliers;
         _lookups = lookups;
+        _audit = audit;
+        _session = session;
         FilteredRecords = CollectionViewSource.GetDefaultView(Records);
         FilteredRecords.Filter = MatchesSearch;
         LoadCommand = new AsyncRelayCommand(LoadAsync);
@@ -122,6 +129,7 @@ public sealed class MasterDataViewModel : ViewModelBase
                 foreach (var row in await _customers.GetAllAsync()) Records.Add(row);
             else
                 foreach (var row in await _suppliers.GetAllAsync()) Records.Add(row);
+            CaptureOriginalSnapshots();
             Announce($"{_section} loaded.");
         }
         catch (Exception ex) { SetError($"Could not load {_section.ToLowerInvariant()}. {ex.Message}"); }
@@ -152,6 +160,7 @@ public sealed class MasterDataViewModel : ViewModelBase
 
     private async Task SaveAsync()
     {
+        var auditWarnings = new List<string>();
         try
         {
             IsBusy = true;
@@ -164,8 +173,12 @@ public sealed class MasterDataViewModel : ViewModelBase
                         throw new InvalidOperationException("Each product needs a code and a name.");
                     if (product.BasePurchasePrice < 0 || product.DefaultSalePrice < 0 || product.MinimumStock < 0 || product.PurchasePercentage < 0)
                         throw new InvalidOperationException("Prices, purchase reference percentage, and minimum stock cannot be negative.");
-                    if (product.ProductId == 0) await _products.AddAsync(product);
+                    var isNew = product.ProductId == 0;
+                    var before = isNew ? null : GetOriginalSnapshot(product, product.ProductId);
+                    if (!isNew && before == Snapshot(product)) continue;
+                    if (isNew) await _products.AddAsync(product);
                     else await _products.UpdateAsync(product);
+                    await RecordMasterDataActionAsync(isNew, product.ProductCode, before, Snapshot(product), auditWarnings);
                 }
                 else if (_section == "Customers" && row is Customer customer)
                 {
@@ -173,8 +186,12 @@ public sealed class MasterDataViewModel : ViewModelBase
                         throw new InvalidOperationException("Each customer needs a code and a name.");
                     if (customer.OpeningBalance < 0 || customer.CreditLimit < 0)
                         throw new InvalidOperationException("Opening balance and credit limit cannot be negative.");
-                    if (customer.CustomerId == 0) await _customers.AddAsync(customer);
+                    var isNew = customer.CustomerId == 0;
+                    var before = isNew ? null : GetOriginalSnapshot(customer, customer.CustomerId);
+                    if (!isNew && before == Snapshot(customer)) continue;
+                    if (isNew) await _customers.AddAsync(customer);
                     else await _customers.UpdateAsync(customer);
+                    await RecordMasterDataActionAsync(isNew, customer.CustomerCode, before, Snapshot(customer), auditWarnings);
                 }
                 else if (_section == "Suppliers" && row is Supplier supplier)
                 {
@@ -182,14 +199,53 @@ public sealed class MasterDataViewModel : ViewModelBase
                         throw new InvalidOperationException("Each supplier needs a code and a name.");
                     if (supplier.OpeningBalance < 0)
                         throw new InvalidOperationException("Opening balance cannot be negative.");
-                    if (supplier.SupplierId == 0) await _suppliers.AddAsync(supplier);
+                    var isNew = supplier.SupplierId == 0;
+                    var before = isNew ? null : GetOriginalSnapshot(supplier, supplier.SupplierId);
+                    if (!isNew && before == Snapshot(supplier)) continue;
+                    if (isNew) await _suppliers.AddAsync(supplier);
                     else await _suppliers.UpdateAsync(supplier);
+                    await RecordMasterDataActionAsync(isNew, supplier.SupplierCode, before, Snapshot(supplier), auditWarnings);
                 }
             }
             await LoadAsync();
-            Announce($"Changes saved. {_section} are up to date.");
+            if (HasErrors) return;
+            if (auditWarnings.Count > 0)
+                SetError($"Changes were saved, but activity logging needs attention: {string.Join(" ", auditWarnings.Distinct())}");
+            else Announce($"Changes saved. {_section} are up to date.");
         }
         catch (Exception ex) { SetError(ex.Message); }
         finally { IsBusy = false; }
+    }
+
+    private void CaptureOriginalSnapshots()
+    {
+        _originalSnapshots.Clear();
+        foreach (var record in Records)
+        {
+            var id = GetRecordId(record);
+            if (id > 0) _originalSnapshots[GetSnapshotKey(record, id)] = Snapshot(record);
+        }
+    }
+
+    private string? GetOriginalSnapshot(object record, int id) => _originalSnapshots.TryGetValue(GetSnapshotKey(record, id), out var value) ? value : null;
+    private static string GetSnapshotKey(object record, int id) => $"{record.GetType().Name}:{id}";
+    private static int GetRecordId(object record) => record switch
+    {
+        Product product => product.ProductId,
+        Customer customer => customer.CustomerId,
+        Supplier supplier => supplier.SupplierId,
+        _ => 0
+    };
+    private static string Snapshot(object record) => JsonSerializer.Serialize(record, record.GetType());
+
+    private async Task RecordMasterDataActionAsync(bool isNew, string reference, string? previous, string current, List<string> warnings)
+    {
+        if (_audit == null || _session == null || _session.AdminId <= 0) return;
+        try
+        {
+            await _audit.LogActionAsync(_session.AdminId, isNew ? "CREATE" : "UPDATE", _section, reference,
+                isNew ? null : previous, current);
+        }
+        catch (Exception ex) { warnings.Add(ex.Message); }
     }
 }

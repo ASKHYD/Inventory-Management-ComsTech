@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS AdminUsers (
     Username TEXT NOT NULL UNIQUE COLLATE NOCASE,
     PasswordHash TEXT NOT NULL,
     FullName TEXT NOT NULL,
+    Role TEXT NOT NULL CHECK(Role IN ('Administrator', 'Employee')) DEFAULT 'Administrator',
     Status TEXT NOT NULL CHECK(Status IN ('Active', 'Inactive')) DEFAULT 'Active',
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     LastLogin DATETIME

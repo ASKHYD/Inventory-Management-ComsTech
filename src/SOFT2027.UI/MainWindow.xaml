@@ -419,12 +419,12 @@
                                 </StackPanel>
                             </Button>
 
-                            <TextBlock Text="SYSTEM" Foreground="{StaticResource SidebarNavGroupBrush}" FontSize="10.5" FontWeight="Bold" Padding="10,16,10,6" />
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToBackupCommand}" AutomationProperties.Name="Create or restore a database backup">
+                            <TextBlock Text="SYSTEM" Visibility="{Binding IsAdministrator, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="{StaticResource SidebarNavGroupBrush}" FontSize="10.5" FontWeight="Bold" Padding="10,16,10,6" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToBackupCommand}" Visibility="{Binding IsAdministrator, Converter={StaticResource BooleanToVisibilityConverter}}" AutomationProperties.Name="Create or restore a database backup">
                                 <TextBlock Text="Backup &amp; Restore" FontSize="13.5" />
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToAdministrationCommand}" AutomationProperties.Name="Manage administrators and review activity">
-                                <TextBlock Text="Administration &amp; Activity" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToAdministrationCommand}" Visibility="{Binding IsAdministrator, Converter={StaticResource BooleanToVisibilityConverter}}" AutomationProperties.Name="Manage administrators and review activity">
+                                <TextBlock Text="Users &amp; Activity" FontSize="13.5" />
                             </Button>
 
                         </StackPanel>
@@ -436,12 +436,18 @@
                             BorderBrush="{StaticResource SidebarBorderBrush}"
                             BorderThickness="0,1,0,0">
                         <StackPanel HorizontalAlignment="Center">
-                            <TextBlock TextAlignment="Center"
-                                       FontSize="11.5"
-                                       Foreground="{StaticResource SidebarNavGroupBrush}">
-                                <Run Text="Developed by " />
-                                <Run Text="COMSTECH.Solutions" FontWeight="Bold" Foreground="#9FB2C8" />
-                            </TextBlock>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Ellipse Width="27" Height="27" Margin="0,0,8,0" Stroke="#FFFFFF" StrokeThickness="1.2"
+                                         ToolTip="COMSTECH Solutions Private Limited">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="/SOFT2027.UI;component/Assets/COMSTECH-Solutions.jpeg" Stretch="UniformToFill" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Developed by" FontSize="10.5" Foreground="{StaticResource SidebarNavGroupBrush}" />
+                                    <TextBlock Text="COMSTECH Solutions" FontSize="12" FontWeight="SemiBold" Foreground="#DCE8F5" />
+                                </StackPanel>
+                            </StackPanel>
 
                             <Button Content="Help &amp; Tour"
                                     Click="ShowTourButton_Click"
@@ -726,7 +732,7 @@
                                                    FontSize="12.5"
                                                    Foreground="{StaticResource TextBrush}"
                                                    TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="Administrator"
+                                        <TextBlock Text="{Binding UserRole}"
                                                    FontSize="11"
                                                    Foreground="{StaticResource MutedBrush}" />
                                     </StackPanel>
@@ -766,7 +772,7 @@
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource TextBrush}"
                                                    TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="Administrator"
+                                        <TextBlock Text="{Binding UserRole}"
                                                    FontSize="12"
                                                    Foreground="{StaticResource MutedBrush}" />
                                         <Border Height="1"

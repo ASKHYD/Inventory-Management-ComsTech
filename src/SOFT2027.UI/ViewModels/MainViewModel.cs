@@ -38,6 +38,8 @@ namespace SOFT2027.Presentation.ViewModels
             set => SetProperty(ref _isAuthenticated, value);
         }
 
+        public bool IsAdministrator => _adminSession?.IsAdministrator ?? true;
+
         public string LoginUsername
         {
             get => _loginUsername;
@@ -80,7 +82,7 @@ namespace SOFT2027.Presentation.ViewModels
         public string LoginButtonText => IsFirstRunSetup ? "Create Administrator" : "Sign In";
         public string LoginHint => IsFirstRunSetup
             ? "This one-time setup protects your local business records. Use at least 10 characters for the password."
-            : "Sign in with your administrator username and password.";
+            : "Sign in with your username and password.";
         public string UserDisplayName
         {
             get => _userDisplayName;
@@ -89,6 +91,7 @@ namespace SOFT2027.Presentation.ViewModels
                 if (SetProperty(ref _userDisplayName, value)) OnPropertyChanged(nameof(UserInitials));
             }
         }
+        public string UserRole => _adminSession?.Role ?? "Administrator";
         public string UserInitials => string.Join(string.Empty, UserDisplayName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(part => part[0])).ToUpperInvariant();
 
         public ViewModelBase? CurrentViewModel
@@ -299,6 +302,8 @@ namespace SOFT2027.Presentation.ViewModels
                 }
 
                 _adminSession.SignIn(user);
+                OnPropertyChanged(nameof(IsAdministrator));
+                OnPropertyChanged(nameof(UserRole));
                 UserDisplayName = user.FullName;
                 LoginPassword = string.Empty;
                 ConfirmPassword = string.Empty;
@@ -312,6 +317,8 @@ namespace SOFT2027.Presentation.ViewModels
         public void ExecuteLogout()
         {
             _adminSession?.SignOut();
+            OnPropertyChanged(nameof(IsAdministrator));
+            OnPropertyChanged(nameof(UserRole));
             IsAuthenticated = false;
             UserDisplayName = "Administrator";
             LoginPassword = string.Empty;
@@ -383,6 +390,7 @@ namespace SOFT2027.Presentation.ViewModels
 
         public void NavigateToBackup()
         {
+            if (!EnsureAdministrator("Backup and restore")) return;
             if (_backupViewModelFactory == null) return;
             CurrentViewModel = _backupViewModelFactory();
             IsAuthenticated = true;
@@ -410,6 +418,7 @@ namespace SOFT2027.Presentation.ViewModels
 
         public void NavigateToAdministration()
         {
+            if (!EnsureAdministrator("Administration")) return;
             if (_administrationViewModelFactory == null) return;
             CurrentViewModel = _administrationViewModelFactory();
             IsAuthenticated = true;
@@ -419,11 +428,19 @@ namespace SOFT2027.Presentation.ViewModels
 
         public void NavigateToLookups()
         {
+            if (!EnsureAdministrator("Category, brand and unit management")) return;
             if (_lookupManagementViewModelFactory == null) return;
             CurrentViewModel = _lookupManagementViewModelFactory();
             IsAuthenticated = true;
             ClearErrors();
             Announce("Opened Categories, Brands and Units");
+        }
+
+        private bool EnsureAdministrator(string action)
+        {
+            if (_adminSession?.IsAdministrator == true) return true;
+            SetError($"Administrator access is required for {action.ToLowerInvariant()}.");
+            return false;
         }
     }
 }

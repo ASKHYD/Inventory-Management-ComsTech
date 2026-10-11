@@ -1,13 +1,14 @@
 <UserControl x:Class="SOFT2027.UI.Views.AdministrationView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
     <Grid Margin="28"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-        <StackPanel><TextBlock Text="Administration" FontSize="26" FontWeight="Bold"/><TextBlock Text="Manage who can sign in and review recent activity." Foreground="{StaticResource MutedBrush}" Margin="0,6,0,16"/></StackPanel>
+        <StackPanel><TextBlock Text="Administration &amp; Activity" FontSize="26" FontWeight="Bold"/><TextBlock Text="Add employees, control account access, and review actions recorded against each signed-in user." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,6,0,16"/></StackPanel>
         <TabControl Grid.Row="1" SelectionChanged="Tabs_SelectionChanged">
-            <TabItem Header="Administrators"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                <Grid Margin="0,0,0,12"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TabItem Header="User Accounts"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <Grid Margin="0,0,0,12"><Grid.ColumnDefinitions><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="1.2*"/><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="150"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                     <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Tag="Username" Height="38" Margin="0,0,8,0" ToolTip="Username"/>
                     <TextBox Grid.Column="1" Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" Tag="Full name" Height="38" Margin="0,0,8,0" ToolTip="Full name"/>
                     <PasswordBox x:Name="NewPasswordBox" Grid.Column="2" Height="38" Margin="0,0,8,0" PasswordChanged="NewPasswordBox_PasswordChanged" ToolTip="Password, at least 10 characters"/>
-                    <Button Grid.Column="3" Content="Add Administrator" Command="{Binding CreateUserCommand}" Padding="14,0"/>
+                    <ComboBox Grid.Column="3" Height="38" Margin="0,0,8,0" ItemsSource="{Binding AvailableRoles}" SelectedItem="{Binding NewUserRole}" ToolTip="Choose whether this account can manage administrators and data safety" AutomationProperties.Name="New user role"/>
+                    <Button Grid.Column="4" Content="Add User" Command="{Binding CreateUserCommand}" Padding="16,0" Style="{StaticResource BtnPrimaryStyle}"/>
                 </Grid>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" AutoGenerateColumns="True" AutoGeneratingColumn="UsersGrid_AutoGeneratingColumn" IsReadOnly="True" CanUserAddRows="False"/>
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,0">

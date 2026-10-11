@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Added the supplied COMSTECH Solutions logo to the sidebar developer attribution.
+- Added Administrator and Employee account roles, safe migration of existing local users, administrator-only account and backup screens, and employee protection from permanent lookup-record deletion.
+- Added audit records for employee and administrator changes to products, customers, and suppliers, and updated activity guidance.
+- Prevented unchanged master-data rows from being written again when Save Changes is used, reducing unnecessary updates and audit noise.
+
 ## 1.0.0-rc.2 — 2026-10-10
 
 - Redesigned the existing header as a compact 68px toolbar with a two-line brand, responsive centered search, balanced notification/profile actions, and separated native-style window controls.

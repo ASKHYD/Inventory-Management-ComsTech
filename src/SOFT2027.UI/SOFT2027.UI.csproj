@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Resource Include="..\..\Assets\COMSTECH-Solutions.jpeg">
+      <Link>Assets\COMSTECH-Solutions.jpeg</Link>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SOFT2027.Core\SOFT2027.Core.csproj" />
     <ProjectReference Include="..\SOFT2027.Data\SOFT2027.Data.csproj" />
   </ItemGroup>

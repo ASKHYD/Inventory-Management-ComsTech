@@ -13,6 +13,7 @@ public sealed class AdministrationViewModel : ViewModelBase
     private readonly IAuditLogRepository _audit;
     private readonly IAdminSession _session;
     private string _username = string.Empty, _fullName = string.Empty, _password = string.Empty;
+    private string _newUserRole = "Employee";
     private AdminUserSummary? _selectedUser;
 
     public AdministrationViewModel(IAdminUserRepository users, IAuditLogRepository audit, IAdminSession session)
@@ -29,6 +30,8 @@ public sealed class AdministrationViewModel : ViewModelBase
     public string Username { get => _username; set => SetProperty(ref _username, value); }
     public string FullName { get => _fullName; set => SetProperty(ref _fullName, value); }
     public string Password { get => _password; set => SetProperty(ref _password, value); }
+    public string NewUserRole { get => _newUserRole; set => SetProperty(ref _newUserRole, value); }
+    public string[] AvailableRoles { get; } = ["Employee", "Administrator"];
     public AdminUserSummary? SelectedUser { get => _selectedUser; set => SetProperty(ref _selectedUser, value); }
     public AsyncRelayCommand LoadUsersCommand { get; }
     public AsyncRelayCommand LoadAuditCommand { get; }
@@ -39,7 +42,7 @@ public sealed class AdministrationViewModel : ViewModelBase
     public async Task LoadUsersAsync()
     {
         try { Users.Clear(); foreach (var item in await _users.GetAllAsync()) Users.Add(item); }
-        catch (Exception ex) { SetError($"Could not load administrators. {ex.Message}"); }
+        catch (Exception ex) { SetError($"Could not load user accounts. {ex.Message}"); }
     }
     public async Task LoadAuditAsync()
     {
@@ -51,11 +54,13 @@ public sealed class AdministrationViewModel : ViewModelBase
         try
         {
             if (string.IsNullOrWhiteSpace(Username) || Username.Trim().Length < 3) throw new InvalidOperationException("Enter a username with at least 3 characters.");
-            if (string.IsNullOrWhiteSpace(FullName)) throw new InvalidOperationException("Enter the administrator's full name.");
+            if (string.IsNullOrWhiteSpace(FullName)) throw new InvalidOperationException("Enter the user's full name.");
             if (Password.Length < 10) throw new InvalidOperationException("Choose a password with at least 10 characters.");
-            await _users.CreateAdminAsync(Username, FullName, Password, _session.AdminId);
+            var createdRole = NewUserRole;
+            await _users.CreateAdminAsync(Username, FullName, Password, createdRole, _session.AdminId);
             Username = FullName = Password = string.Empty;
-            await LoadUsersAsync(); await LoadAuditAsync(); Announce("Administrator added.");
+            NewUserRole = "Employee";
+            await LoadUsersAsync(); await LoadAuditAsync(); Announce($"{createdRole} account added.");
         }
         catch (Exception ex) { SetError(ex.Message); }
     }
@@ -63,7 +68,7 @@ public sealed class AdministrationViewModel : ViewModelBase
     {
         try
         {
-            if (SelectedUser == null) throw new InvalidOperationException("Select an administrator first.");
+            if (SelectedUser == null) throw new InvalidOperationException("Select a user account first.");
             if (SelectedUser.AdminId == _session.AdminId && SelectedUser.Status == "Active") throw new InvalidOperationException("You cannot deactivate the account you are using.");
             await _users.SetStatusAsync(SelectedUser.AdminId, SelectedUser.Status != "Active", _session.AdminId);
             await LoadUsersAsync(); await LoadAuditAsync(); Announce("Administrator access updated.");
@@ -74,7 +79,7 @@ public sealed class AdministrationViewModel : ViewModelBase
     {
         try
         {
-            if (SelectedUser == null) throw new InvalidOperationException("Select an administrator first.");
+            if (SelectedUser == null) throw new InvalidOperationException("Select a user account first.");
             if (Password.Length < 10) throw new InvalidOperationException("Enter a new password with at least 10 characters.");
             await _users.ResetPasswordAsync(SelectedUser.AdminId, Password, _session.AdminId);
             Password = string.Empty; await LoadAuditAsync(); Announce("Administrator password reset.");

@@ -276,7 +276,9 @@ namespace SOFT2027.UI
                 sp.GetRequiredService<IProductRepository>(),
                 sp.GetRequiredService<ICustomerRepository>(),
                 sp.GetRequiredService<ISupplierRepository>(),
-                sp.GetRequiredService<IBusinessLookupRepository>()));
+                sp.GetRequiredService<IBusinessLookupRepository>(),
+                sp.GetRequiredService<IAuditLogRepository>(),
+                sp.GetRequiredService<IAdminSession>()));
 
             // 5. Delegate Factories for Navigation
             container.RegisterSingleton<Func<SalesEntryViewModel>>(sp => () => sp.GetRequiredService<SalesEntryViewModel>());
