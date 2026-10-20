@@ -32,13 +32,13 @@ namespace SOFT2027.Presentation.ViewModels
         public decimal UnitPrice
         {
             get => _unitPrice;
-            set => SetProperty(ref _unitPrice, value, RecalculateLineTotal);
+            set => SetProperty(ref _unitPrice, value, () => { RecalculateMarkup(); RecalculateLineTotal(); });
         }
 
         public decimal CostPrice
         {
             get => _costPrice;
-            set => SetProperty(ref _costPrice, value);
+            set => SetProperty(ref _costPrice, value, RecalculateMarkup);
         }
 
         public decimal SellingPercentage
@@ -74,5 +74,9 @@ namespace SOFT2027.Presentation.ViewModels
             LineTotal = gross - discount;
             LineTotalChanged?.Invoke();
         }
+
+        private void RecalculateMarkup() => SellingPercentage = CostPrice > 0m
+            ? ((UnitPrice - CostPrice) / CostPrice) * 100m
+            : 0m;
     }
 }

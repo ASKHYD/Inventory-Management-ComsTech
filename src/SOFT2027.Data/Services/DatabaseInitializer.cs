@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -73,6 +74,43 @@ namespace SOFT2027.Data.Services
                     schemaCmd.ExecuteNonQuery();
                 }
             }
+
+            // Existing installations may predate item-level product-description snapshots.
+            // Add missing columns idempotently and seed existing rows once from their current catalog entry.
+            await EnsureSnapshotColumnAsync(connection, "SaleItems", "ProductCodeAtSale", cancellationToken).ConfigureAwait(false);
+            await EnsureSnapshotColumnAsync(connection, "SaleItems", "ProductNameAtSale", cancellationToken).ConfigureAwait(false);
+            await EnsureSnapshotColumnAsync(connection, "PurchaseItems", "ProductCodeAtPurchase", cancellationToken).ConfigureAwait(false);
+            await EnsureSnapshotColumnAsync(connection, "PurchaseItems", "ProductNameAtPurchase", cancellationToken).ConfigureAwait(false);
+            await EnsureRoleColumnAsync(connection, cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(new CommandDefinition(@"
+                UPDATE SaleItems SET
+                    ProductCodeAtSale=COALESCE((SELECT ProductCode FROM Products WHERE Products.ProductId=SaleItems.ProductId), '')
+                WHERE ProductCodeAtSale='';
+                UPDATE SaleItems SET
+                    ProductNameAtSale=COALESCE((SELECT ProductName FROM Products WHERE Products.ProductId=SaleItems.ProductId), '')
+                WHERE ProductNameAtSale='';
+                UPDATE PurchaseItems SET
+                    ProductCodeAtPurchase=COALESCE((SELECT ProductCode FROM Products WHERE Products.ProductId=PurchaseItems.ProductId), '')
+                WHERE ProductCodeAtPurchase='';
+                UPDATE PurchaseItems SET
+                    ProductNameAtPurchase=COALESCE((SELECT ProductName FROM Products WHERE Products.ProductId=PurchaseItems.ProductId), '')
+                WHERE ProductNameAtPurchase='';", cancellationToken: cancellationToken)).ConfigureAwait(false);
         }
+
+        private static async Task EnsureSnapshotColumnAsync(System.Data.IDbConnection connection, string table, string column, CancellationToken cancellationToken)
+        {
+            var columns = await connection.QueryAsync<SchemaColumn>(new CommandDefinition($"PRAGMA table_info({table});", cancellationToken: cancellationToken)).ConfigureAwait(false);
+            if (!columns.Any(item => string.Equals(item.Name, column, StringComparison.OrdinalIgnoreCase)))
+                await connection.ExecuteAsync(new CommandDefinition($"ALTER TABLE {table} ADD COLUMN {column} TEXT NOT NULL DEFAULT '';", cancellationToken: cancellationToken)).ConfigureAwait(false);
+        }
+
+        private static async Task EnsureRoleColumnAsync(System.Data.IDbConnection connection, CancellationToken cancellationToken)
+        {
+            var columns = await connection.QueryAsync<SchemaColumn>(new CommandDefinition("PRAGMA table_info(AdminUsers);", cancellationToken: cancellationToken)).ConfigureAwait(false);
+            if (!columns.Any(item => string.Equals(item.Name, "Role", StringComparison.OrdinalIgnoreCase)))
+                await connection.ExecuteAsync(new CommandDefinition("ALTER TABLE AdminUsers ADD COLUMN Role TEXT NOT NULL DEFAULT 'Administrator';", cancellationToken: cancellationToken)).ConfigureAwait(false);
+        }
+
+        private sealed class SchemaColumn { public string Name { get; set; } = string.Empty; }
     }
 }

@@ -71,6 +71,9 @@ namespace SOFT2027.Data.Services
                 var customer = await _customerRepository.GetByIdAsync(receipt.CustomerId, transaction, cancellationToken).ConfigureAwait(false)
                     ?? throw new InvalidOperationException($"Customer with ID {receipt.CustomerId} not found.");
 
+                if (receipt.Amount <= 0 || receipt.Amount > customer.OutstandingBalance)
+                    throw new InvalidOperationException("Receipt amount must be positive and cannot exceed the customer's outstanding balance.");
+
                 var newCustBalance = customer.OutstandingBalance - receipt.Amount;
                 var custBalanceUpdated = await _customerRepository.UpdateBalanceAsync(receipt.CustomerId, newCustBalance, transaction, cancellationToken).ConfigureAwait(false);
                 if (!custBalanceUpdated)
@@ -183,6 +186,9 @@ namespace SOFT2027.Data.Services
                 // 2. Fetch Supplier and decrement OutstandingBalance
                 var supplier = await _supplierRepository.GetByIdAsync(payment.SupplierId, transaction, cancellationToken).ConfigureAwait(false)
                     ?? throw new InvalidOperationException($"Supplier with ID {payment.SupplierId} not found.");
+
+                if (payment.Amount <= 0 || payment.Amount > supplier.OutstandingBalance)
+                    throw new InvalidOperationException("Payment amount must be positive and cannot exceed the supplier's outstanding balance.");
 
                 var newSuppBalance = supplier.OutstandingBalance - payment.Amount;
                 var suppBalanceUpdated = await _supplierRepository.UpdateBalanceAsync(payment.SupplierId, newSuppBalance, transaction, cancellationToken).ConfigureAwait(false);

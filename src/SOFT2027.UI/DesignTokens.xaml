@@ -1,0 +1,297 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!-- SOFT2027 shared design tokens. The navy and orange are sampled visually
+         from the supplied ComsTech logo; orange is reserved for accents. -->
+    <Color x:Key="BrandNavyColor">#17194A</Color>
+    <SolidColorBrush x:Key="BrandNavyBrush" Color="{StaticResource BrandNavyColor}" />
+    <Color x:Key="BrandNavyHoverColor">#20235C</Color>
+    <SolidColorBrush x:Key="BrandNavyHoverBrush" Color="#20235C" />
+    <Color x:Key="BrandNavyPressedColor">#101238</Color>
+    <SolidColorBrush x:Key="BrandNavyPressedBrush" Color="#101238" />
+    <Color x:Key="AccentOrangeColor">#FF5A1F</Color>
+    <SolidColorBrush x:Key="AccentOrangeBrush" Color="{StaticResource AccentOrangeColor}" />
+    <SolidColorBrush x:Key="AccentOrangeDarkBrush" Color="#C2410C" />
+    <SolidColorBrush x:Key="PageBackgroundBrush" Color="#F5F6FA" />
+    <SolidColorBrush x:Key="SurfaceWhiteBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="InkBrush" Color="#1F2937" />
+    <SolidColorBrush x:Key="MutedTextBrush" Color="#475569" />
+    <SolidColorBrush x:Key="SubtleTextBrush" Color="#5B6472" />
+    <SolidColorBrush x:Key="BorderTokenBrush" Color="#CBD5E1" />
+    <SolidColorBrush x:Key="BorderStrongTokenBrush" Color="#94A3B8" />
+    <SolidColorBrush x:Key="SurfaceSubtleTokenBrush" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="SelectionTokenBrush" Color="#EEF0FA" />
+    <SolidColorBrush x:Key="ErrorTokenBrush" Color="#C62828" />
+    <SolidColorBrush x:Key="ErrorSurfaceTokenBrush" Color="#FDECEC" />
+    <SolidColorBrush x:Key="SuccessTokenBrush" Color="#166534" />
+    <SolidColorBrush x:Key="SuccessSurfaceTokenBrush" Color="#E8F5EC" />
+    <SolidColorBrush x:Key="WarningTokenBrush" Color="#B45309" />
+    <SolidColorBrush x:Key="WarningSurfaceTokenBrush" Color="#FFF4E5" />
+    <SolidColorBrush x:Key="FocusRingBrush" Color="#D9480F" />
+    <SolidColorBrush x:Key="DisabledSurfaceBrush" Color="#EEF1F5" />
+    <SolidColorBrush x:Key="DisabledTextBrush" Color="#526173" />
+    <SolidColorBrush x:Key="OverlayWhite10Brush" Color="#10FFFFFF" />
+    <SolidColorBrush x:Key="OverlayWhite25Brush" Color="#25FFFFFF" />
+
+    <!-- Spacing scale: 4 / 8 / 12 / 16 / 24 px. -->
+    <Thickness x:Key="Space4">4</Thickness>
+    <Thickness x:Key="Space8">8</Thickness>
+    <Thickness x:Key="Space12">12</Thickness>
+    <Thickness x:Key="Space16">16</Thickness>
+    <Thickness x:Key="Space24">24</Thickness>
+
+    <!-- Type scale. Body and supporting text remain at least 12 px. -->
+    <sys:Double x:Key="TypeSmall" xmlns:sys="clr-namespace:System;assembly=mscorlib">12</sys:Double>
+    <sys:Double x:Key="TypeBody" xmlns:sys="clr-namespace:System;assembly=mscorlib">14</sys:Double>
+    <sys:Double x:Key="TypeEmphasis" xmlns:sys="clr-namespace:System;assembly=mscorlib">16</sys:Double>
+    <sys:Double x:Key="TypeSectionTitle" xmlns:sys="clr-namespace:System;assembly=mscorlib">20</sys:Double>
+    <sys:Double x:Key="TypePageTitle" xmlns:sys="clr-namespace:System;assembly=mscorlib">26</sys:Double>
+    <sys:Double x:Key="TypeDisplay" xmlns:sys="clr-namespace:System;assembly=mscorlib">28</sys:Double>
+    <sys:Double x:Key="ControlHeight" xmlns:sys="clr-namespace:System;assembly=mscorlib">40</sys:Double>
+    <sys:Double x:Key="ButtonHeight" xmlns:sys="clr-namespace:System;assembly=mscorlib">40</sys:Double>
+
+    <!-- Shared presentation formats; no calculation logic is performed here. -->
+    <sys:String x:Key="CurrencyStringFormat" xmlns:sys="clr-namespace:System;assembly=mscorlib">PKR {0:N2}</sys:String>
+    <sys:String x:Key="NumberStringFormat" xmlns:sys="clr-namespace:System;assembly=mscorlib">{0:N2}</sys:String>
+    <sys:String x:Key="QuantityStringFormat" xmlns:sys="clr-namespace:System;assembly=mscorlib">{0:N2}</sys:String>
+    <sys:String x:Key="DateStringFormat" xmlns:sys="clr-namespace:System;assembly=mscorlib">{0:dd/MM/yyyy}</sys:String>
+    <sys:String x:Key="DateTimeStringFormat" xmlns:sys="clr-namespace:System;assembly=mscorlib">{0:dd/MM/yyyy HH:mm}</sys:String>
+<Thickness x:Key="Layout_BorderThickness_0">0</Thickness>
+<Thickness x:Key="Layout_BorderThickness_0_0_0_1">0,0,0,1</Thickness>
+<Thickness x:Key="Layout_BorderThickness_0_1_0_0">0,1,0,0</Thickness>
+<Thickness x:Key="Layout_BorderThickness_1">1</Thickness>
+<Thickness x:Key="Layout_BorderThickness_1_0_0_0">1,0,0,0</Thickness>
+<CornerRadius x:Key="Layout_CornerRadius_0">0</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_10">10</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_12">12</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_17">17</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_4">4</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_5">5</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_6">6</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_7">7</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_8">8</CornerRadius>
+<CornerRadius x:Key="Layout_CornerRadius_9">9</CornerRadius>
+<GridLength x:Key="Layout_GridHeight_68">68</GridLength>
+<GridLength x:Key="Layout_GridWidth_14">14</GridLength>
+<GridLength x:Key="Layout_GridWidth_150">150</GridLength>
+<GridLength x:Key="Layout_GridWidth_20">20</GridLength>
+<GridLength x:Key="Layout_GridWidth_240">240</GridLength>
+<GridLength x:Key="Layout_GridWidth_250">250</GridLength>
+<sys:Double x:Key="Layout_Height_1">1</sys:Double>
+<sys:Double x:Key="Layout_Height_10">10</sys:Double>
+<sys:Double x:Key="Layout_Height_15">15</sys:Double>
+<sys:Double x:Key="Layout_Height_17">17</sys:Double>
+<sys:Double x:Key="Layout_Height_18">18</sys:Double>
+<sys:Double x:Key="Layout_Height_27">27</sys:Double>
+<sys:Double x:Key="Layout_Height_3">3</sys:Double>
+<sys:Double x:Key="Layout_Height_34">34</sys:Double>
+<sys:Double x:Key="Layout_Height_38">38</sys:Double>
+<sys:Double x:Key="Layout_Height_40">40</sys:Double>
+<sys:Double x:Key="Layout_Height_42">42</sys:Double>
+<sys:Double x:Key="Layout_Height_430">430</sys:Double>
+<sys:Double x:Key="Layout_Height_68">68</sys:Double>
+<sys:Double x:Key="Layout_Height_720">720</sys:Double>
+<sys:Double x:Key="Layout_Height_8">8</sys:Double>
+<sys:Double x:Key="Layout_LineHeight_23">23</sys:Double>
+<Thickness x:Key="Layout_Margin_0">0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_0">0,0,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_10">0,0,0,10</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_12">0,0,0,12</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_14">0,0,0,14</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_16">0,0,0,16</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_18">0,0,0,18</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_20">0,0,0,20</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_22">0,0,0,22</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_24">0,0,0,24</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_28">0,0,0,28</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_4">0,0,0,4</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_5">0,0,0,5</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_6">0,0,0,6</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_0_8">0,0,0,8</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_10_0">0,0,10,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_10_12">0,0,10,12</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_10_8">0,0,10,8</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_12_0">0,0,12,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_16_12">0,0,16,12</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_20_0">0,0,20,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_24_0">0,0,24,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_6_0">0,0,6,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_8_0">0,0,8,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_0_8_10">0,0,8,10</Thickness>
+<Thickness x:Key="Layout_Margin_0_1_0_0">0,1,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_10_0_0">0,10,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_12_0_0">0,12,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_12_0_2">0,12,0,2</Thickness>
+<Thickness x:Key="Layout_Margin_0_12_0_5">0,12,0,5</Thickness>
+<Thickness x:Key="Layout_Margin_0_13_0_9">0,13,0,9</Thickness>
+<Thickness x:Key="Layout_Margin_0_14_0_0">0,14,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_16_0_0">0,16,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_16_0_20">0,16,0,20</Thickness>
+<Thickness x:Key="Layout_Margin_0_18_0_0">0,18,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_2">0,2</Thickness>
+<Thickness x:Key="Layout_Margin_0_2_0_0">0,2,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_20_0_0">0,20,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_24_0_0">0,24,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_3_0_0">0,3,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_3_8_0">0,3,8,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_4">0,4</Thickness>
+<Thickness x:Key="Layout_Margin_0_4_0_0">0,4,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_4_0_10">0,4,0,10</Thickness>
+<Thickness x:Key="Layout_Margin_0_4_0_12">0,4,0,12</Thickness>
+<Thickness x:Key="Layout_Margin_0_4_0_18">0,4,0,18</Thickness>
+<Thickness x:Key="Layout_Margin_0_4_0_2">0,4,0,2</Thickness>
+<Thickness x:Key="Layout_Margin_0_5_0_1">0,5,0,1</Thickness>
+<Thickness x:Key="Layout_Margin_0_5_0_12">0,5,0,12</Thickness>
+<Thickness x:Key="Layout_Margin_0_5_7_0">0,5,7,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_6_0_0">0,6,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_6_0_16">0,6,0,16</Thickness>
+<Thickness x:Key="Layout_Margin_0_6_0_18">0,6,0,18</Thickness>
+<Thickness x:Key="Layout_Margin_0_6_0_3">0,6,0,3</Thickness>
+<Thickness x:Key="Layout_Margin_0_6_10_0">0,6,10,0</Thickness>
+<Thickness x:Key="Layout_Margin_0_8_0_0">0,8,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_10_0">10,0</Thickness>
+<Thickness x:Key="Layout_Margin_10_0_0_0">10,0,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_10_12_10_16">10,12,10,16</Thickness>
+<Thickness x:Key="Layout_Margin_12">12</Thickness>
+<Thickness x:Key="Layout_Margin_12_0_0_0">12,0,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_12_0_12_12">12,0,12,12</Thickness>
+<Thickness x:Key="Layout_Margin_12_0_12_8">12,0,12,8</Thickness>
+<Thickness x:Key="Layout_Margin_12_0_12_5">12,0,12,5</Thickness>
+<Thickness x:Key="Layout_Margin_12_12_12_5">12,12,12,5</Thickness>
+<Thickness x:Key="Layout_Margin_13_0_8_0">13,0,8,0</Thickness>
+<Thickness x:Key="Layout_Margin_14_0_0_0">14,0,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_16_0_0_0">16,0,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_24">24</Thickness>
+<Thickness x:Key="Layout_Margin_28">28</Thickness>
+<Thickness x:Key="Layout_Margin_56_48">56,48</Thickness>
+<Thickness x:Key="Layout_Margin_6_0_0_0">6,0,0,0</Thickness>
+<Thickness x:Key="Layout_Margin_8">8</Thickness>
+<Thickness x:Key="Layout_Margin_8_0">8,0</Thickness>
+<Thickness x:Key="Layout_Margin_8_0_0_0">8,0,0,0</Thickness>
+<sys:Double x:Key="Layout_MaxHeight_440">440</sys:Double>
+<sys:Double x:Key="Layout_MaxWidth_1200">1200</sys:Double>
+<sys:Double x:Key="Layout_MaxWidth_205">205</sys:Double>
+<sys:Double x:Key="Layout_MaxWidth_440">440</sys:Double>
+<sys:Double x:Key="Layout_MaxWidth_480">480</sys:Double>
+<sys:Double x:Key="Layout_MaxWidth_520">520</sys:Double>
+<sys:Double x:Key="Layout_MaxWidth_94">94</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_0">0</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_130">130</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_180">180</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_210">210</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_26">26</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_260">260</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_36">36</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_38">38</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_390">390</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_40">40</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_44">44</sys:Double>
+<sys:Double x:Key="Layout_MinHeight_560">560</sys:Double>
+<sys:Double x:Key="Layout_MinWidth_0">0</sys:Double>
+<sys:Double x:Key="Layout_MinWidth_110">110</sys:Double>
+<sys:Double x:Key="Layout_MinWidth_180">180</sys:Double>
+<sys:Double x:Key="Layout_MinWidth_250">250</sys:Double>
+<sys:Double x:Key="Layout_MinWidth_360">360</sys:Double>
+<sys:Double x:Key="Layout_MinWidth_560">560</sys:Double>
+<sys:Double x:Key="Layout_MinWidth_980">980</sys:Double>
+<Thickness x:Key="Layout_Padding_0">0</Thickness>
+<Thickness x:Key="Layout_Padding_10">10</Thickness>
+<Thickness x:Key="Layout_Padding_10_10">10,10</Thickness>
+<Thickness x:Key="Layout_Padding_10_12_10_6">10,12,10,6</Thickness>
+<Thickness x:Key="Layout_Padding_10_16_10_6">10,16,10,6</Thickness>
+<Thickness x:Key="Layout_Padding_10_4">10,4</Thickness>
+<Thickness x:Key="Layout_Padding_10_6">10,6</Thickness>
+<Thickness x:Key="Layout_Padding_10_7">10,7</Thickness>
+<Thickness x:Key="Layout_Padding_10_8">10,8</Thickness>
+<Thickness x:Key="Layout_Padding_12">12</Thickness>
+<Thickness x:Key="Layout_Padding_12_0">12,0</Thickness>
+<Thickness x:Key="Layout_Padding_12_0_0_0">12,0,0,0</Thickness>
+<Thickness x:Key="Layout_Padding_12_6">12,6</Thickness>
+<Thickness x:Key="Layout_Padding_12_7">12,7</Thickness>
+<Thickness x:Key="Layout_Padding_14">14</Thickness>
+<Thickness x:Key="Layout_Padding_14_0">14,0</Thickness>
+<Thickness x:Key="Layout_Padding_14_10">14,10</Thickness>
+<Thickness x:Key="Layout_Padding_14_12">14,12</Thickness>
+<Thickness x:Key="Layout_Padding_14_14">14,14</Thickness>
+<Thickness x:Key="Layout_Padding_14_5">14,5</Thickness>
+<Thickness x:Key="Layout_Padding_14_8">14,8</Thickness>
+<Thickness x:Key="Layout_Padding_16">16</Thickness>
+<Thickness x:Key="Layout_Padding_16_0">16,0</Thickness>
+<Thickness x:Key="Layout_Padding_16_16_16_6">16,16,16,6</Thickness>
+<Thickness x:Key="Layout_Padding_16_18_16_14">16,18,16,14</Thickness>
+<Thickness x:Key="Layout_Padding_16_8">16,8</Thickness>
+<Thickness x:Key="Layout_Padding_18_0">18,0</Thickness>
+<Thickness x:Key="Layout_Padding_18_16">18,16</Thickness>
+<Thickness x:Key="Layout_Padding_18_6">18,6</Thickness>
+<Thickness x:Key="Layout_Padding_18_8">18,8</Thickness>
+<Thickness x:Key="Layout_Padding_18_9">18,9</Thickness>
+<Thickness x:Key="Layout_Padding_20">20</Thickness>
+<Thickness x:Key="Layout_Padding_20_10">20,10</Thickness>
+<Thickness x:Key="Layout_Padding_20_16">20,16</Thickness>
+<Thickness x:Key="Layout_Padding_20_8">20,8</Thickness>
+<Thickness x:Key="Layout_Padding_22_0">22,0</Thickness>
+<Thickness x:Key="Layout_Padding_24">24</Thickness>
+<Thickness x:Key="Layout_Padding_24_0">24,0</Thickness>
+<Thickness x:Key="Layout_Padding_24_8">24,8</Thickness>
+<Thickness x:Key="Layout_Padding_36_36">36,36</Thickness>
+<Thickness x:Key="Layout_Padding_4_0">4,0</Thickness>
+<Thickness x:Key="Layout_Padding_5_2">5,2</Thickness>
+<Thickness x:Key="Layout_Padding_7_4">7,4</Thickness>
+<Thickness x:Key="Layout_Padding_8_3">8,3</Thickness>
+<Thickness x:Key="Layout_Padding_8_4">8,4</Thickness>
+<Thickness x:Key="Layout_Padding_8_5">8,5</Thickness>
+<Thickness x:Key="Layout_Padding_8_8">8,8</Thickness>
+<Thickness x:Key="Layout_Padding_9_7">9,7</Thickness>
+<sys:Double x:Key="Layout_StrokeThickness_1p2">1.2</sys:Double>
+<sys:Double x:Key="Layout_StrokeThickness_1p6">1.6</sys:Double>
+<sys:Double x:Key="Layout_StrokeThickness_1p8">1.8</sys:Double>
+<sys:Double x:Key="Layout_Width_10">10</sys:Double>
+<sys:Double x:Key="Layout_Width_100">100</sys:Double>
+<sys:Double x:Key="Layout_Width_105">105</sys:Double>
+<sys:Double x:Key="Layout_Width_110">110</sys:Double>
+<sys:Double x:Key="Layout_Width_120">120</sys:Double>
+<sys:Double x:Key="Layout_Width_125">125</sys:Double>
+<sys:Double x:Key="Layout_Width_1280">1280</sys:Double>
+<sys:Double x:Key="Layout_Width_130">130</sys:Double>
+<sys:Double x:Key="Layout_Width_140">140</sys:Double>
+<sys:Double x:Key="Layout_Width_15">15</sys:Double>
+<sys:Double x:Key="Layout_Width_150">150</sys:Double>
+<sys:Double x:Key="Layout_Width_155">155</sys:Double>
+<sys:Double x:Key="Layout_Width_17">17</sys:Double>
+<sys:Double x:Key="Layout_Width_18">18</sys:Double>
+<sys:Double x:Key="Layout_Width_190">190</sys:Double>
+<sys:Double x:Key="Layout_Width_195">195</sys:Double>
+<sys:Double x:Key="Layout_Width_205">205</sys:Double>
+<sys:Double x:Key="Layout_Width_210">210</sys:Double>
+<sys:Double x:Key="Layout_Width_220">220</sys:Double>
+<sys:Double x:Key="Layout_Width_230">230</sys:Double>
+<sys:Double x:Key="Layout_Width_260">260</sys:Double>
+<sys:Double x:Key="Layout_Width_27">27</sys:Double>
+<sys:Double x:Key="Layout_Width_270">270</sys:Double>
+<sys:Double x:Key="Layout_Width_290">290</sys:Double>
+<sys:Double x:Key="Layout_Width_300">300</sys:Double>
+<sys:Double x:Key="Layout_Width_330">330</sys:Double>
+<sys:Double x:Key="Layout_Width_34">34</sys:Double>
+<sys:Double x:Key="Layout_Width_36">36</sys:Double>
+<sys:Double x:Key="Layout_Width_38">38</sys:Double>
+<sys:Double x:Key="Layout_Width_390">390</sys:Double>
+<sys:Double x:Key="Layout_Width_40">40</sys:Double>
+<sys:Double x:Key="Layout_Width_58">58</sys:Double>
+<sys:Double x:Key="Layout_Width_640">640</sys:Double>
+<sys:Double x:Key="Layout_Width_70">70</sys:Double>
+<sys:Double x:Key="Layout_Width_8">8</sys:Double>
+<sys:Double x:Key="Layout_Width_80">80</sys:Double>
+<sys:Double x:Key="Layout_Width_85">85</sys:Double>
+<sys:Double x:Key="Layout_Width_90">90</sys:Double>
+<sys:Double x:Key="Layout_Width_95">95</sys:Double>
+<DataGridLength x:Key="Layout_DataGridWidth_110">110</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_120">120</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_130">130</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_150">150</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_155">155</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_220">220</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_70">70</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_80">80</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_85">85</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_90">90</DataGridLength>
+<DataGridLength x:Key="Layout_DataGridWidth_95">95</DataGridLength>
+</ResourceDictionary>

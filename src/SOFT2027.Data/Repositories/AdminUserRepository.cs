@@ -44,7 +44,7 @@ public sealed class AdminUserRepository : IAdminUserRepository
             VALUES (@AdminId, 'CREATE', 'AdminUsers', @RecordReference, 'Initial administrator setup');",
             new { AdminId = id, RecordReference = normalizedUsername }, transaction, cancellationToken: cancellationToken));
         transaction.Commit();
-        return new AdminUser { AdminId = id, Username = normalizedUsername, FullName = fullName.Trim(), Status = "Active", CreatedAt = DateTime.UtcNow };
+        return new AdminUser { AdminId = id, Username = normalizedUsername, FullName = fullName.Trim(), Role = "Administrator", Status = "Active", CreatedAt = DateTime.UtcNow };
     }
 
     public async Task<AdminUser?> AuthenticateAsync(string username, string password, CancellationToken cancellationToken = default)
@@ -52,7 +52,7 @@ public sealed class AdminUserRepository : IAdminUserRepository
         using var connection = _connectionFactory.CreateConnection();
         await OpenAsync(connection, cancellationToken);
         var user = await connection.QuerySingleOrDefaultAsync<AdminUser>(new CommandDefinition(@"
-            SELECT AdminId, Username, PasswordHash, FullName, Status, CreatedAt, LastLogin
+            SELECT AdminId, Username, PasswordHash, FullName, Role, Status, CreatedAt, LastLogin
             FROM AdminUsers WHERE Username = @Username COLLATE NOCASE;",
             new { Username = username.Trim() }, cancellationToken: cancellationToken));
         if (user == null || user.Status != "Active" || !VerifyPassword(password, user.PasswordHash)) return null;
@@ -70,25 +70,30 @@ public sealed class AdminUserRepository : IAdminUserRepository
         using var connection = _connectionFactory.CreateConnection();
         await OpenAsync(connection, cancellationToken);
         var rows = await connection.QueryAsync<AdminUserSummary>(new CommandDefinition(@"
-            SELECT AdminId, Username, FullName, Status, CreatedAt, LastLogin
+            SELECT AdminId, Username, FullName, Role, Status, CreatedAt, LastLogin
             FROM AdminUsers ORDER BY FullName COLLATE NOCASE;", cancellationToken: cancellationToken));
         return rows.AsList();
     }
 
-    public async Task<int> CreateAdminAsync(string username, string fullName, string password, int actorAdminId, CancellationToken cancellationToken = default)
+    public Task<int> CreateAdminAsync(string username, string fullName, string password, int actorAdminId, CancellationToken cancellationToken = default) =>
+        CreateAdminAsync(username, fullName, password, "Administrator", actorAdminId, cancellationToken);
+
+    public async Task<int> CreateAdminAsync(string username, string fullName, string password, string role, int actorAdminId, CancellationToken cancellationToken = default)
     {
+        if (role is not ("Administrator" or "Employee")) throw new ArgumentOutOfRangeException(nameof(role), "Choose Administrator or Employee.");
         using var connection = _connectionFactory.CreateConnection();
         await OpenAsync(connection, cancellationToken);
         using var transaction = connection.BeginTransaction();
+        await EnsureAdministratorAsync(connection, transaction, actorAdminId, cancellationToken);
         var id = await connection.ExecuteScalarAsync<int>(new CommandDefinition(@"
-            INSERT INTO AdminUsers (Username, PasswordHash, FullName, Status)
-            VALUES (@Username, @PasswordHash, @FullName, 'Active');
+            INSERT INTO AdminUsers (Username, PasswordHash, FullName, Role, Status)
+            VALUES (@Username, @PasswordHash, @FullName, @Role, 'Active');
             SELECT last_insert_rowid();",
-            new { Username = username.Trim(), PasswordHash = HashPassword(password), FullName = fullName.Trim() }, transaction, cancellationToken: cancellationToken));
+            new { Username = username.Trim(), PasswordHash = HashPassword(password), FullName = fullName.Trim(), Role = role }, transaction, cancellationToken: cancellationToken));
         await connection.ExecuteAsync(new CommandDefinition(@"
             INSERT INTO AuditLogs (AdminId, Action, ModuleName, RecordReference, NewValue)
             VALUES (@ActorId, 'CREATE', 'AdminUsers', @Reference, @NewValue);",
-            new { ActorId = actorAdminId, Reference = username.Trim(), NewValue = $"Created administrator id {id}" }, transaction, cancellationToken: cancellationToken));
+            new { ActorId = actorAdminId, Reference = username.Trim(), NewValue = $"Created {role.ToLowerInvariant()} account id {id}" }, transaction, cancellationToken: cancellationToken));
         transaction.Commit();
         return id;
     }
@@ -98,14 +103,15 @@ public sealed class AdminUserRepository : IAdminUserRepository
         using var connection = _connectionFactory.CreateConnection();
         await OpenAsync(connection, cancellationToken);
         using var transaction = connection.BeginTransaction();
+        await EnsureAdministratorAsync(connection, transaction, actorAdminId, cancellationToken);
         var user = await connection.QuerySingleOrDefaultAsync<AdminUserSummary>(new CommandDefinition(
-            "SELECT AdminId, Username, FullName, Status FROM AdminUsers WHERE AdminId = @AdminId;",
+            "SELECT AdminId, Username, FullName, Role, Status FROM AdminUsers WHERE AdminId = @AdminId;",
             new { AdminId = adminId }, transaction, cancellationToken: cancellationToken));
-        if (user == null) throw new InvalidOperationException("The selected administrator no longer exists.");
+        if (user == null) throw new InvalidOperationException("The selected user account no longer exists.");
         if (!isActive && user.Status == "Active")
         {
             var activeCount = await connection.ExecuteScalarAsync<int>(new CommandDefinition(
-                "SELECT COUNT(*) FROM AdminUsers WHERE Status = 'Active';", transaction: transaction, cancellationToken: cancellationToken));
+                "SELECT COUNT(*) FROM AdminUsers WHERE Status = 'Active' AND Role='Administrator';", transaction: transaction, cancellationToken: cancellationToken));
             if (activeCount <= 1) throw new InvalidOperationException("At least one active administrator must remain.");
         }
         var status = isActive ? "Active" : "Inactive";
@@ -123,6 +129,7 @@ public sealed class AdminUserRepository : IAdminUserRepository
         using var connection = _connectionFactory.CreateConnection();
         await OpenAsync(connection, cancellationToken);
         using var transaction = connection.BeginTransaction();
+        await EnsureAdministratorAsync(connection, transaction, actorAdminId, cancellationToken);
         var username = await connection.ExecuteScalarAsync<string?>(new CommandDefinition(
             "SELECT Username FROM AdminUsers WHERE AdminId = @AdminId;", new { AdminId = adminId }, transaction, cancellationToken: cancellationToken));
         if (username == null) throw new InvalidOperationException("The selected administrator no longer exists.");
@@ -140,6 +147,14 @@ public sealed class AdminUserRepository : IAdminUserRepository
         token.ThrowIfCancellationRequested();
         if (connection is DbConnection dbConnection) await dbConnection.OpenAsync(token);
         else connection.Open();
+    }
+
+    private static async Task EnsureAdministratorAsync(System.Data.IDbConnection connection, System.Data.IDbTransaction transaction, int actorAdminId, CancellationToken token)
+    {
+        var allowed = await connection.ExecuteScalarAsync<int>(new CommandDefinition(
+            "SELECT COUNT(*) FROM AdminUsers WHERE AdminId=@AdminId AND Status='Active' AND Role='Administrator';",
+            new { AdminId = actorAdminId }, transaction, cancellationToken: token));
+        if (allowed != 1) throw new InvalidOperationException("Only an active administrator can manage user accounts.");
     }
 
     private static string HashPassword(string password)

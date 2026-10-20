@@ -27,4 +27,15 @@ public sealed class AuditLogRepository : IAuditLogRepository
             LIMIT @Limit;", new { Limit = limit }, cancellationToken: cancellationToken));
         return rows.AsList();
     }
+
+    public async Task LogActionAsync(int adminId, string action, string moduleName, string reference, string? previousValue = null, string? newValue = null, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        if (connection is DbConnection dbConnection) await dbConnection.OpenAsync(cancellationToken);
+        await connection.ExecuteAsync(new CommandDefinition(@"
+            INSERT INTO AuditLogs (AdminId, Action, ModuleName, RecordReference, PreviousValue, NewValue)
+            VALUES (@AdminId, @Action, @ModuleName, @Reference, @PreviousValue, @NewValue);",
+            new { AdminId = adminId, Action = action, ModuleName = moduleName, Reference = reference, PreviousValue = previousValue, NewValue = newValue },
+            cancellationToken: cancellationToken));
+    }
 }

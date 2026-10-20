@@ -78,6 +78,20 @@ namespace SOFT2027.Presentation.Commands
             }
         }
 
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        public void RaiseCanExecuteChanged()
+        {
+            var handler = CanExecuteChanged;
+            if (handler == null) return;
+
+            var app = System.Windows.Application.Current;
+            if (app != null && !app.Dispatcher.CheckAccess())
+            {
+                app.Dispatcher.BeginInvoke(() => handler.Invoke(this, EventArgs.Empty));
+            }
+            else
+            {
+                handler.Invoke(this, EventArgs.Empty);
+            }
+        }
     }
 }

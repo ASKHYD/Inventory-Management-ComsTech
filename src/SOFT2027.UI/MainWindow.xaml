@@ -8,57 +8,167 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         Title="SOFT2027 — Ali Traders FMCG Wholesale &amp; Distribution"
-        Height="720" Width="1280"
-        MinHeight="560" MinWidth="980"
+        Icon="/SOFT2027.UI;component/Assets/SOFT2027.ico"
+        Height="{StaticResource Layout_Height_720}" Width="{StaticResource Layout_Width_1280}"
+        MinHeight="{StaticResource Layout_MinHeight_560}" MinWidth="{StaticResource Layout_MinWidth_980}"
         WindowStartupLocation="CenterScreen"
         PreviewKeyDown="MainWindow_PreviewKeyDown"
+        PreviewMouseWheel="MainWindow_PreviewMouseWheel"
         WindowStyle="None"
         Background="{StaticResource BackgroundBrush}">
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="60" CornerRadius="0" GlassFrameThickness="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
+        <WindowChrome CaptionHeight="68" CornerRadius="{StaticResource Layout_CornerRadius_0}" GlassFrameThickness="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
     <Window.Resources>
-        <Style x:Key="WindowControlButtonStyle" TargetType="Button" BasedOn="{StaticResource BtnStyle}">
+        <Style x:Key="TopbarIconButtonStyle" TargetType="Button" BasedOn="{StaticResource BtnStyle}">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Height" Value="34" />
-            <Setter Property="MinHeight" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="{StaticResource Layout_BorderThickness_1}" />
+            <Setter Property="Padding" Value="{StaticResource Layout_Padding_0}" />
+            <Setter Property="MinHeight" Value="{StaticResource Layout_MinHeight_0}" />
+            <Setter Property="Width" Value="{StaticResource Layout_Width_40}" />
+            <Setter Property="Height" Value="{StaticResource Layout_Height_40}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
                                               TextElement.Foreground="{TemplateBinding Foreground}" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#EAF2F9" />
-                                <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource SurfaceSubtleBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                             </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#D6E5F2" />
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource SurfaceSubtleBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55" />
+                                <Setter Property="Cursor" Value="Arrow" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="TopbarProfileButtonStyle" TargetType="Button" BasedOn="{StaticResource TopbarIconButtonStyle}">
+            <Setter Property="Width" Value="Auto" />
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="MinWidth" Value="{StaticResource Layout_MinWidth_0}" />
+            <Setter Property="MinHeight" Value="{StaticResource Layout_MinHeight_44}" />
+            <Setter Property="Padding" Value="{StaticResource Layout_Padding_7_4}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{StaticResource Layout_CornerRadius_9}"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource SurfaceSubtleBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource SurfaceSubtleBrush}" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="WindowControlButtonStyle" TargetType="Button" BasedOn="{StaticResource BtnStyle}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="{StaticResource Layout_BorderThickness_0}" />
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="MinHeight" Value="{StaticResource Layout_MinHeight_0}" />
+            <Setter Property="Padding" Value="{StaticResource Layout_Padding_0}" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="{StaticResource Layout_CornerRadius_5}">
+                                <ContentPresenter x:Name="WindowButtonContentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                  TextElement.Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                            <Border x:Name="FocusRing" Background="Transparent" BorderBrush="Transparent"
+                                    BorderThickness="{StaticResource Layout_BorderThickness_1}" CornerRadius="{StaticResource Layout_CornerRadius_5}" IsHitTestVisible="False" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FocusVisualStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type Control}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Border BorderBrush="{StaticResource AccentOrangeBrush}" BorderThickness="2" CornerRadius="{StaticResource Layout_CornerRadius_5}" Margin="1" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource SurfaceSubtleBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{StaticResource BorderBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{StaticResource FaintBrush}" />
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="WindowCloseButtonStyle" TargetType="Button" BasedOn="{StaticResource WindowControlButtonStyle}">
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#DC2626" />
-                    <Setter Property="Foreground" Value="#FFFFFF" />
+                    <Setter Property="Background" Value="#E81123" />
+                    <Setter Property="Foreground" Value="{StaticResource SurfaceWhiteBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#B91C1C" />
-                    <Setter Property="Foreground" Value="#FFFFFF" />
+                    <Setter Property="Background" Value="{StaticResource RedDarkBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource SurfaceWhiteBrush}" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{StaticResource FaintBrush}" />
+                    <Setter Property="Cursor" Value="Arrow" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -66,14 +176,35 @@
             <Style.BasedOn>
                 <StaticResource ResourceKey="WindowControlButtonStyle" />
             </Style.BasedOn>
-            <Setter Property="Content" Value="▢" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                                <Grid>
+                                    <Path x:Name="MaximizeIcon" Data="M 1,1 H 11 V 11 H 1 Z"
+                                          Stroke="{TemplateBinding Foreground}" StrokeThickness="1.4"
+                                          Width="12" Height="12" Stretch="Uniform" />
+                                    <Path x:Name="RestoreIcon" Data="M 3,1 H 11 V 9 H 3 Z M 1,3 H 9 V 11 H 1 Z"
+                                          Stroke="{TemplateBinding Foreground}" StrokeThickness="1.4"
+                                          Width="12" Height="12" Stretch="Uniform" Visibility="Collapsed" />
+                                </Grid>
+                            </Border>
+                            <Border Background="Transparent" BorderBrush="Transparent"
+                                    BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                    CornerRadius="5" IsHitTestVisible="False" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" Value="Maximized">
+                                <Setter TargetName="MaximizeIcon" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="RestoreIcon" Property="Visibility" Value="Visible" />
+                                <Setter Property="ToolTip" Value="Restore Window" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Setter Property="ToolTip" Value="Maximize Window" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" Value="Maximized">
-                    <Setter Property="Content" Value="❐" />
-                    <Setter Property="ToolTip" Value="Restore Window" />
-                </DataTrigger>
-            </Style.Triggers>
         </Style>
         <!-- ViewModel to View DataTemplates -->
         <DataTemplate DataType="{x:Type vm:SalesEntryViewModel}">
@@ -142,18 +273,39 @@
             </Grid.Style>
 
             <Grid.ColumnDefinitions>
-                <!-- Exactly 250px Fixed Left Sidebar -->
-                <ColumnDefinition Width="250" />
+                <!-- Flexible Left Sidebar (250px when visible, 0px when hidden) -->
+                <ColumnDefinition>
+                    <ColumnDefinition.Style>
+                        <Style TargetType="ColumnDefinition">
+                            <Setter Property="Width" Value="{StaticResource Layout_GridWidth_250}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSidebarVisible}" Value="False">
+                                    <Setter Property="Width" Value="0" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
                 <!-- Main Content Area -->
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <!-- LEFT SIDEBAR (Strictly 250px, Navy Gradient, Zero Negative Margins) -->
             <Border Grid.Column="0"
-                    Margin="0"
+                    Margin="{StaticResource Layout_Margin_0}"
                     HorizontalAlignment="Stretch"
                     Background="{StaticResource SidebarGradientBrush}"
                     SnapsToDevicePixels="True">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSidebarVisible}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" /> <!-- Brand Header -->
@@ -163,170 +315,223 @@
 
                     <!-- TOP BRAND CARD -->
                     <Border Grid.Row="0"
-                            Padding="16,18,16,14"
+                            Padding="{StaticResource Layout_Padding_16_18_16_14}"
                             BorderBrush="{StaticResource SidebarBorderBrush}"
-                            BorderThickness="0,0,0,1">
+                            BorderThickness="{StaticResource Layout_BorderThickness_0_0_0_1}">
                         <StackPanel>
                             <!-- White "ALI TRADERS" Badge -->
-                            <Border Background="#FFFFFF"
-                                    CornerRadius="5"
-                                    Padding="8,8"
-                                    Margin="0,0,0,8"
+                            <Border Background="{StaticResource SurfaceWhiteBrush}"
+                                    CornerRadius="{StaticResource Layout_CornerRadius_5}"
+                                    Padding="{StaticResource Layout_Padding_8_8}"
+                                    Margin="{StaticResource Layout_Margin_0_0_0_8}"
                                     SnapsToDevicePixels="True">
                                 <TextBlock Text="ALI TRADERS"
-                                           Foreground="#000000"
+                                           Foreground="{StaticResource NavyBrush}"
                                            FontWeight="ExtraBold"
-                                           FontSize="16"
+                                           FontSize="{StaticResource TypeEmphasis}"
                                            HorizontalAlignment="Center"
                                            TextAlignment="Center" />
                             </Border>
                             <!-- Subtitle Tag -->
                             <TextBlock Text="FMCG Wholesale &amp; Distribution"
                                        Foreground="{StaticResource SidebarTagBrush}"
-                                       FontSize="11.5"
+                                       FontSize="{StaticResource TypeSmall}"
                                        HorizontalAlignment="Center" />
                         </StackPanel>
                     </Border>
 
                     <!-- NAVIGATION MENU -->
-                    <ScrollViewer Grid.Row="1"
+                    <ScrollViewer x:Name="NavigationScrollViewer" Grid.Row="1"
                                   VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled"
                                   Focusable="False">
-                        <StackPanel Margin="10,12,10,16">
+                        <StackPanel Margin="{StaticResource Layout_Margin_10_12_10_16}">
 
                             <!-- Nav Group: OPERATIONS -->
                             <TextBlock Text="OPERATIONS"
                                        Foreground="{StaticResource SidebarNavGroupBrush}"
-                                       FontSize="10.5"
+                                       FontSize="{StaticResource TypeSmall}"
                                        FontWeight="Bold"
-                                       Padding="10,12,10,6" />
+                                       Padding="{StaticResource Layout_Padding_10_12_10_6}" />
 
                             <!-- Nav Item: Sales Entry -->
                             <Button Style="{StaticResource SidebarNavItemStyle}"
+                                    Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Sales}"
                                     Command="{Binding NavigateToSalesCommand}"
                                     AutomationProperties.Name="Navigate to Sales Entry"
                                     AutomationProperties.HelpText="Open point-of-sale invoice entry">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <Path Data="{StaticResource IconSaleGeometry}"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                          StrokeThickness="1.6"
-                                          Width="17" Height="17"
-                                          Margin="0,0,10,0"
+                                          StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}"
+                                          Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}"
+                                          Margin="{StaticResource Layout_Margin_0_0_10_0}"
                                           Stretch="Uniform"
                                           VerticalAlignment="Center" />
                                     <TextBlock Text="Sales Entry"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                               FontSize="13.5"
+                                               FontSize="{StaticResource TypeBody}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
 
                             <Button Style="{StaticResource SidebarNavItemStyle}"
+                                    Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Purchases}"
                                     Command="{Binding NavigateToPurchasesCommand}"
                                     AutomationProperties.Name="Create a purchase bill">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconSaleGeometry}"
+                                    <Path Data="{StaticResource IconBoxGeometry}"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                          StrokeThickness="1.6" Width="17" Height="17" Margin="0,0,10,0" Stretch="Uniform" />
-                                    <TextBlock Text="Purchase Entry" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="13.5" />
+                                          StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Purchase Entry" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
                                 </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToSalesReturnsCommand}" AutomationProperties.Name="Record a customer sales return">
-                                <TextBlock Text="Sales Returns" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=SalesReturns}" Command="{Binding NavigateToSalesReturnsCommand}" AutomationProperties.Name="Record a customer sales return">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconRefreshGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Sales Returns" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToPurchaseReturnsCommand}" AutomationProperties.Name="Record a supplier purchase return">
-                                <TextBlock Text="Purchase Returns" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=PurchaseReturns}" Command="{Binding NavigateToPurchaseReturnsCommand}" AutomationProperties.Name="Record a supplier purchase return">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconRefreshGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Purchase Returns" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
 
-                            <TextBlock Text="INVENTORY" Foreground="{StaticResource SidebarNavGroupBrush}" FontSize="10.5" FontWeight="Bold" Padding="10,16,10,6" />
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToInventoryCommand}" AutomationProperties.Name="View current stock and make adjustments">
-                                <TextBlock Text="Current Stock &amp; Movements" FontSize="13.5" />
+                            <!-- Nav Group: INVENTORY -->
+                            <TextBlock Text="INVENTORY" Foreground="{StaticResource SidebarNavGroupBrush}" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Padding="{StaticResource Layout_Padding_10_16_10_6}" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Inventory}" Command="{Binding NavigateToInventoryCommand}" AutomationProperties.Name="View current stock and make adjustments">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconBoxGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Current Stock &amp; Movements" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
 
-                            <!-- Nav Group: MASTER DATA -->
-                            <TextBlock Text="MASTER DATA"
+                            <!-- Nav Group: PARTIES & MASTER DATA -->
+                            <TextBlock Text="PARTIES &amp; MASTER DATA"
                                        Foreground="{StaticResource SidebarNavGroupBrush}"
-                                       FontSize="10.5"
+                                       FontSize="{StaticResource TypeSmall}"
                                        FontWeight="Bold"
-                                       Padding="10,16,10,6" />
+                                       Padding="{StaticResource Layout_Padding_10_16_10_6}" />
 
                             <Button Style="{StaticResource SidebarNavItemStyle}"
+                                    Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Products}"
                                     Command="{Binding NavigateToProductsCommand}"
                                     AutomationProperties.Name="Manage products">
-                                <TextBlock Text="Products" FontSize="13.5" />
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconTagGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Products" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
                             <Button Style="{StaticResource SidebarNavItemStyle}"
+                                    Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Customers}"
                                     Command="{Binding NavigateToCustomersCommand}"
                                     AutomationProperties.Name="Manage customers">
-                                <TextBlock Text="Customers" FontSize="13.5" />
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconUsersGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Customers" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
                             <Button Style="{StaticResource SidebarNavItemStyle}"
+                                    Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Suppliers}"
                                     Command="{Binding NavigateToSuppliersCommand}"
                                     AutomationProperties.Name="Manage suppliers">
-                                <TextBlock Text="Suppliers" FontSize="13.5" />
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconUsersGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Suppliers" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToLookupsCommand}" AutomationProperties.Name="Manage categories, brands and product units">
-                                <TextBlock Text="Categories, Brands &amp; Units" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Lookups}" Command="{Binding NavigateToLookupsCommand}" IsEnabled="{Binding IsAdministrator}" ToolTip="Administrator access required" ToolTipService.ShowOnDisabled="True" AutomationProperties.Name="Manage categories, brands and product units">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconTagGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Categories, Brands &amp; Units" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
 
-                            <TextBlock Text="ACCOUNTS"
+                            <!-- Nav Group: ACCOUNTS & FINANCE -->
+                            <TextBlock Text="ACCOUNTS &amp; FINANCE"
                                        Foreground="{StaticResource SidebarNavGroupBrush}"
-                                       FontSize="10.5"
+                                       FontSize="{StaticResource TypeSmall}"
                                        FontWeight="Bold"
-                                       Padding="10,16,10,6" />
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToReceiptsCommand}" AutomationProperties.Name="Record a customer receipt">
-                                <TextBlock Text="Receipts" FontSize="13.5" />
+                                       Padding="{StaticResource Layout_Padding_10_16_10_6}" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Receipts}" Command="{Binding NavigateToReceiptsCommand}" AutomationProperties.Name="Record a customer receipt">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconReceiptGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Receipts" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToPaymentsCommand}" AutomationProperties.Name="Record a supplier payment">
-                                <TextBlock Text="Payments" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Payments}" Command="{Binding NavigateToPaymentsCommand}" AutomationProperties.Name="Record a supplier payment">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconCreditCardGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Payments" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToExpensesCommand}" AutomationProperties.Name="Record a business expense">
-                                <TextBlock Text="Expenses" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Expenses}" Command="{Binding NavigateToExpensesCommand}" AutomationProperties.Name="Record a business expense">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconDollarGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Expenses" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToCashBankCommand}" AutomationProperties.Name="View cash and bank balances">
-                                <TextBlock Text="Cash &amp; Bank" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=CashBank}" Command="{Binding NavigateToCashBankCommand}" AutomationProperties.Name="View cash and bank balances">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconDollarGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Cash &amp; Bank" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToCustomerLedgerCommand}" AutomationProperties.Name="View customer ledger">
-                                <TextBlock Text="Customer Ledger" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=CustomerLedger}" Command="{Binding NavigateToCustomerLedgerCommand}" AutomationProperties.Name="View customer ledger">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconUsersGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Customer Ledger" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToSupplierLedgerCommand}" AutomationProperties.Name="View supplier ledger">
-                                <TextBlock Text="Supplier Ledger" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=SupplierLedger}" Command="{Binding NavigateToSupplierLedgerCommand}" AutomationProperties.Name="View supplier ledger">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconUsersGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Supplier Ledger" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
 
                             <!-- Nav Group: REPORTS -->
                             <TextBlock Text="REPORTS"
                                        Foreground="{StaticResource SidebarNavGroupBrush}"
-                                       FontSize="10.5"
+                                       FontSize="{StaticResource TypeSmall}"
                                        FontWeight="Bold"
-                                       Padding="10,16,10,6" />
+                                       Padding="{StaticResource Layout_Padding_10_16_10_6}" />
 
                             <!-- Nav Item: Reports Dashboard -->
                             <Button Style="{StaticResource SidebarNavItemStyle}"
+                                    Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Reports}"
                                     Command="{Binding NavigateToReportsCommand}"
                                     AutomationProperties.Name="Navigate to Reports Dashboard"
                                     AutomationProperties.HelpText="Open reports and analytics dashboard">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <Path Data="{StaticResource IconChartGeometry}"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                          StrokeThickness="1.6"
-                                          Width="17" Height="17"
-                                          Margin="0,0,10,0"
+                                          StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}"
+                                          Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}"
+                                          Margin="{StaticResource Layout_Margin_0_0_10_0}"
                                           Stretch="Uniform"
                                           VerticalAlignment="Center" />
                                     <TextBlock Text="Reports Dashboard"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                               FontSize="13.5"
+                                               FontSize="{StaticResource TypeBody}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
 
-                            <TextBlock Text="SYSTEM" Foreground="{StaticResource SidebarNavGroupBrush}" FontSize="10.5" FontWeight="Bold" Padding="10,16,10,6" />
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToBackupCommand}" AutomationProperties.Name="Create or restore a database backup">
-                                <TextBlock Text="Backup &amp; Restore" FontSize="13.5" />
+                            <TextBlock Text="SYSTEM" Visibility="{Binding IsAdministrator, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="{StaticResource SidebarNavGroupBrush}" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Padding="{StaticResource Layout_Padding_10_16_10_6}" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Backup}" Command="{Binding NavigateToBackupCommand}" Visibility="{Binding IsAdministrator, Converter={StaticResource BooleanToVisibilityConverter}}" AutomationProperties.Name="Create or restore a database backup">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconDatabaseGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Backup &amp; Restore" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SidebarNavItemStyle}" Command="{Binding NavigateToAdministrationCommand}" AutomationProperties.Name="Manage administrators and review activity">
-                                <TextBlock Text="Administration &amp; Activity" FontSize="13.5" />
+                            <Button Style="{StaticResource SidebarNavItemStyle}" Tag="{Binding CurrentViewModel, Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Administration}" Command="{Binding NavigateToAdministrationCommand}" Visibility="{Binding IsAdministrator, Converter={StaticResource BooleanToVisibilityConverter}}" AutomationProperties.Name="Manage administrators and review activity">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconShieldGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="{StaticResource Layout_StrokeThickness_1p6}" Width="{StaticResource Layout_Width_17}" Height="{StaticResource Layout_Height_17}" Margin="{StaticResource Layout_Margin_0_0_10_0}" Stretch="Uniform" />
+                                    <TextBlock Text="Users &amp; Activity" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{StaticResource TypeBody}" />
+                                </StackPanel>
                             </Button>
 
                         </StackPanel>
@@ -334,45 +539,42 @@
 
                     <!-- SIDEBAR FOOTER -->
                     <Border Grid.Row="2"
-                            Padding="14,14"
+                            Padding="8,8"
                             BorderBrush="{StaticResource SidebarBorderBrush}"
-                            BorderThickness="0,1,0,0">
+                            BorderThickness="{StaticResource Layout_BorderThickness_0_1_0_0}">
                         <StackPanel HorizontalAlignment="Center">
-                            <TextBlock TextAlignment="Center"
-                                       FontSize="11.5"
-                                       Foreground="{StaticResource SidebarNavGroupBrush}">
-                                <Run Text="Developed by " />
-                                <Run Text="COMSTECH.Solutions" FontWeight="Bold" Foreground="#9FB2C8" />
-                            </TextBlock>
-
-                            <Button Content="Help &amp; Tour"
-                                    Click="ShowTourButton_Click"
-                                    Margin="0,12,0,2"
-                                    Padding="18,7"
-                                    Background="{StaticResource SidebarHoverBrush}"
-                                    Foreground="White"
-                                    BorderBrush="{StaticResource SidebarBorderBrush}"
-                                    BorderThickness="1"
-                                    Cursor="Hand"
-                                    ToolTip="Replay the getting-started tour"
-                                    AutomationProperties.Name="Open help and app tour" />
-
-                            <!-- Offline Desktop Status Badge -->
-                            <Border Background="{StaticResource SidebarHoverBrush}"
-                                    CornerRadius="12"
-                                    Padding="8,4"
-                                    Margin="0,8,0,0"
-                                    HorizontalAlignment="Center">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Ellipse Width="8" Height="8"
-                                             Fill="{StaticResource GreenBrush}"
-                                             Margin="0,0,6,0"
-                                             VerticalAlignment="Center" />
-                                    <TextBlock Text="Offline Desktop (SQLite WAL)"
-                                               Foreground="#A0B0C0"
-                                               FontSize="10.5"
-                                               FontWeight="SemiBold"
-                                               VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                                <Button Content="Help &amp; Tour" Click="ShowTourButton_Click"
+                                        Style="{StaticResource SidebarActionButtonStyle}" Width="106"
+                                        Margin="{StaticResource Layout_Margin_0_0_6_0}"
+                                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                        ToolTip="Replay the getting-started tour"
+                                        AutomationProperties.Name="Open help and app tour" />
+                                <Button Content="Report a bug" Click="ReportBugButton_Click"
+                                        Style="{StaticResource SidebarActionButtonStyle}" Width="106"
+                                        Margin="{StaticResource Layout_Margin_0}"
+                                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                        ToolTip="Report a problem"
+                                        AutomationProperties.Name="Report a bug"
+                                        AutomationProperties.HelpText="Opens the default email app. Review the draft and choose what to send." />
+                            </StackPanel>
+                            <!-- COMSTECH.Solutions Developer Badge -->
+                            <Border Background="{StaticResource OverlayWhite10Brush}"
+                                    BorderBrush="{StaticResource OverlayWhite25Brush}"
+                                    BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                    CornerRadius="{StaticResource Layout_CornerRadius_6}"
+                                    Padding="8,5"
+                                    Width="218"
+                                    HorizontalAlignment="Center"
+                                    SnapsToDevicePixels="True">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Image Source="pack://application:,,,/SOFT2027.UI;component/Assets/COMSTECH-Solutions.jpeg"
+                                           Height="20" MaxWidth="75" Stretch="Uniform" Margin="0,0,8,0"
+                                           RenderOptions.BitmapScalingMode="HighQuality" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Developed by" FontSize="9" Foreground="{StaticResource SidebarTagBrush}" />
+                                        <TextBlock Text="COMSTECH.Solutions" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SurfaceWhiteBrush}" />
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -383,17 +585,17 @@
             <!-- MAIN VIEWPORT (Topbar + Content Area) -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60" /> <!-- Top Bar (60px) -->
+                    <RowDefinition Height="{StaticResource Layout_GridHeight_68}" /> <!-- Header toolbar -->
                     <RowDefinition Height="*" />  <!-- Main Workspace -->
                 </Grid.RowDefinitions>
 
                 <!-- TOPBAR (WindowChrome caption area with HitTestVisible interactive controls) -->
                 <Border Grid.Row="0"
-                        Height="60"
-                        Background="#FFFFFF"
+                        Height="{StaticResource Layout_Height_68}"
+                        Background="{StaticResource SurfaceWhiteBrush}"
                         BorderBrush="{StaticResource BorderBrush}"
-                        BorderThickness="0,0,0,1"
-                        Padding="20,0"
+                        BorderThickness="{StaticResource Layout_BorderThickness_0_0_0_1}"
+                        Padding="{StaticResource Layout_Padding_24_0}"
                         SnapsToDevicePixels="True">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -403,193 +605,448 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Title -->
-                        <TextBlock Grid.Column="0"
-                                   Text="Ali Traders — Wholesale &amp; Distribution ERP"
-                                   MaxWidth="360"
-                                   TextTrimming="CharacterEllipsis"
-                                   FontSize="16.5"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   VerticalAlignment="Center" />
+                        <!-- Compact brand block & Sidebar Toggle -->
+                        <StackPanel Grid.Column="0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    Margin="{StaticResource Layout_Margin_0_0_20_0}"
+                                    WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button Style="{StaticResource TopbarIconButtonStyle}"
+                                    Command="{Binding ToggleSidebarCommand}"
+                                    Margin="0,0,12,0"
+                                    Width="36" Height="36"
+                                    ToolTip="Show / Hide sidebar menu"
+                                    AutomationProperties.Name="Toggle Sidebar Menu">
+                                <Path Data="{StaticResource IconMenuGeometry}"
+                                      Stroke="{StaticResource NavyBrush}"
+                                      StrokeThickness="2"
+                                      Width="18" Height="18"
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Center" />
+                            </Button>
+                            <StackPanel VerticalAlignment="Center" MaxWidth="{StaticResource Layout_MaxWidth_205}">
+                                <TextBlock Text="Ali Traders"
+                                           FontSize="{StaticResource TypeSectionTitle}"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource NavyBrush}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="Wholesale &amp; Distribution ERP"
+                                           Margin="{StaticResource Layout_Margin_0_1_0_0}"
+                                           FontSize="{StaticResource TypeSmall}"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </StackPanel>
 
-                        <!-- Right Controls Panel (HitTestVisible in Chrome) -->
+                        <!-- Flexible search stays centered and yields space to essential actions. -->
+                        <Border Grid.Column="1"
+                                BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                CornerRadius="{StaticResource Layout_CornerRadius_9}"
+                                Padding="{StaticResource Layout_Padding_12_0}"
+                                Margin="{StaticResource Layout_Margin_8_0}"
+                                MinWidth="{StaticResource Layout_MinWidth_110}"
+                                MaxWidth="{StaticResource Layout_MaxWidth_440}"
+                                Height="{StaticResource Layout_Height_42}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                SnapsToDevicePixels="True">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{StaticResource SurfaceSubtleBrush}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsKeyboardFocused, ElementName=GlobalSearchBox}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource SurfaceWhiteBrush}" />
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentOrangeBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="GlobalSearchButton" Grid.Column="0"
+                                        Click="GlobalSearchButton_Click"
+                                        Background="Transparent" BorderThickness="0" Padding="0"
+                                        Margin="{StaticResource Layout_Margin_0_0_10_0}"
+                                        Cursor="Hand" ToolTip="Search products, customers, or suppliers"
+                                        AutomationProperties.Name="Search products, customers, or suppliers">
+                                    <Path Data="{StaticResource IconSearchGeometry}"
+                                          Stroke="{StaticResource MutedBrush}"
+                                          StrokeThickness="{StaticResource Layout_StrokeThickness_1p8}"
+                                          Width="{StaticResource Layout_Width_15}" Height="{StaticResource Layout_Height_15}"
+                                          VerticalAlignment="Center" />
+                                </Button>
+                                <TextBox x:Name="GlobalSearchBox" Grid.Column="1"
+                                         Text=""
+                                         ToolTip="Search products, customers, or suppliers. Press Enter to open a match."
+                                         BorderThickness="{StaticResource Layout_BorderThickness_0}" Background="Transparent"
+                                         Foreground="{StaticResource NavyBrush}"
+                                         FontSize="{StaticResource TypeBody}" VerticalAlignment="Center"
+                                         KeyDown="GlobalSearchBox_KeyDown"
+                                         AutomationProperties.Name="Search products, customers, or suppliers" />
+                                <TextBlock Grid.Column="1" Text="Search products, customers, suppliers…"
+                                           Foreground="{StaticResource MutedBrush}" FontSize="{StaticResource TypeBody}"
+                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           IsHitTestVisible="False">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=GlobalSearchBox}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <Border Grid.Column="2"
+                                        Background="{StaticResource SurfaceWhiteBrush}"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                        CornerRadius="{StaticResource Layout_CornerRadius_5}"
+                                        Padding="{StaticResource Layout_Padding_5_2}"
+                                        Margin="{StaticResource Layout_Margin_8_0_0_0}"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="Ctrl K"
+                                               FontSize="{StaticResource TypeSmall}"
+                                               Foreground="{StaticResource MutedBrush}"
+                                               FontWeight="SemiBold" />
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Toolbar actions -->
                         <StackPanel Grid.Column="2"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
 
-                            <!-- Global Search Box -->
-                            <Border Background="{StaticResource BackgroundBrush}"
-                                    BorderBrush="{StaticResource BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="6"
-                                    Padding="10,7"
-                                    Margin="0,0,14,0"
-                                    Width="220"
-                                    MinWidth="150"
-                                    WindowChrome.IsHitTestVisibleInChrome="True"
-                                    SnapsToDevicePixels="True">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Path Grid.Column="0"
-                                          Data="{StaticResource IconSearchGeometry}"
-                                          Stroke="{StaticResource MutedBrush}"
-                                          StrokeThickness="1.8"
-                                          Width="14" Height="14"
-                                          Margin="0,0,8,0"
-                                          VerticalAlignment="Center" />
-                                    <TextBox x:Name="GlobalSearchBox" Grid.Column="1"
-                                             Text=""
-                                             ToolTip="Search products, customers, and suppliers; press Enter"
-                                             BorderThickness="0" Background="Transparent"
-                                             Foreground="{StaticResource TextBrush}"
-                                             FontSize="12" VerticalAlignment="Center"
-                                             KeyDown="GlobalSearchBox_KeyDown"
-                                             AutomationProperties.Name="Search products, customers, or suppliers" />
-                                    <TextBlock Grid.Column="1" Text="Search products, customers, suppliers"
-                                               Foreground="{StaticResource MutedBrush}" FontSize="12"
-                                               VerticalAlignment="Center" IsHitTestVisible="False">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Text, ElementName=GlobalSearchBox}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <Border Grid.Column="2"
-                                            Background="#FFFFFF"
-                                            BorderBrush="{StaticResource BorderDarkBrush}"
-                                            BorderThickness="1"
-                                            CornerRadius="4"
-                                            Padding="4,1"
-                                            Margin="8,0,0,0"
-                                            VerticalAlignment="Center">
-                                        <TextBlock Text="Ctrl K"
-                                                   FontSize="10"
-                                                   Foreground="{StaticResource MutedBrush}"
-                                                   FontWeight="SemiBold" />
-                                    </Border>
-                                </Grid>
-                            </Border>
-
                             <!-- Notification Bell -->
-                            <Button Click="OpenInventoryFromNotifications_Click"
-                                  ToolTip="Open stock levels and low-stock alerts"
-                                  AutomationProperties.Name="Open stock levels and low-stock alerts"
-                                  Background="Transparent" BorderThickness="0" Padding="0"
-                                  Margin="0,0,14,0"
-                                  VerticalAlignment="Center"
-                                  Cursor="Hand"
-                                  WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Border Width="34" Height="34"
-                                        CornerRadius="6"
-                                        Background="Transparent">
+                            <Button x:Name="NotificationButton"
+                                    Click="NotificationButton_Click"
+                                    ToolTip="View notifications"
+                                    AutomationProperties.Name="Open notifications"
+                                    Margin="{StaticResource Layout_Margin_0_0_12_0}"
+                                    VerticalAlignment="Center"
+                                    Cursor="Hand"
+                                    WindowChrome.IsHitTestVisibleInChrome="True"
+                                    Style="{StaticResource TopbarIconButtonStyle}">
+                                <Grid Width="{StaticResource Layout_Width_38}" Height="{StaticResource Layout_Height_38}">
                                     <Path Data="{StaticResource IconBellGeometry}"
                                           Stroke="{StaticResource MutedBrush}"
-                                          StrokeThickness="1.8"
-                                          Width="18" Height="18"
+                                          StrokeThickness="{StaticResource Layout_StrokeThickness_1p8}"
+                                          Width="{StaticResource Layout_Width_18}" Height="{StaticResource Layout_Height_18}"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center" />
-                                </Border>
+                                    <Border x:Name="NotificationBadge"
+                                            Width="{StaticResource Layout_Width_8}" Height="{StaticResource Layout_Height_8}"
+                                            CornerRadius="{StaticResource Layout_CornerRadius_4}"
+                                            Background="{StaticResource RedBrush}"
+                                            BorderBrush="{StaticResource SurfaceWhiteBrush}"
+                                            BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Margin="{StaticResource Layout_Margin_0_5_7_0}"
+                                            Visibility="Collapsed" />
+                                </Grid>
                             </Button>
 
-                            <!-- User Chip -->
-                            <Button Command="{Binding LogoutCommand}"
-                                    Background="Transparent" BorderThickness="0" Padding="6,4"
-                                    Cursor="Hand" VerticalAlignment="Center" Margin="0,0,12,0"
-                                    WindowChrome.IsHitTestVisibleInChrome="True"
-                                    ToolTip="Sign out" AutomationProperties.Name="Sign out of SOFT2027">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Border Width="32" Height="32"
-                                            CornerRadius="16"
-                                            Background="{StaticResource BlueBrush}"
-                                            Margin="0,0,8,0">
-                                        <TextBlock Text="{Binding UserInitials}"
-                                                   Foreground="#FFFFFF"
+                            <Popup x:Name="NotificationPopup"
+                                   PlacementTarget="{Binding ElementName=NotificationButton}"
+                                   Placement="Bottom"
+                                   HorizontalOffset="-174"
+                                   VerticalOffset="8"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Fade">
+                                <Border Width="{StaticResource Layout_Width_300}"
+                                        Padding="{StaticResource Layout_Padding_16}"
+                                        Background="{StaticResource SurfaceWhiteBrush}"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                        CornerRadius="{StaticResource Layout_CornerRadius_9}"
+                                        Effect="{StaticResource CardDropShadow}"
+                                        SnapsToDevicePixels="True">
+                                    <StackPanel>
+                                        <TextBlock Text="NOTIFICATIONS"
+                                                   FontSize="{StaticResource TypeSmall}"
                                                    FontWeight="Bold"
-                                                   FontSize="12"
+                                                   Foreground="{StaticResource MutedBrush}" />
+                                        <TextBlock x:Name="NotificationSummaryText"
+                                                   Text="Checking stock alerts…"
+                                                   Margin="{StaticResource Layout_Margin_0_6_0_3}"
+                                                   FontSize="{StaticResource TypeBody}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextBrush}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock x:Name="NotificationDetailText"
+                                                   Text="Current stock alerts from your saved product records."
+                                                   Margin="{StaticResource Layout_Margin_0_0_0_10}"
+                                                   FontSize="{StaticResource TypeSmall}"
+                                                   Foreground="{StaticResource MutedBrush}"
+                                                   TextWrapping="Wrap" />
+                                        <ItemsControl x:Name="LowStockItemsControl" Visibility="Collapsed">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Padding="{StaticResource Layout_Padding_9_7}"
+                                                            Margin="{StaticResource Layout_Margin_0_2}"
+                                                            Background="{StaticResource WarningSurfaceTokenBrush}"
+                                                            BorderBrush="{StaticResource WarningSurfaceTokenBrush}"
+                                                            BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                                            CornerRadius="{StaticResource Layout_CornerRadius_6}">
+                                                        <DockPanel LastChildFill="True">
+                                                            <TextBlock DockPanel.Dock="Right"
+                                                                       Text="{Binding CurrentStock, StringFormat={}{0:0.##}}"
+                                                                       Margin="{StaticResource Layout_Margin_10_0_0_0}"
+                                                                       Foreground="{StaticResource WarningTokenBrush}"
+                                                                       FontSize="{StaticResource TypeSmall}"
+                                                                       VerticalAlignment="Center" />
+                                                            <TextBlock Text="{Binding ProductName}"
+                                                                       Foreground="{StaticResource TextBrush}"
+                                                                       FontSize="{StaticResource TypeSmall}"
+                                                                       TextTrimming="CharacterEllipsis"
+                                                                       VerticalAlignment="Center" />
+                                                        </DockPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Button x:Name="ViewInventoryFromNotificationsButton"
+                                                Content="Review inventory"
+                                                Click="OpenInventoryFromNotifications_Click"
+                                                HorizontalContentAlignment="Center"
+                                                Margin="{StaticResource Layout_Margin_0_10_0_0}"
+                                                Padding="{StaticResource Layout_Padding_10_7}"
+                                                MinHeight="{StaticResource Layout_MinHeight_36}"
+                                                Style="{StaticResource BtnPrimaryStyle}"
+                                                Visibility="Collapsed" />
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+
+                            <!-- User profile menu: opening the profile never signs out by itself. -->
+                            <Button x:Name="UserProfileButton"
+                                    Click="UserProfileButton_Click"
+                                    Background="Transparent" BorderBrush="Transparent" BorderThickness="{StaticResource Layout_BorderThickness_1}" Padding="{StaticResource Layout_Padding_8_5}"
+                                    Cursor="Hand" VerticalAlignment="Center" Margin="{StaticResource Layout_Margin_0_0_12_0}"
+                                    WindowChrome.IsHitTestVisibleInChrome="True"
+                                    ToolTip="Account options" AutomationProperties.Name="Open administrator account menu"
+                                    Style="{StaticResource TopbarProfileButtonStyle}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Width="{StaticResource Layout_Width_34}" Height="{StaticResource Layout_Height_34}"
+                                            CornerRadius="{StaticResource Layout_CornerRadius_17}"
+                                            Background="{StaticResource BlueBrush}"
+                                            Margin="{StaticResource Layout_Margin_0_0_8_0}">
+                                        <TextBlock Text="{Binding UserInitials}"
+                                                   Foreground="{StaticResource SurfaceWhiteBrush}"
+                                                   FontWeight="Bold"
+                                                   FontSize="{StaticResource TypeSmall}"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center" />
                                     </Border>
-                                    <StackPanel VerticalAlignment="Center" Margin="0,0,6,0" MaxWidth="130">
+                                    <StackPanel VerticalAlignment="Center" Margin="{StaticResource Layout_Margin_0_0_6_0}" MaxWidth="{StaticResource Layout_MaxWidth_94}">
                                         <TextBlock Text="{Binding UserDisplayName}"
                                                    FontWeight="Bold"
-                                                   FontSize="12.5"
+                                                   FontSize="{StaticResource TypeBody}"
                                                    Foreground="{StaticResource TextBrush}"
-                                                   TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="Administrator"
-                                                   FontSize="11"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding UserDisplayName}" />
+                                        <TextBlock Text="{Binding UserRole}"
+                                                   FontSize="{StaticResource TypeSmall}"
                                                    Foreground="{StaticResource MutedBrush}" />
                                     </StackPanel>
                                     <Path Data="{StaticResource IconChevronDownGeometry}"
                                           Stroke="{StaticResource MutedBrush}"
-                                          StrokeThickness="1.8"
-                                          Width="10" Height="10"
+                                          StrokeThickness="{StaticResource Layout_StrokeThickness_1p8}"
+                                          Width="{StaticResource Layout_Width_10}" Height="{StaticResource Layout_Height_10}"
                                           VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
 
+                            <Popup x:Name="ProfileMenuPopup"
+                                   PlacementTarget="{Binding ElementName=UserProfileButton}"
+                                   Placement="Bottom"
+                                   HorizontalOffset="-54"
+                                   VerticalOffset="8"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Fade"
+                                   DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                <Border Width="{StaticResource Layout_Width_230}"
+                                        Padding="{StaticResource Layout_Padding_16}"
+                                        Background="{StaticResource SurfaceWhiteBrush}"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                        CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                                        Effect="{StaticResource CardDropShadow}"
+                                        SnapsToDevicePixels="True">
+                                    <StackPanel>
+                                        <TextBlock Text="ACCOUNT"
+                                                   FontSize="{StaticResource TypeSmall}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource MutedBrush}" />
+                                        <TextBlock Text="{Binding UserDisplayName}"
+                                                   Margin="{StaticResource Layout_Margin_0_5_0_1}"
+                                                   FontSize="{StaticResource TypeBody}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextBrush}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding UserRole}"
+                                                   FontSize="{StaticResource TypeSmall}"
+                                                   Foreground="{StaticResource MutedBrush}" />
+                                        <Border Height="{StaticResource Layout_Height_1}"
+                                                Margin="{StaticResource Layout_Margin_0_13_0_9}"
+                                                Background="{StaticResource BorderBrush}" />
+                                        <Button Content="Sign out"
+                                                Click="SignOutButton_Click"
+                                                HorizontalContentAlignment="Left"
+                                                Padding="{StaticResource Layout_Padding_10_8}"
+                                                MinHeight="{StaticResource Layout_MinHeight_38}"
+                                                Background="{StaticResource ErrorSurfaceTokenBrush}"
+                                                BorderBrush="{StaticResource ErrorSurfaceTokenBrush}"
+                                                Foreground="{StaticResource ErrorTokenBrush}"
+                                                FontSize="{StaticResource TypeBody}"
+                                                AutomationProperties.Name="Sign out of SOFT2027" />
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+
                         </StackPanel>
 
-                        <!-- Window Control Buttons (Minimize, Maximize, Close) -->
-                        <StackPanel Grid.Column="3"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Center"
-                                    WindowChrome.IsHitTestVisibleInChrome="True">
+                        <!-- Window controls remain visually separate from application actions. -->
+                        <Border Grid.Column="3"
+                                Margin="{StaticResource Layout_Margin_8_0_0_0}"
+                                Padding="{StaticResource Layout_Padding_12_0_0_0}"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="{StaticResource Layout_BorderThickness_1_0_0_0}"
+                                VerticalAlignment="Stretch"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <!-- Minimize -->
                             <Button Click="MinimizeButton_Click"
-                                    Width="36" Height="34"
-                                    Content="—"
-                                    FontSize="12"
                                     Cursor="Hand"
                                     WindowChrome.IsHitTestVisibleInChrome="True"
                                     ToolTip="Minimize Window"
                                     AutomationProperties.Name="Minimize Window"
-                                    Style="{StaticResource WindowControlButtonStyle}" />
+                                    Style="{StaticResource WindowControlButtonStyle}">
+                                <Path Data="M 1,6 H 11" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.4" Width="12" Height="12" Stretch="Uniform" />
+                            </Button>
 
                             <!-- Maximize -->
                             <Button Click="MaximizeButton_Click"
-                                    Width="36" Height="34"
                                     Style="{StaticResource WindowMaximizeButtonStyle}"
-                                    FontSize="13"
                                     Cursor="Hand"
                                     WindowChrome.IsHitTestVisibleInChrome="True"
                                     AutomationProperties.Name="Maximize or restore window" />
 
                             <!-- Close -->
                             <Button Click="CloseButton_Click"
-                                    Width="36" Height="34"
-                                    Content="✕"
-                                    FontSize="12"
                                     Cursor="Hand"
                                     WindowChrome.IsHitTestVisibleInChrome="True"
                                     ToolTip="Close Window"
                                     AutomationProperties.Name="Close Window"
-                                    Style="{StaticResource WindowCloseButtonStyle}" />
-                        </StackPanel>
+                                    Style="{StaticResource WindowCloseButtonStyle}">
+                                <Path Data="M 2,2 L 10,10 M 10,2 L 2,10" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.4" Width="12" Height="12" Stretch="Uniform" />
+                            </Button>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Border>
 
                 <!-- MAIN WORKSPACE: ScrollViewer wrapping ContentControl restores mouse wheel scrolling -->
-                <ScrollViewer Grid.Row="1"
-                              VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled"
-                              Padding="24"
-                              Focusable="False">
-                    <ContentControl Content="{Binding CurrentViewModel}"
-                                    HorizontalAlignment="Stretch"
-                                    MaxWidth="1200"
-                                    AutomationProperties.Name="Main Workspace View Area" />
-                </ScrollViewer>
+                <Grid Grid.Row="1">
+                    <ScrollViewer x:Name="MainWorkspaceScrollViewer"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="24,24,24,112"
+                                  Focusable="False">
+                        <ContentControl Content="{Binding CurrentViewModel}"
+                                        HorizontalAlignment="Stretch"
+                                        MaxWidth="{StaticResource Layout_MaxWidth_1200}"
+                                        AutomationProperties.Name="Main Workspace View Area" />
+                    </ScrollViewer>
+                    <Border VerticalAlignment="Bottom" Background="{StaticResource SurfaceWhiteBrush}"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
+                            Padding="24,10" Panel.ZIndex="5">
+                        <Border.DataContext>
+                            <Binding Path="CurrentViewModel" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        </Border.DataContext>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ., Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Sales}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ., Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Purchases}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ., Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Sales}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <TextBlock Text="Net total" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding NetTotal, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeEmphasis}" FontWeight="Bold" Foreground="{StaticResource GreenBrush}" Margin="12,0,24,0" VerticalAlignment="Center" />
+                                <TextBlock Text="Balance due" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding RemainingBalance, StringFormat={StaticResource CurrencyStringFormat}}" FontWeight="Bold" Foreground="{StaticResource RedBrush}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ., Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Purchases}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <TextBlock Text="Bill total" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding NetTotal, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeEmphasis}" FontWeight="Bold" Foreground="{StaticResource GreenBrush}" Margin="12,0,24,0" VerticalAlignment="Center" />
+                                <TextBlock Text="Supplier balance" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding RemainingBalance, StringFormat={StaticResource CurrencyStringFormat}}" FontWeight="Bold" Foreground="{StaticResource RedBrush}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="Save Invoice" Command="{Binding SaveSaleCommand}"
+                                    MinWidth="150" Margin="16,0,0,0"
+                                    AutomationProperties.Name="Save sale invoice">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BtnPrimaryStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ., Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Sales}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Grid.Column="2" Content="Save Purchase" Command="{Binding SaveCommand}"
+                                    MinWidth="150" Margin="16,0,0,0"
+                                    AutomationProperties.Name="Save purchase bill">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BtnPrimaryStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ., Converter={StaticResource NavigationActiveConverter}, ConverterParameter=Purchases}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
 
@@ -614,7 +1071,7 @@
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Margin="0,6,10,0"
+                    Margin="{StaticResource Layout_Margin_0_6_10_0}"
                     Panel.ZIndex="10"
                     WindowChrome.IsHitTestVisibleInChrome="True">
             <StackPanel.Style>
@@ -627,21 +1084,22 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
-            <Button Click="MinimizeButton_Click" Width="36" Height="34"
-                    Content="—" FontSize="12"
+            <Button Click="MinimizeButton_Click"
                     Cursor="Hand" WindowChrome.IsHitTestVisibleInChrome="True"
                     ToolTip="Minimize Window" AutomationProperties.Name="Minimize Window"
-                    Style="{StaticResource WindowControlButtonStyle}" />
-            <Button Click="MaximizeButton_Click" Width="36" Height="34"
+                    Style="{StaticResource WindowControlButtonStyle}">
+                <Path Data="M 1,6 H 11" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.4" Width="12" Height="12" Stretch="Uniform" />
+            </Button>
+            <Button Click="MaximizeButton_Click"
                     Style="{StaticResource WindowMaximizeButtonStyle}"
-                    FontSize="13"
                     Cursor="Hand" WindowChrome.IsHitTestVisibleInChrome="True"
                     AutomationProperties.Name="Maximize or restore window" />
-            <Button Click="CloseButton_Click" Width="36" Height="34"
-                    Content="✕" FontSize="12"
+            <Button Click="CloseButton_Click"
                     Cursor="Hand" WindowChrome.IsHitTestVisibleInChrome="True"
                     ToolTip="Close Window" AutomationProperties.Name="Close Window"
-                    Style="{StaticResource WindowCloseButtonStyle}" />
+                    Style="{StaticResource WindowCloseButtonStyle}">
+                <Path Data="M 2,2 L 10,10 M 10,2 L 2,10" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.4" Width="12" Height="12" Stretch="Uniform" />
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

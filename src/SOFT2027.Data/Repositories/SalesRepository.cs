@@ -64,10 +64,10 @@ namespace SOFT2027.Data.Repositories
                 {
                     const string itemSql = @"
                         INSERT INTO SaleItems (
-                            SaleId, ProductId, Quantity, HistoricalSalePrice, HistoricalCostPrice,
+                            SaleId, ProductId, ProductCodeAtSale, ProductNameAtSale, Quantity, HistoricalSalePrice, HistoricalCostPrice,
                             SellingPercentage, DiscountPercentage, LineTotal
                         ) VALUES (
-                            @SaleId, @ProductId, @Quantity, @HistoricalSalePrice, @HistoricalCostPrice,
+                            @SaleId, @ProductId, @ProductCodeAtSale, @ProductNameAtSale, @Quantity, @HistoricalSalePrice, @HistoricalCostPrice,
                             @SellingPercentage, @DiscountPercentage, @LineTotal
                         );";
 

@@ -6,31 +6,28 @@
              xmlns:vm="clr-namespace:SOFT2027.Presentation.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:ReportsDashboardViewModel}"
-             Background="Transparent">
+             Background="Transparent" Loaded="ReportsDashboardView_OnLoaded" DataContextChanged="ReportsDashboardView_OnDataContextChanged">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled"
-                  Focusable="False">
-        <StackPanel Margin="0,0,0,24">
+    <StackPanel Margin="{StaticResource Layout_Margin_0_0_0_24}">
 
             <!-- ================================================================= -->
             <!-- 1. TOP DATE-FILTER CARD (.card with controls & loading indicator)  -->
             <!-- ================================================================= -->
             <Border Style="{StaticResource CardBorderStyle}"
-                    Padding="20,16"
-                    Margin="0,0,0,20">
+                    Padding="{StaticResource Layout_Padding_20_16}"
+                    Margin="{StaticResource Layout_Margin_0_0_0_20}">
                 <StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <!-- Start Date -->
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="{StaticResource Layout_GridWidth_20}" />
                             <!-- End Date -->
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="{StaticResource Layout_GridWidth_20}" />
                             <!-- Generate Button -->
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="{StaticResource Layout_GridWidth_20}" />
                             <!-- Error Message & Live Announcement -->
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
@@ -40,9 +37,9 @@
                             <TextBlock Text="Start Date:"
                                        FontWeight="SemiBold"
                                        VerticalAlignment="Center"
-                                       Margin="0,0,10,0" />
+                                       Margin="{StaticResource Layout_Margin_0_0_10_0}" />
                             <DatePicker SelectedDate="{Binding StartDate}"
-                                        Height="38"
+                                        Height="{StaticResource ControlHeight}"
                                         AutomationProperties.Name="Start Date" />
                         </StackPanel>
 
@@ -51,9 +48,9 @@
                             <TextBlock Text="End Date:"
                                        FontWeight="SemiBold"
                                        VerticalAlignment="Center"
-                                       Margin="0,0,10,0" />
+                                       Margin="{StaticResource Layout_Margin_0_0_10_0}" />
                             <DatePicker SelectedDate="{Binding EndDate}"
-                                        Height="38"
+                                        Height="{StaticResource ControlHeight}"
                                         AutomationProperties.Name="End Date" />
                         </StackPanel>
 
@@ -62,16 +59,16 @@
                                 Command="{Binding LoadReportsCommand}"
                                 Content="Generate Reports"
                                 Style="{StaticResource BtnPrimaryStyle}"
-                                Height="38"
-                                Padding="20,8"
+                                Height="{StaticResource ButtonHeight}"
+                                Padding="{StaticResource Layout_Padding_20_8}"
                                 AutomationProperties.Name="Generate Reports" />
 
                         <!-- Error Reporting with Accessibility Announcement -->
                         <TextBlock Grid.Column="6"
-                                   Text="{Binding ErrorMessage}"
-                                   Foreground="{StaticResource RedBrush}"
+                                   Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}"
+                                   Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}"
                                    FontWeight="SemiBold"
-                                   FontSize="13.5"
+                                   FontSize="{StaticResource TypeBody}"
                                    VerticalAlignment="Center"
                                    TextTrimming="CharacterEllipsis"
                                    AutomationProperties.LiveSetting="Assertive"
@@ -80,11 +77,11 @@
 
                     <!-- Loading Progress Indicator (Triggered by IsLoading) -->
                     <ProgressBar IsIndeterminate="True"
-                                 Height="3"
-                                 Margin="0,14,0,0"
+                                 Height="{StaticResource Layout_Height_3}"
+                                 Margin="{StaticResource Layout_Margin_0_14_0_0}"
                                  Foreground="{StaticResource BlueBrush}"
                                  Background="{StaticResource SurfaceSubtleBrush}"
-                                 BorderThickness="0">
+                                 BorderThickness="{StaticResource Layout_BorderThickness_0}">
                         <ProgressBar.Style>
                             <Style TargetType="ProgressBar">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -99,109 +96,135 @@
                 </StackPanel>
             </Border>
 
+            <Border Style="{StaticResource CardBorderStyle}" Padding="{StaticResource Layout_Padding_20}" Margin="{StaticResource Layout_Margin_0_0_0_20}">
+                <StackPanel>
+                    <TextBlock Text="Operating Dashboard" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="{StaticResource Layout_Margin_0_0_0_4}" />
+                    <TextBlock Text="Today's figures use today's calendar date; trends and recent activity use the selected period. Balances and stock are current persisted values." Foreground="{StaticResource MutedBrush}" Margin="{StaticResource Layout_Margin_0_0_0_14}" />
+                    <UniformGrid Columns="4" Rows="2" Margin="{StaticResource Layout_Margin_0_0_0_14}">
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="TODAY'S SALES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding TodaySales, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="TODAY'S PURCHASES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding TodayPurchases, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="PERIOD SALES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding PeriodSales, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="PERIOD PURCHASES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding PeriodPurchases, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="RECEIVABLES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding OutstandingReceivables, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="PAYABLES" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding OutstandingPayables, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="INVENTORY AT COST" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding StockValuation.TotalValuation, StringFormat={StaticResource CurrencyStringFormat}}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Layout_Margin_8}"><TextBlock Text="LOW-STOCK ITEMS" FontWeight="Bold" Foreground="{StaticResource MutedBrush}"/><TextBlock Text="{Binding LowStockItemCount}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource RedBrush}"/></StackPanel>
+                    </UniformGrid>
+                    <TextBlock Text="Sales and purchase trend · selected period" FontSize="{StaticResource TypeBody}" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                    <ItemsControl ItemsSource="{Binding DashboardTrends}" Margin="{StaticResource Layout_Margin_0_0_0_12}" />
+                    <TextBlock Text="No sales or purchases in the selected period." Foreground="{StaticResource MutedBrush}" Margin="{StaticResource Layout_Margin_0_0_0_12}">
+                        <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding HasDashboardTrends}" Value="False"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="Recent activity · selected period" FontSize="{StaticResource TypeBody}" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                    <ItemsControl ItemsSource="{Binding DashboardRecentActivity}">
+                        <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding Text}" Tag="{Binding Module}" Click="DashboardActivity_Click" HorizontalContentAlignment="Left" Padding="{StaticResource Layout_Padding_8_5}" Margin="{StaticResource Layout_Margin_0_2}" /></DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
             <!-- ================================================================= -->
             <!-- 2. PROFIT & LOSS KPI CARDS (.kpi-grid 4 columns)                  -->
             <!-- ================================================================= -->
             <TextBlock Text="Profit &amp; Loss Summary"
-                       FontSize="18"
+                       FontSize="{StaticResource TypeSectionTitle}"
                        FontWeight="Bold"
                        Foreground="{StaticResource NavyBrush}"
-                       Margin="0,0,0,12" />
+                       Margin="{StaticResource Layout_Margin_0_0_0_12}" />
 
-            <Grid Margin="0,0,0,24">
+            <Grid Margin="{StaticResource Layout_Margin_0_0_0_24}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="{StaticResource Layout_GridWidth_14}" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="{StaticResource Layout_GridWidth_14}" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="{StaticResource Layout_GridWidth_14}" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <!-- KPI 1: Total Revenue -->
                 <Border Grid.Column="0"
                         Style="{StaticResource CardBorderStyle}"
-                        Padding="18,16">
+                        Padding="{StaticResource Layout_Padding_18_16}">
                     <StackPanel>
                         <TextBlock Text="TOTAL REVENUE"
-                                   FontSize="11.5"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBlock Text="{Binding ProfitAndLoss.TotalRevenue, StringFormat=C}"
-                                   FontSize="22"
+                                   Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                        <TextBlock Text="{Binding ProfitAndLoss.TotalRevenue, StringFormat={StaticResource CurrencyStringFormat}}"
+                                   FontSize="{StaticResource TypePageTitle}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource TextBrush}" />
                         <TextBlock Text="Gross Sales Revenue"
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,6,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_6_0_0}" />
                     </StackPanel>
                 </Border>
 
                 <!-- KPI 2: Cost of Goods Sold (COGS) -->
                 <Border Grid.Column="2"
                         Style="{StaticResource CardBorderStyle}"
-                        Padding="18,16">
+                        Padding="{StaticResource Layout_Padding_18_16}">
                     <StackPanel>
                         <TextBlock Text="COST OF GOODS SOLD (COGS)"
-                                   FontSize="11.5"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBlock Text="{Binding ProfitAndLoss.CostOfGoodsSold, StringFormat=C}"
-                                   FontSize="22"
+                                   Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                        <TextBlock Text="{Binding ProfitAndLoss.CostOfGoodsSold, StringFormat={StaticResource CurrencyStringFormat}}"
+                                   FontSize="{StaticResource TypePageTitle}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource RedBrush}" />
                         <TextBlock Text="Historical Inventory Cost"
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,6,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_6_0_0}" />
                     </StackPanel>
                 </Border>
 
                 <!-- KPI 3: Gross Profit -->
                 <Border Grid.Column="4"
                         Style="{StaticResource CardBorderStyle}"
-                        Padding="18,16">
+                        Padding="{StaticResource Layout_Padding_18_16}">
                     <StackPanel>
                         <TextBlock Text="GROSS PROFIT"
-                                   FontSize="11.5"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBlock Text="{Binding ProfitAndLoss.GrossProfit, StringFormat=C}"
-                                   FontSize="22"
+                                   Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                        <TextBlock Text="{Binding ProfitAndLoss.GrossProfit, StringFormat={StaticResource CurrencyStringFormat}}"
+                                   FontSize="{StaticResource TypePageTitle}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource GreenBrush}" />
                         <TextBlock Text="{Binding ProfitAndLoss.GrossMarginPercentage, StringFormat='{}{0:N1}% Gross Margin'}"
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="SemiBold"
                                    Foreground="{StaticResource GreenDarkBrush}"
-                                   Margin="0,6,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_6_0_0}" />
                     </StackPanel>
                 </Border>
 
                 <!-- KPI 4: Net Profit -->
                 <Border Grid.Column="6"
                         Style="{StaticResource CardBorderStyle}"
-                        Padding="18,16">
+                        Padding="{StaticResource Layout_Padding_18_16}">
                     <StackPanel>
                         <TextBlock Text="NET PROFIT"
-                                   FontSize="11.5"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBlock Text="{Binding ProfitAndLoss.NetProfit, StringFormat=C}"
-                                   FontSize="22"
+                                   Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                        <TextBlock Text="{Binding ProfitAndLoss.NetProfit, StringFormat={StaticResource CurrencyStringFormat}}"
+                                   FontSize="{StaticResource TypePageTitle}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource NavyBrush}" />
                         <TextBlock Text="{Binding ProfitAndLoss.NetMarginPercentage, StringFormat='{}{0:N1}% Net Margin'}"
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="SemiBold"
                                    Foreground="{StaticResource BlueBrush}"
-                                   Margin="0,6,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_6_0_0}" />
                     </StackPanel>
                 </Border>
             </Grid>
@@ -210,80 +233,80 @@
             <!-- 3. INVENTORY ASSET VALUATION KPI CARDS (.kpi-grid 3 columns)      -->
             <!-- ================================================================= -->
             <TextBlock Text="Inventory Asset Valuation"
-                       FontSize="18"
+                       FontSize="{StaticResource TypeSectionTitle}"
                        FontWeight="Bold"
                        Foreground="{StaticResource NavyBrush}"
-                       Margin="0,0,0,12" />
+                       Margin="{StaticResource Layout_Margin_0_0_0_12}" />
 
-            <Grid Margin="0,0,0,24">
+            <Grid Margin="{StaticResource Layout_Margin_0_0_0_24}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="{StaticResource Layout_GridWidth_14}" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="{StaticResource Layout_GridWidth_14}" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <!-- KPI 1: Total Warehouse Cost Value -->
                 <Border Grid.Column="0"
                         Style="{StaticResource CardBorderStyle}"
-                        Padding="18,16">
+                        Padding="{StaticResource Layout_Padding_18_16}">
                     <StackPanel>
                         <TextBlock Text="TOTAL WAREHOUSE COST VALUE"
-                                   FontSize="11.5"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBlock Text="{Binding StockValuation.TotalValuation, StringFormat=C}"
-                                   FontSize="22"
+                                   Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                        <TextBlock Text="{Binding StockValuation.TotalValuation, StringFormat={StaticResource CurrencyStringFormat}}"
+                                   FontSize="{StaticResource TypePageTitle}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource BlueBrush}" />
                         <TextBlock Text="Valuation at Purchase Cost"
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,6,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_6_0_0}" />
                     </StackPanel>
                 </Border>
 
                 <!-- KPI 2: Potential Retail Value -->
                 <Border Grid.Column="2"
                         Style="{StaticResource CardBorderStyle}"
-                        Padding="18,16">
+                        Padding="{StaticResource Layout_Padding_18_16}">
                     <StackPanel>
                         <TextBlock Text="POTENTIAL RETAIL VALUE"
-                                   FontSize="11.5"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBlock Text="{Binding StockValuation.TotalPotentialRetailValue, StringFormat=C}"
-                                   FontSize="22"
+                                   Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                        <TextBlock Text="{Binding StockValuation.TotalPotentialRetailValue, StringFormat={StaticResource CurrencyStringFormat}}"
+                                   FontSize="{StaticResource TypePageTitle}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource GreenBrush}" />
                         <TextBlock Text="Potential Value at Standard Sale Price"
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,6,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_6_0_0}" />
                     </StackPanel>
                 </Border>
 
                 <!-- KPI 3: Active Product Items -->
                 <Border Grid.Column="4"
                         Style="{StaticResource CardBorderStyle}"
-                        Padding="18,16">
+                        Padding="{StaticResource Layout_Padding_18_16}">
                     <StackPanel>
                         <TextBlock Text="ACTIVE PRODUCT ITEMS"
-                                   FontSize="11.5"
+                                   FontSize="{StaticResource TypeSmall}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,0,0,6" />
+                                   Margin="{StaticResource Layout_Margin_0_0_0_6}" />
                         <TextBlock Text="{Binding StockValuation.TotalItemsCount}"
-                                   FontSize="22"
+                                   FontSize="{StaticResource TypePageTitle}"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource NavyBrush}" />
                         <TextBlock Text="Active SKUs in Catalog"
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,6,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_6_0_0}" />
                     </StackPanel>
                 </Border>
             </Grid>
@@ -294,21 +317,20 @@
 
             <!-- Table 1: Operating Expenses by Category -->
             <Border Style="{StaticResource CardBorderStyle}"
-                    Padding="20"
-                    Margin="0,0,0,20">
+                    Padding="{StaticResource Layout_Padding_20}"
+                    Margin="{StaticResource Layout_Margin_0_0_0_20}">
                 <StackPanel>
                     <TextBlock Text="Operating Expenses by Category"
-                               FontSize="16"
+                               FontSize="{StaticResource TypeEmphasis}"
                                FontWeight="Bold"
                                Foreground="{StaticResource NavyBrush}"
-                               Margin="0,0,0,12" />
+                               Margin="{StaticResource Layout_Margin_0_0_0_12}" />
 
                     <DataGrid ItemsSource="{Binding ProfitAndLoss.ExpensesByCategory}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               HeadersVisibility="Column"
-                              RowHeaderWidth="0"
-                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                             >
                         <DataGrid.Columns>
                             <!-- Category Name -->
                             <DataGridTextColumn Header="EXPENSE CATEGORY"
@@ -317,10 +339,10 @@
 
                             <!-- Total Amount (Numeric Right Aligned) -->
                             <DataGridTextColumn Header="TOTAL AMOUNT"
-                                                Binding="{Binding TotalAmount, StringFormat=C}"
-                                                Width="220">
+                                                Binding="{Binding TotalAmount, StringFormat={StaticResource CurrencyStringFormat}}"
+                                                Width="{StaticResource Layout_DataGridWidth_220}">
                                 <DataGridTextColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                         <Setter Property="HorizontalContentAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.HeaderStyle>
@@ -340,26 +362,25 @@
 
             <!-- Table 2: Stock Valuation Items -->
             <Border Style="{StaticResource CardBorderStyle}"
-                    Padding="20"
-                    Margin="0,0,0,10">
+                    Padding="{StaticResource Layout_Padding_20}"
+                    Margin="{StaticResource Layout_Margin_0_0_0_10}">
                 <StackPanel>
                     <TextBlock Text="Stock Valuation Items"
-                               FontSize="16"
+                               FontSize="{StaticResource TypeEmphasis}"
                                FontWeight="Bold"
                                Foreground="{StaticResource NavyBrush}"
-                               Margin="0,0,0,12" />
+                               Margin="{StaticResource Layout_Margin_0_0_0_12}" />
 
                     <DataGrid ItemsSource="{Binding StockValuation.Items}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               HeadersVisibility="Column"
-                              RowHeaderWidth="0"
-                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                             >
                         <DataGrid.Columns>
                             <!-- Product Code -->
                             <DataGridTextColumn Header="CODE"
                                                 Binding="{Binding ProductCode}"
-                                                Width="110" />
+                                                Width="{StaticResource Layout_DataGridWidth_110}" />
 
                             <!-- Product Name -->
                             <DataGridTextColumn Header="PRODUCT NAME"
@@ -369,9 +390,9 @@
                             <!-- Current Stock -->
                             <DataGridTextColumn Header="STOCK UNITS"
                                                 Binding="{Binding CurrentStock}"
-                                                Width="110">
+                                                Width="{StaticResource Layout_DataGridWidth_110}">
                                 <DataGridTextColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                         <Setter Property="HorizontalContentAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.HeaderStyle>
@@ -385,10 +406,10 @@
 
                             <!-- Unit Cost -->
                             <DataGridTextColumn Header="UNIT COST"
-                                                Binding="{Binding UnitCost, StringFormat=C}"
-                                                Width="130">
+                                                Binding="{Binding UnitCost, StringFormat={StaticResource CurrencyStringFormat}}"
+                                                Width="{StaticResource Layout_DataGridWidth_130}">
                                 <DataGridTextColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                         <Setter Property="HorizontalContentAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.HeaderStyle>
@@ -402,10 +423,10 @@
 
                             <!-- Total Valuation -->
                             <DataGridTextColumn Header="TOTAL VALUATION"
-                                                Binding="{Binding TotalValuation, StringFormat=C}"
-                                                Width="150">
+                                                Binding="{Binding TotalValuation, StringFormat={StaticResource CurrencyStringFormat}}"
+                                                Width="{StaticResource Layout_DataGridWidth_150}">
                                 <DataGridTextColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                         <Setter Property="HorizontalContentAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.HeaderStyle>
@@ -421,10 +442,10 @@
 
                             <!-- Retail Price -->
                             <DataGridTextColumn Header="RETAIL PRICE"
-                                                Binding="{Binding DefaultSalePrice, StringFormat=C}"
-                                                Width="130">
+                                                Binding="{Binding DefaultSalePrice, StringFormat={StaticResource CurrencyStringFormat}}"
+                                                Width="{StaticResource Layout_DataGridWidth_130}">
                                 <DataGridTextColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                         <Setter Property="HorizontalContentAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.HeaderStyle>
@@ -438,10 +459,10 @@
 
                             <!-- Potential Retail Value -->
                             <DataGridTextColumn Header="POTENTIAL VALUE"
-                                                Binding="{Binding PotentialRetailValue, StringFormat=C}"
-                                                Width="150">
+                                                Binding="{Binding PotentialRetailValue, StringFormat={StaticResource CurrencyStringFormat}}"
+                                                Width="{StaticResource Layout_DataGridWidth_150}">
                                 <DataGridTextColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                         <Setter Property="HorizontalContentAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.HeaderStyle>
@@ -457,6 +478,24 @@
                 </StackPanel>
             </Border>
 
-        </StackPanel>
-    </ScrollViewer>
+            <Border Style="{StaticResource CardBorderStyle}" Padding="{StaticResource Layout_Padding_20}" Margin="{StaticResource Layout_Margin_0_16_0_20}">
+                <StackPanel>
+                    <TextBlock Text="Operational Reports" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="{StaticResource Layout_Margin_0_0_0_12}" />
+                    <WrapPanel Margin="{StaticResource Layout_Margin_0_0_0_12}">
+                        <ComboBox Width="{StaticResource Layout_Width_260}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_10_8}" ItemsSource="{Binding ReportChoices}" SelectedItem="{Binding SelectedReport}" DisplayMemberPath="Name" AutomationProperties.Name="Report type" />
+                        <ComboBox Width="{StaticResource Layout_Width_210}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_10_8}" ItemsSource="{Binding Customers}" SelectedItem="{Binding FilterCustomer}" DisplayMemberPath="CustomerName" SelectedValuePath="CustomerId" IsEditable="True" Text="Customer (optional)" />
+                        <ComboBox Width="{StaticResource Layout_Width_210}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_10_8}" ItemsSource="{Binding Suppliers}" SelectedItem="{Binding FilterSupplier}" DisplayMemberPath="SupplierName" IsEditable="True" Text="Supplier (optional)" />
+                        <ComboBox Width="{StaticResource Layout_Width_220}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_10_8}" ItemsSource="{Binding Products}" SelectedItem="{Binding FilterProduct}" DisplayMemberPath="ProductName" IsEditable="True" Text="Product (optional)" />
+                        <ComboBox Width="{StaticResource Layout_Width_190}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_10_8}" ItemsSource="{Binding Categories}" SelectedItem="{Binding FilterCategory}" DisplayMemberPath="Name" IsEditable="True" Text="Category (optional)" />
+                        <ComboBox Width="{StaticResource Layout_Width_190}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_10_8}" ItemsSource="{Binding ExpenseCategories}" SelectedItem="{Binding FilterExpenseCategory}" IsEditable="True" Text="Expense category (optional)" />
+                        <Button Content="Run report" Command="{Binding GenerateOperationalReportCommand}" Style="{StaticResource BtnPrimaryStyle}" Height="{StaticResource ButtonHeight}" Padding="{StaticResource Layout_Padding_18_6}" Margin="{StaticResource Layout_Margin_0_0_10_8}" />
+                        <Button Content="Export CSV" Click="ExportOperationalReport_OnClick" Style="{StaticResource BtnPrimaryStyle}" Height="{StaticResource ButtonHeight}" Padding="{StaticResource Layout_Padding_18_6}" Margin="{StaticResource Layout_Margin_0_0_0_8}" />
+                    </WrapPanel>
+                    <TextBlock Text="{Binding OperationalReport.Title}" FontSize="{StaticResource TypeBody}" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" Margin="{StaticResource Layout_Margin_0_0_0_8}" />
+                    <TextBlock x:Name="ReportEmptyState" Text="Run a report to see results. No rows match the selected filters." Foreground="{StaticResource MutedBrush}" Margin="{StaticResource Layout_Margin_0_0_0_8}" />
+                    <DataGrid x:Name="OperationalReportGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column" MinHeight="{StaticResource Layout_MinHeight_130}" MaxHeight="{StaticResource Layout_MaxHeight_440}" />
+                </StackPanel>
+            </Border>
+
+    </StackPanel>
 </UserControl>

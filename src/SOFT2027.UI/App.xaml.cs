@@ -16,6 +16,13 @@ namespace SOFT2027.UI
 
     public static string GetDatabasePath()
         {
+            var configuredPath = Environment.GetEnvironmentVariable("SOFT2027_DATABASE_PATH");
+            if (!string.IsNullOrWhiteSpace(configuredPath))
+            {
+                var fullPath = Path.GetFullPath(configuredPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+                return fullPath;
+            }
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var appDir = Path.Combine(localAppData, "SOFT2027");
             if (!Directory.Exists(appDir))

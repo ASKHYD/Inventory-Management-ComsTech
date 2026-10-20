@@ -64,6 +64,118 @@ namespace SOFT2027.Tests
                 "INSERT INTO AdminUsers (Username, PasswordHash, FullName) VALUES ('admin_rep', 'hash', 'Admin Report'); SELECT last_insert_rowid();");
         }
 
+        [Theory]
+        [InlineData("SalesByDate")][InlineData("SalesByInvoice")][InlineData("SalesByCustomer")][InlineData("SalesByProduct")]
+        [InlineData("SalesReturns")][InlineData("SalesDiscounts")][InlineData("SalesPaymentStatus")]
+        [InlineData("PurchasesByDate")][InlineData("PurchasesByInvoice")][InlineData("PurchasesBySupplier")][InlineData("PurchasesByProduct")]
+        [InlineData("PurchaseReturns")][InlineData("PurchaseDiscounts")][InlineData("PurchasesPaymentStatus")]
+        [InlineData("CurrentStock")][InlineData("StockValuation")][InlineData("StockMovements")][InlineData("StockAdjustments")][InlineData("LowStock")][InlineData("StockMovementByProduct")]
+        [InlineData("Customers")][InlineData("CustomerStatement")][InlineData("OutstandingReceivables")][InlineData("CustomerSalesHistory")][InlineData("CustomerPriceHistory")][InlineData("CustomerPriceChanges")]
+        [InlineData("Suppliers")][InlineData("SupplierStatement")][InlineData("OutstandingPayables")][InlineData("SupplierPurchaseHistory")][InlineData("SupplierPriceHistory")][InlineData("SupplierPriceChanges")]
+        [InlineData("ProfitAndLoss")][InlineData("ExpensesByDate")][InlineData("ExpensesByCategory")][InlineData("CashActivity")][InlineData("CashBalance")][InlineData("BankActivity")][InlineData("BankBalance")][InlineData("ReceiptsPayments")][InlineData("ReceivablesPayables")]
+        [InlineData("ProductPriceList")][InlineData("ProductProfitability")]
+        public async Task GetOperationalReportAsync_EachRegisteredReportExecutesAgainstTheRealSchema(string key)
+        {
+            var result = await _sut.GetOperationalReportAsync(new OperationalReportRequest
+            {
+                ReportKey = key,
+                StartDate = new DateTime(2026, 1, 1),
+                EndDate = new DateTime(2026, 1, 31)
+            });
+
+            result.Title.Should().NotBeNullOrWhiteSpace();
+            result.Columns.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task OperationalSalesReports_UseSavedDiscountPaymentAndHistoricalPriceValues()
+        {
+            using var connection = _factory.CreateConnection();
+            await ((SqliteConnection)connection).OpenAsync();
+            var customerId = await connection.ExecuteScalarAsync<int>("INSERT INTO Customers (CustomerCode,CustomerName) VALUES ('RPT-C1','Report Customer'); SELECT last_insert_rowid();");
+            var productId = await connection.ExecuteScalarAsync<int>("INSERT INTO Products (ProductCode,ProductName,BasePurchasePrice,DefaultSalePrice,CurrentStock) VALUES ('RPT-P1','Report Product',999,999,8); SELECT last_insert_rowid();");
+            var saleId = await connection.ExecuteScalarAsync<int>(@"INSERT INTO Sales (InvoiceNumber,CustomerId,SaleDate,SubTotal,DiscountAmount,NetTotal,PaidAmount,RemainingBalance,PaymentType,Status,AdminId)
+                VALUES ('RPT-INV-1',@CustomerId,'2026-01-10',200,20,180,100,80,'Split','Completed',@AdminId); SELECT last_insert_rowid();", new { CustomerId = customerId, AdminId = _testAdminId });
+            await connection.ExecuteAsync(@"INSERT INTO SaleItems (SaleId,ProductId,Quantity,HistoricalSalePrice,HistoricalCostPrice,DiscountPercentage,LineTotal)
+                VALUES (@SaleId,@ProductId,2,100,60,10,180);", new { SaleId = saleId, ProductId = productId });
+            await connection.ExecuteAsync("UPDATE Products SET DefaultSalePrice=150,BasePurchasePrice=110 WHERE ProductId=@ProductId", new { ProductId = productId });
+
+            var invoice = await _sut.GetOperationalReportAsync(new OperationalReportRequest { ReportKey = "SalesByInvoice", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 1, 31) });
+            invoice.Rows.Should().ContainSingle();
+            Convert.ToDecimal(invoice.Rows[0].Values["NetTotal"]).Should().Be(180m);
+            Convert.ToDecimal(invoice.Rows[0].Values["PaidAmount"]).Should().Be(100m);
+            Convert.ToDecimal(invoice.Rows[0].Values["RemainingBalance"]).Should().Be(80m);
+
+            var productReport = await _sut.GetOperationalReportAsync(new OperationalReportRequest { ReportKey = "SalesByProduct", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 1, 31) });
+            productReport.Rows.Should().ContainSingle();
+            Convert.ToDecimal(productReport.Rows[0].Values["GrossSales"]).Should().Be(180m);
+            Convert.ToDecimal(productReport.Rows[0].Values["Discount"]).Should().Be(20m);
+        }
+
+        [Fact]
+        public async Task OperationalReports_ReconcileSalesPurchasesReturnsInventoryLedgersAndFinance()
+        {
+            using var connection = _factory.CreateConnection();
+            await ((SqliteConnection)connection).OpenAsync();
+            var customerId = await connection.ExecuteScalarAsync<int>("INSERT INTO Customers (CustomerCode,CustomerName,OutstandingBalance) VALUES ('ALL-C1','Retailer',500); SELECT last_insert_rowid();");
+            var supplierId = await connection.ExecuteScalarAsync<int>("INSERT INTO Suppliers (SupplierCode,SupplierName,OutstandingBalance) VALUES ('ALL-S1','Wholesaler',250); SELECT last_insert_rowid();");
+            var productId = await connection.ExecuteScalarAsync<int>("INSERT INTO Products (ProductCode,ProductName,BasePurchasePrice,PurchasePercentage,DefaultSalePrice,SellingPercentage,CurrentStock,MinimumStock) VALUES ('ALL-P1','Cooking Oil',60,4,100,66.67,8,10); SELECT last_insert_rowid();");
+            var saleId = await connection.ExecuteScalarAsync<int>(@"INSERT INTO Sales (InvoiceNumber,CustomerId,SaleDate,SubTotal,DiscountAmount,NetTotal,PaidAmount,RemainingBalance,PaymentType,Status,AdminId)
+                VALUES ('ALL-INV-1',@CustomerId,'2026-01-10',1000,100,900,400,500,'Split','Completed',@AdminId); SELECT last_insert_rowid();", new { CustomerId = customerId, AdminId = _testAdminId });
+            await connection.ExecuteAsync(@"INSERT INTO SaleItems (SaleId,ProductId,ProductCodeAtSale,ProductNameAtSale,Quantity,HistoricalSalePrice,HistoricalCostPrice,SellingPercentage,DiscountPercentage,LineTotal)
+                VALUES (@SaleId,@ProductId,'ALL-P1','Cooking Oil',10,100,60,66.67,10,900);", new { SaleId = saleId, ProductId = productId });
+            var purchaseId = await connection.ExecuteScalarAsync<int>(@"INSERT INTO Purchases (InvoiceNumber,SupplierId,PurchaseDate,SubTotal,DiscountAmount,NetTotal,PaidAmount,RemainingBalance,Status,AdminId)
+                VALUES ('ALL-PUR-1',@SupplierId,'2026-01-10',500,50,450,200,250,'Received',@AdminId); SELECT last_insert_rowid();", new { SupplierId = supplierId, AdminId = _testAdminId });
+            await connection.ExecuteAsync(@"INSERT INTO PurchaseItems (PurchaseId,ProductId,ProductCodeAtPurchase,ProductNameAtPurchase,Quantity,HistoricalPurchasePrice,PurchasePercentage,DiscountPercentage,LineTotal)
+                VALUES (@PurchaseId,@ProductId,'ALL-P1','Cooking Oil',10,50,4,10,450);", new { PurchaseId = purchaseId, ProductId = productId });
+            var saleReturnId = await connection.ExecuteScalarAsync<int>(@"INSERT INTO SalesReturns (ReturnNumber,OriginalSaleId,CustomerId,ReturnDate,TotalRefundAmount,AdminId) VALUES ('ALL-SR-1',@SaleId,@CustomerId,'2026-01-11',200,@AdminId); SELECT last_insert_rowid();", new { SaleId = saleId, CustomerId = customerId, AdminId = _testAdminId });
+            await connection.ExecuteAsync("INSERT INTO SalesReturnItems (ReturnId,ProductId,Quantity,RefundRate,LineTotal) VALUES (@ReturnId,@ProductId,2,100,200);", new { ReturnId = saleReturnId, ProductId = productId });
+            var purchaseReturnId = await connection.ExecuteScalarAsync<int>(@"INSERT INTO PurchaseReturns (ReturnNumber,OriginalPurchaseId,SupplierId,ReturnDate,TotalRefundAmount,AdminId) VALUES ('ALL-PR-1',@PurchaseId,@SupplierId,'2026-01-11',100,@AdminId); SELECT last_insert_rowid();", new { PurchaseId = purchaseId, SupplierId = supplierId, AdminId = _testAdminId });
+            await connection.ExecuteAsync("INSERT INTO PurchaseReturnItems (ReturnId,ProductId,Quantity,RefundRate,LineTotal) VALUES (@ReturnId,@ProductId,2,50,100);", new { ReturnId = purchaseReturnId, ProductId = productId });
+            await connection.ExecuteAsync(@"INSERT INTO StockMovements (ProductId,MovementDate,MovementType,ReferenceNumber,QuantityIn,QuantityOut,BalanceQuantity,AdminId,Remarks)
+                VALUES (@ProductId,'2026-01-10','PURCHASE','ALL-PUR-1',10,0,10,@AdminId,''),(@ProductId,'2026-01-10','SALE','ALL-INV-1',0,10,0,@AdminId,''),(@ProductId,'2026-01-11','ADJUSTMENT','ALL-ADJ-1',8,0,8,@AdminId,'Count correction');", new { ProductId = productId, AdminId = _testAdminId });
+            await connection.ExecuteAsync("INSERT INTO CustomerLedger (CustomerId,TransactionDate,TransactionType,ReferenceNumber,Description,Debit,Credit,RunningBalance) VALUES (@CustomerId,'2026-01-10','SALE','ALL-INV-1','Sale',900,400,500);", new { CustomerId = customerId });
+            await connection.ExecuteAsync("INSERT INTO SupplierLedger (SupplierId,TransactionDate,TransactionType,ReferenceNumber,Description,Debit,Credit,RunningBalance) VALUES (@SupplierId,'2026-01-10','PURCHASE','ALL-PUR-1','Purchase',200,450,250);", new { SupplierId = supplierId });
+            await connection.ExecuteAsync("INSERT INTO Receipts (ReceiptNumber,CustomerId,ReceiptDate,Amount,PaymentMode,AdminId) VALUES ('ALL-REC-1',@CustomerId,'2026-01-10',100,'Cash',@AdminId);", new { CustomerId = customerId, AdminId = _testAdminId });
+            await connection.ExecuteAsync("INSERT INTO Payments (PaymentNumber,SupplierId,PaymentDate,Amount,PaymentMode,AdminId) VALUES ('ALL-PAY-1',@SupplierId,'2026-01-10',150,'Cash',@AdminId);", new { SupplierId = supplierId, AdminId = _testAdminId });
+            await connection.ExecuteAsync("INSERT INTO Expenses (ExpenseDate,ExpenseCategory,Amount,Description,PaymentSource,AdminId) VALUES ('2026-01-10','Rent',50,'Shop rent','Cash',@AdminId);", new { AdminId = _testAdminId });
+            await connection.ExecuteAsync("INSERT INTO CashTransactions (TransactionDate,TransactionType,ReferenceNumber,Description,Debit,Credit,RunningBalance,AdminId) VALUES ('2026-01-10','RECEIPT','ALL-REC-1','Receipt',100,0,100,@AdminId); INSERT INTO BankTransactions (TransactionDate,TransactionType,ReferenceNumber,Description,Debit,Credit,RunningBalance,AdminId) VALUES ('2026-01-10','DEPOSIT','ALL-DEP-1','Deposit',300,0,300,@AdminId);", new { AdminId = _testAdminId });
+            await connection.ExecuteAsync("INSERT INTO CustomerProductPricingHistory (CustomerId,ProductId,SalePrice,SellingPercentage,DiscountPercentage,Quantity,InvoiceNumber,TransactionDate,AdminId) VALUES (@CustomerId,@ProductId,100,66.67,10,10,'ALL-INV-1','2026-01-10',@AdminId); INSERT INTO SupplierProductPricingHistory (SupplierId,ProductId,PurchasePrice,PurchasePercentage,DiscountPercentage,Quantity,InvoiceNumber,TransactionDate,AdminId) VALUES (@SupplierId,@ProductId,50,4,10,10,'ALL-PUR-1','2026-01-10',@AdminId);", new { CustomerId = customerId, SupplierId = supplierId, ProductId = productId, AdminId = _testAdminId });
+
+            var start = new DateTime(2026, 1, 1); var end = new DateTime(2026, 1, 31);
+            async Task<OperationalReport> Report(string key) => await _sut.GetOperationalReportAsync(new OperationalReportRequest { ReportKey = key, StartDate = start, EndDate = end });
+            static decimal Amount(OperationalReport report, int row, string field) => Convert.ToDecimal(report.Rows[row].Values[field]);
+
+            Amount(await Report("SalesByDate"), 0, "NetTotal").Should().Be(900m);
+            Amount(await Report("SalesReturns"), 0, "LineTotal").Should().Be(200m);
+            Amount(await Report("SalesDiscounts"), 0, "DiscountAmount").Should().Be(100m);
+            Amount(await Report("SalesPaymentStatus"), 0, "NetSales").Should().Be(900m);
+            Amount(await Report("PurchasesByDate"), 0, "NetTotal").Should().Be(450m);
+            Amount(await Report("PurchaseReturns"), 0, "LineTotal").Should().Be(100m);
+            Amount(await Report("PurchaseDiscounts"), 0, "DiscountAmount").Should().Be(50m);
+            Amount(await Report("PurchasesPaymentStatus"), 0, "Outstanding").Should().Be(250m);
+            (await Report("LowStock")).Rows.Should().ContainSingle();
+            Amount(await Report("CurrentStock"), 0, "StockValue").Should().Be(480m);
+            (await Report("StockAdjustments")).Rows.Should().ContainSingle();
+            Amount(await Report("StockMovementByProduct"), 0, "QuantityOut").Should().Be(10m);
+            Amount(await Report("OutstandingReceivables"), 0, "OutstandingBalance").Should().Be(500m);
+            Amount(await Report("OutstandingPayables"), 0, "OutstandingBalance").Should().Be(250m);
+            Amount(await Report("CustomerPriceHistory"), 0, "SalePrice").Should().Be(100m);
+            Amount(await Report("SupplierPriceHistory"), 0, "PurchasePrice").Should().Be(50m);
+            Amount(await Report("ExpensesByCategory"), 0, "TotalAmount").Should().Be(50m);
+            Amount(await Report("CashBalance"), 0, "RunningBalance").Should().Be(100m);
+            Amount(await Report("BankBalance"), 0, "RunningBalance").Should().Be(300m);
+            (await Report("ReceiptsPayments")).Rows.Should().HaveCount(2);
+            var pnl = await Report("ProfitAndLoss");
+            Amount(pnl, 0, "Revenue").Should().Be(700m);
+            Amount(pnl, 0, "CostOfGoodsSold").Should().Be(480m);
+            Amount(pnl, 0, "NetProfit").Should().Be(170m);
+            var profitability = await Report("ProductProfitability");
+            Amount(profitability, 0, "NetSales").Should().Be(700m);
+            Amount(profitability, 0, "NetCost").Should().Be(480m);
+            Amount(profitability, 0, "GrossProfit").Should().Be(220m);
+        }
+
         [Fact]
         public async Task GetCustomerStatementAsync_ShouldCalculateOpeningBalance_DebitsCredits_AndClosingBalanceCorrectly()
         {

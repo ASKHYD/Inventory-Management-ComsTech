@@ -1,11 +1,19 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
+using SOFT2027.Core.Interfaces;
 using SOFT2027.Presentation.ViewModels;
 using SOFT2027.UI.Views;
+using SOFT2027.UI.BugReports;
 
 namespace SOFT2027.UI;
 
@@ -19,6 +27,13 @@ public partial class MainWindow : Window
     private bool _tourShownThisSession;
     private MainViewModel? _observedViewModel;
 
+    static MainWindow()
+    {
+        // Suppress Windows ApplicationCommands.Help globally so F1 doesn't launch Windows Help or browser
+        CommandManager.RegisterClassCommandBinding(typeof(Window),
+            new CommandBinding(ApplicationCommands.Help, (_, e) => e.Handled = true));
+    }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -27,10 +42,31 @@ public partial class MainWindow : Window
 
         SourceInitialized += OnSourceInitialized;
         Loaded += MainWindow_Loaded;
+        SizeChanged += MainWindow_SizeChanged;
         DataContextChanged += MainWindow_DataContextChanged;
+        Closing += MainWindow_Closing;
     }
 
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e) => ShowTourIfFirstRun();
+    private double _previousWindowWidth = double.NaN;
+
+    private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        // Work Order 9: If window width is < 1100px, collapse the sidebar automatically to give full breathing room to the active table.
+        if (DataContext is MainViewModel vm && e.NewSize.Width < 1100 && (double.IsNaN(_previousWindowWidth) || _previousWindowWidth >= 1100))
+        {
+            vm.IsSidebarVisible = false;
+        }
+        _previousWindowWidth = e.NewSize.Width;
+    }
+
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainViewModel vm && ActualWidth < 1100)
+        {
+            vm.IsSidebarVisible = false;
+        }
+        ShowTourIfFirstRun();
+    }
 
     private void MainWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
@@ -55,33 +91,237 @@ public partial class MainWindow : Window
 
     private void ShowTourButton_Click(object sender, RoutedEventArgs e) => ShowTour();
 
+    private void ReportBugButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainViewModel model) return;
+        var assembly = Assembly.GetExecutingAssembly();
+        var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+            ?? assembly.GetName().Version?.ToString() ?? "Unknown";
+        var module = model.CurrentViewModel?.GetType().Name.Replace("ViewModel", "", StringComparison.Ordinal) ?? "Unknown";
+        var dialog = new BugReportWindow(new BugReportMetadata(version, Environment.OSVersion.VersionString,
+            module, DateTimeOffset.Now, model.UserRole)) { Owner = this };
+        dialog.ShowDialog();
+    }
+
+    private void GlobalSearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        ExecuteGlobalSearch();
+    }
+
     private void GlobalSearchBox_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key != Key.Enter || DataContext is not MainViewModel viewModel) return;
-        var query = GlobalSearchBox.Text.Trim();
-        var section = query.StartsWith("c:", StringComparison.OrdinalIgnoreCase) ? "Customers"
-            : query.StartsWith("s:", StringComparison.OrdinalIgnoreCase) ? "Suppliers"
-            : "Products";
-        if (query.Length > 2 && query[1] == ':') query = query[2..].Trim();
+        if (e.Key != Key.Enter) return;
+        ExecuteGlobalSearch();
+        e.Handled = true;
+    }
+
+    private async void ExecuteGlobalSearch()
+    {
+        if (DataContext is not MainViewModel viewModel) return;
+        var raw = GlobalSearchBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(raw)) return;
+
+        var query = raw;
+        string section = "Products";
+        if (query.StartsWith("c:", StringComparison.OrdinalIgnoreCase) || query.StartsWith("cust:", StringComparison.OrdinalIgnoreCase))
+        {
+            section = "Customers";
+            query = query.Substring(query.IndexOf(':') + 1).Trim();
+        }
+        else if (query.StartsWith("s:", StringComparison.OrdinalIgnoreCase) || query.StartsWith("supp:", StringComparison.OrdinalIgnoreCase))
+        {
+            section = "Suppliers";
+            query = query.Substring(query.IndexOf(':') + 1).Trim();
+        }
+        else if (query.StartsWith("p:", StringComparison.OrdinalIgnoreCase) || query.StartsWith("prod:", StringComparison.OrdinalIgnoreCase))
+        {
+            section = "Products";
+            query = query.Substring(query.IndexOf(':') + 1).Trim();
+        }
+        else if (viewModel.CurrentViewModel is MasterDataViewModel currentMd)
+        {
+            section = currentMd.Title;
+        }
+        else
+        {
+            try
+            {
+                var custRepo = App.Container?.GetService(typeof(ICustomerRepository)) as ICustomerRepository;
+                var suppRepo = App.Container?.GetService(typeof(ISupplierRepository)) as ISupplierRepository;
+                if (custRepo != null)
+                {
+                    var customers = await custRepo.GetAllAsync();
+                    if (customers.Any(c => (c.CustomerName?.Contains(query, StringComparison.OrdinalIgnoreCase) == true) ||
+                                          (c.CustomerCode?.Contains(query, StringComparison.OrdinalIgnoreCase) == true)))
+                    {
+                        section = "Customers";
+                    }
+                }
+                if (section == "Products" && suppRepo != null)
+                {
+                    var suppliers = await suppRepo.GetAllAsync();
+                    if (suppliers.Any(s => (s.SupplierName?.Contains(query, StringComparison.OrdinalIgnoreCase) == true) ||
+                                          (s.SupplierCode?.Contains(query, StringComparison.OrdinalIgnoreCase) == true)))
+                    {
+                        section = "Suppliers";
+                    }
+                }
+            }
+            catch { }
+        }
+
         viewModel.NavigateToMasterData(section);
         if (viewModel.CurrentViewModel is MasterDataViewModel masterData)
+        {
             masterData.SearchText = query;
-        e.Handled = true;
+        }
+    }
+
+    private async void NotificationButton_Click(object sender, RoutedEventArgs e)
+    {
+        NotificationPopup.IsOpen = !NotificationPopup.IsOpen;
+        if (!NotificationPopup.IsOpen) return;
+
+        NotificationSummaryText.Text = "Checking stock alerts…";
+        NotificationDetailText.Text = "Loading current stock from saved product records.";
+        LowStockItemsControl.ItemsSource = null;
+        LowStockItemsControl.Visibility = Visibility.Collapsed;
+        ViewInventoryFromNotificationsButton.Visibility = Visibility.Collapsed;
+        NotificationBadge.Visibility = Visibility.Collapsed;
+
+        try
+        {
+            var repository = App.Container?.GetRequiredService<IProductRepository>();
+            if (repository == null)
+                throw new InvalidOperationException("The product repository is unavailable.");
+
+            var products = await repository.GetAllAsync();
+            var lowStockProducts = products
+                .Where(product => product.Status == "Active" && product.CurrentStock <= product.MinimumStock)
+                .OrderBy(product => product.ProductName)
+                .ToList();
+
+            if (lowStockProducts.Count == 0)
+            {
+                NotificationSummaryText.Text = "You're all caught up";
+                NotificationDetailText.Text = "No active products are at or below their minimum stock level.";
+                return;
+            }
+
+            NotificationSummaryText.Text = $"{lowStockProducts.Count} low-stock item{(lowStockProducts.Count == 1 ? string.Empty : "s")} need attention";
+            NotificationDetailText.Text = lowStockProducts.Count > 4
+                ? "Showing the first four items. Review inventory to see the complete list."
+                : "These items are at or below their saved minimum stock level.";
+            LowStockItemsControl.ItemsSource = lowStockProducts.Take(4).ToList();
+            LowStockItemsControl.Visibility = Visibility.Visible;
+            ViewInventoryFromNotificationsButton.Visibility = Visibility.Visible;
+            NotificationBadge.Visibility = Visibility.Visible;
+        }
+        catch (Exception ex)
+        {
+            NotificationSummaryText.Text = "Notifications are unavailable";
+            NotificationDetailText.Text = $"Could not load stock alerts. {ex.Message}";
+        }
     }
 
     private void OpenInventoryFromNotifications_Click(object sender, RoutedEventArgs e)
     {
+        NotificationPopup.IsOpen = false;
         if (DataContext is MainViewModel viewModel) viewModel.NavigateToInventory();
+    }
+
+    private void UserProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+        ProfileMenuPopup.IsOpen = !ProfileMenuPopup.IsOpen;
+    }
+
+    private void SignOutButton_Click(object sender, RoutedEventArgs e)
+    {
+        ProfileMenuPopup.IsOpen = false;
+        if (DataContext is MainViewModel viewModel) viewModel.ExecuteLogout();
     }
 
     private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
     {
+        if (e.Key == Key.Escape)
+        {
+            var popupWasOpen = ProfileMenuPopup.IsOpen || NotificationPopup.IsOpen;
+            ProfileMenuPopup.IsOpen = false;
+            NotificationPopup.IsOpen = false;
+            if (popupWasOpen) e.Handled = true;
+            return;
+        }
+
         if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.K)
         {
             GlobalSearchBox.Focus();
             GlobalSearchBox.SelectAll();
             e.Handled = true;
         }
+    }
+
+    private void MainWindow_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        // WPF controls such as DataGrid handle MouseWheel themselves, which can
+        // trap the wheel over an empty table or at its scroll boundary. Route
+        // the wheel to the nearest scrollable viewer, then walk outward when a
+        // nested viewer has reached its edge (for example, grid -> page).
+        var scrollViewer = FindAncestor<ScrollViewer>(e.OriginalSource as DependencyObject);
+        while (scrollViewer != null)
+        {
+            if (scrollViewer.IsVisible && scrollViewer.ScrollableHeight > 0.5)
+            {
+                var delta = (e.Delta / 120d) * 48d;
+                var targetOffset = Math.Clamp(
+                    scrollViewer.VerticalOffset - delta,
+                    0,
+                    scrollViewer.ScrollableHeight);
+
+                if (Math.Abs(targetOffset - scrollViewer.VerticalOffset) > 0.1)
+                {
+                    scrollViewer.ScrollToVerticalOffset(targetOffset);
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            scrollViewer = FindAncestor<ScrollViewer>(GetParentElement(scrollViewer));
+        }
+
+        // Do not let a non-scrollable child such as an empty DataGrid swallow
+        // the wheel and prevent the enclosing page from receiving it.
+        e.Handled = true;
+    }
+
+    private static T? FindAncestor<T>(DependencyObject? element) where T : DependencyObject
+    {
+        while (element != null)
+        {
+            if (element is T match) return match;
+            element = GetParentElement(element);
+        }
+
+        return null;
+    }
+
+    private static DependencyObject? GetParentElement(DependencyObject element)
+    {
+        if (element is Visual or Visual3D)
+        {
+            var visualParent = VisualTreeHelper.GetParent(element);
+            if (visualParent != null) return visualParent;
+        }
+
+        if (element is ContentElement contentElement)
+        {
+            var contentParent = ContentOperations.GetParent(contentElement);
+            if (contentParent != null) return contentParent;
+        }
+
+        if (element is FrameworkContentElement frameworkContentElement && frameworkContentElement.Parent != null)
+            return frameworkContentElement.Parent;
+
+        return LogicalTreeHelper.GetParent(element);
     }
 
     private void ShowTour()
@@ -173,6 +413,24 @@ public partial class MainWindow : Window
     {
         Close();
     }
+
+    private void MainWindow_Closing(object? sender, CancelEventArgs e)
+    {
+        if (DataContext is not MainViewModel viewModel || !HasUnsavedDraft(viewModel)) return;
+
+        var answer = MessageBox.Show(this,
+            "An invoice, bill, or return has unsaved items. Close and discard this draft?",
+            "Unsaved transaction", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+        e.Cancel = answer != MessageBoxResult.Yes;
+    }
+
+    private static bool HasUnsavedDraft(MainViewModel viewModel) => viewModel.CurrentViewModel switch
+    {
+        SalesEntryViewModel sales => sales.Items.Count > 0,
+        PurchaseEntryViewModel purchase => purchase.Items.Count > 0,
+        ReturnEntryViewModel returns => returns.Lines.Any(line => line.Quantity > 0),
+        _ => false
+    };
 
     [DllImport("user32.dll")]
     private static extern IntPtr MonitorFromWindow(IntPtr hwnd, int dwFlags);

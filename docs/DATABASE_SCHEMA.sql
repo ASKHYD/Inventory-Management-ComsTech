@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS AdminUsers (
     Username TEXT NOT NULL UNIQUE COLLATE NOCASE,
     PasswordHash TEXT NOT NULL,
     FullName TEXT NOT NULL,
+    Role TEXT NOT NULL CHECK(Role IN ('Administrator', 'Employee')) DEFAULT 'Administrator',
     Status TEXT NOT NULL CHECK(Status IN ('Active', 'Inactive')) DEFAULT 'Active',
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     LastLogin DATETIME
@@ -187,6 +188,8 @@ CREATE TABLE IF NOT EXISTS SaleItems (
     SaleItemId INTEGER PRIMARY KEY AUTOINCREMENT,
     SaleId INTEGER NOT NULL,
     ProductId INTEGER NOT NULL,
+    ProductCodeAtSale TEXT NOT NULL DEFAULT '',
+    ProductNameAtSale TEXT NOT NULL DEFAULT '',
     Quantity REAL NOT NULL CHECK(Quantity > 0),
     -- Historical Immutability Columns:
     HistoricalSalePrice REAL NOT NULL CHECK(HistoricalSalePrice >= 0),
@@ -228,6 +231,8 @@ CREATE TABLE IF NOT EXISTS PurchaseItems (
     PurchaseItemId INTEGER PRIMARY KEY AUTOINCREMENT,
     PurchaseId INTEGER NOT NULL,
     ProductId INTEGER NOT NULL,
+    ProductCodeAtPurchase TEXT NOT NULL DEFAULT '',
+    ProductNameAtPurchase TEXT NOT NULL DEFAULT '',
     Quantity REAL NOT NULL CHECK(Quantity > 0),
     HistoricalPurchasePrice REAL NOT NULL CHECK(HistoricalPurchasePrice >= 0),
     PurchasePercentage REAL NOT NULL DEFAULT 0.0,

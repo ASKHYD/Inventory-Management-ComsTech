@@ -12,6 +12,7 @@ public interface IAdminUserRepository
     Task<AdminUser?> AuthenticateAsync(string username, string password, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<AdminUserSummary>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<int> CreateAdminAsync(string username, string fullName, string password, int actorAdminId, CancellationToken cancellationToken = default);
+    Task<int> CreateAdminAsync(string username, string fullName, string password, string role, int actorAdminId, CancellationToken cancellationToken = default);
     Task SetStatusAsync(int adminId, bool isActive, int actorAdminId, CancellationToken cancellationToken = default);
     Task ResetPasswordAsync(int adminId, string newPassword, int actorAdminId, CancellationToken cancellationToken = default);
 }

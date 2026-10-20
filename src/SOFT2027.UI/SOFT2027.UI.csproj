@@ -1,6 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Resource Include="..\..\Assets\COMSTECH-Solutions.jpeg">
+      <Link>Assets\COMSTECH-Solutions.jpeg</Link>
+    </Resource>
+    <Resource Include="..\..\Assets\SOFT2027.ico">
+      <Link>Assets\SOFT2027.ico</Link>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SOFT2027.Core\SOFT2027.Core.csproj" />
     <ProjectReference Include="..\SOFT2027.Data\SOFT2027.Data.csproj" />
   </ItemGroup>
@@ -11,14 +20,25 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <EmbeddedResource Include="..\..\docs\DATABASE_SCHEMA.sql">
+      <LogicalName>SOFT2027.UI.DATABASE_SCHEMA.sql</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <Version>1.0.0-rc.2</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyTitle>SOFT2027 — Ali Traders FMCG Wholesale &amp; Distribution</AssemblyTitle>
+    <Product>SOFT2027 — Ali Traders FMCG Wholesale &amp; Distribution</Product>
+    <Company>COMSTECH.Solutions</Company>
+    <Copyright>Copyright © COMSTECH.Solutions 2026</Copyright>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>..\..\Assets\SOFT2027.ico</ApplicationIcon>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>

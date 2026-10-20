@@ -339,5 +339,43 @@ namespace SOFT2027.Tests
             cashTx!.Credit.Should().Be(150.0m);
             cashTx.RunningBalance.Should().Be(350.0m);
         }
+
+        [Fact]
+        public async Task RepeatedPartialReceiptsAndPayments_ShouldReconcileCashBankAndPartyBalances()
+        {
+            await _sut.PostReceiptAsync(new Receipt { ReceiptNumber = "REC-MULTI-CASH", CustomerId = _testCustomerId, ReceiptDate = DateTime.UtcNow, Amount = 200m, PaymentMode = "Cash", AdminId = _testAdminId });
+            await _sut.PostReceiptAsync(new Receipt { ReceiptNumber = "REC-MULTI-BANK", CustomerId = _testCustomerId, ReceiptDate = DateTime.UtcNow, Amount = 300m, PaymentMode = "OnlineTransfer", AdminId = _testAdminId });
+            await _sut.PostPaymentAsync(new Payment { PaymentNumber = "PAY-MULTI-CASH", SupplierId = _testSupplierId, PaymentDate = DateTime.UtcNow, Amount = 100m, PaymentMode = "Cash", AdminId = _testAdminId });
+            await _sut.PostPaymentAsync(new Payment { PaymentNumber = "PAY-MULTI-BANK", SupplierId = _testSupplierId, PaymentDate = DateTime.UtcNow, Amount = 250m, PaymentMode = "Cheque", AdminId = _testAdminId });
+
+            using var connection = _factory.CreateConnection();
+            connection.Open();
+            (await connection.ExecuteScalarAsync<decimal>("SELECT OutstandingBalance FROM Customers WHERE CustomerId=@Id", new { Id = _testCustomerId })).Should().Be(500m);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT OutstandingBalance FROM Suppliers WHERE SupplierId=@Id", new { Id = _testSupplierId })).Should().Be(450m);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT RunningBalance FROM CashTransactions ORDER BY CashTransactionId DESC LIMIT 1")).Should().Be(600m);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM BankTransactions")).Should().Be(2);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT RunningBalance FROM BankTransactions ORDER BY BankTransactionId DESC LIMIT 1")).Should().Be(50m);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM CustomerLedger WHERE ReferenceNumber LIKE 'REC-MULTI-%'")).Should().Be(2);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM SupplierLedger WHERE ReferenceNumber LIKE 'PAY-MULTI-%'")).Should().Be(2);
+        }
+
+        [Fact]
+        public async Task ReceiptAndPaymentCannotOverSettleAndFailedAttemptLeavesNoEntries()
+        {
+            var receipt = new Receipt { ReceiptNumber = "REC-OVER", CustomerId = _testCustomerId, ReceiptDate = DateTime.UtcNow, Amount = 1001m, PaymentMode = "Cash", AdminId = _testAdminId };
+            Func<Task> receiptAction = () => _sut.PostReceiptAsync(receipt);
+            await receiptAction.Should().ThrowAsync<InvalidOperationException>().WithMessage("*cannot exceed*");
+
+            var payment = new Payment { PaymentNumber = "PAY-OVER", SupplierId = _testSupplierId, PaymentDate = DateTime.UtcNow, Amount = 801m, PaymentMode = "Cash", AdminId = _testAdminId };
+            Func<Task> paymentAction = () => _sut.PostPaymentAsync(payment);
+            await paymentAction.Should().ThrowAsync<InvalidOperationException>().WithMessage("*cannot exceed*");
+
+            using var connection = _factory.CreateConnection();
+            connection.Open();
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Receipts WHERE ReceiptNumber='REC-OVER'")).Should().Be(0);
+            (await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Payments WHERE PaymentNumber='PAY-OVER'")).Should().Be(0);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT OutstandingBalance FROM Customers WHERE CustomerId=@Id", new { Id = _testCustomerId })).Should().Be(1000m);
+            (await connection.ExecuteScalarAsync<decimal>("SELECT OutstandingBalance FROM Suppliers WHERE SupplierId=@Id", new { Id = _testSupplierId })).Should().Be(800m);
+        }
     }
 }

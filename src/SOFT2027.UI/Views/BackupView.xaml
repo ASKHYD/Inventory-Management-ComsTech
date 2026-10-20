@@ -7,27 +7,27 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:BackupViewModel}"
              Background="Transparent">
-    <Border Style="{StaticResource CardBorderStyle}" Padding="26" Margin="0,0,0,16" MaxWidth="900" HorizontalAlignment="Stretch">
+    <Border Style="{StaticResource PageContentCardStyle}" Margin="{StaticResource Layout_Margin_0_0_0_16}">
         <StackPanel>
-            <TextBlock Text="Backup &amp; Restore" FontSize="22" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-            <TextBlock Text="Protect your business records with a local database backup. Keep a copy on a separate drive or secure location." FontSize="13" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,18" />
-            <Border Background="{StaticResource BlueLightBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+            <TextBlock Text="Backup &amp; Restore" FontSize="{StaticResource TypePageTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+            <TextBlock Text="Protect your business records with a local database backup. Keep a copy on a separate drive or secure location." FontSize="{StaticResource TypeBody}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_4_0_18}" />
+            <Border Background="{StaticResource BlueLightBrush}" CornerRadius="{StaticResource Layout_CornerRadius_8}" Padding="{StaticResource Layout_Padding_16}" Margin="{StaticResource Layout_Margin_0_0_0_16}">
                 <StackPanel>
-                    <TextBlock Text="Create a backup" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                    <TextBlock Text="Choose where to save a complete copy of your current records. The database stays available while the copy is made." FontSize="13" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,12" />
-                    <Button Content="Create Backup…" Click="CreateBackup_Click" Style="{StaticResource BtnPrimaryStyle}" Height="40" HorizontalAlignment="Left" Padding="18,0" AutomationProperties.Name="Create database backup" />
+                    <TextBlock Text="Create a backup" FontSize="{StaticResource TypeEmphasis}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                    <TextBlock Text="Choose where to save a complete copy of your current records. The database stays available while the copy is made." FontSize="{StaticResource TypeBody}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_5_0_12}" />
+                    <Button Content="Create Backup…" Click="CreateBackup_Click" Style="{StaticResource BtnPrimaryStyle}" Height="{StaticResource ButtonHeight}" HorizontalAlignment="Left" Padding="{StaticResource Layout_Padding_18_0}" AutomationProperties.Name="Create database backup" />
                 </StackPanel>
             </Border>
-            <Border Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+            <Border Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="{StaticResource Layout_BorderThickness_1}" CornerRadius="{StaticResource Layout_CornerRadius_8}" Padding="{StaticResource Layout_Padding_16}">
                 <StackPanel>
-                    <TextBlock Text="Restore a backup" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                    <TextBlock Text="Restoring replaces current records with the selected backup. SOFT2027 first creates a safety copy of the current database." FontSize="13" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,12" />
-                    <Button Content="Choose Backup to Restore…" Click="RestoreBackup_Click" Style="{StaticResource BtnDarkStyle}" Height="40" HorizontalAlignment="Left" Padding="18,0" AutomationProperties.Name="Choose database backup to restore" />
+                    <TextBlock Text="Restore a backup" FontSize="{StaticResource TypeEmphasis}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                    <TextBlock Text="Restoring replaces current records with the selected backup. SOFT2027 first creates a safety copy of the current database." FontSize="{StaticResource TypeBody}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_5_0_12}" />
+                    <Button Content="Choose Backup to Restore…" Click="RestoreBackup_Click" Style="{StaticResource BtnDarkStyle}" Height="{StaticResource ButtonHeight}" HorizontalAlignment="Left" Padding="{StaticResource Layout_Padding_18_0}" AutomationProperties.Name="Choose database backup to restore" />
                 </StackPanel>
             </Border>
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource RedBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,14,0,0" AutomationProperties.LiveSetting="Assertive" />
-            <TextBlock Text="{Binding StatusAnnouncement}" Foreground="{StaticResource GreenBrush}" TextWrapping="Wrap" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite" />
-            <TextBlock Text="Latest file: " FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="0,12,0,0" />
+            <TextBlock Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}" Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_14_0_0}" AutomationProperties.LiveSetting="Assertive" />
+            <TextBlock Text="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}}" Foreground="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_8_0_0}" AutomationProperties.LiveSetting="Polite" />
+            <TextBlock Text="Latest file: " FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="{StaticResource Layout_Margin_0_12_0_0}" />
             <TextBlock Text="{Binding LastBackup}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
         </StackPanel>
     </Border>
