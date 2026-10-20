@@ -30,6 +30,8 @@ dotnet run --project src/SOFT2027.UI/SOFT2027.UI.csproj
 
 On first launch, create the primary administrator account in the setup screen. There is no default username or password.
 
+The source release does not include a business database or sample customer/product records. The application creates an empty local database on first launch. For a disposable fresh-data startup check after building, run `qa-artifacts\Run-SOFT2027-QA-Fresh.cmd`; this keeps QA data separate from the normal `%LOCALAPPDATA%\SOFT2027\soft2027.db` database.
+
 ## Build a Windows x64 portable package
 
 ```powershell
@@ -60,6 +62,7 @@ The application database is stored at `%LOCALAPPDATA%\SOFT2027\soft2027.db`, sep
 - [Business rules](docs/BUSINESS_RULES.md): transaction and pricing rules.
 - [Installation and handover](docs/INSTALLATION_AND_HANDOVER.md): portable setup, updates, uninstall, recovery, and release checklist.
 - [Final test report](docs/FINAL_TEST_REPORT.md): automated results and outstanding manual acceptance scenarios.
+- [Changes so far](docs/CHANGES_SO_FAR.md): files changed during the UI and QA work.
 
 ## Verification
 

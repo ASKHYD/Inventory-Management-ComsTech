@@ -26,3 +26,9 @@
 /graphify-*/
 /ECC-main/
 /.agents/
+
+# Local isolated QA work copy and generated smoke data (never publish databases)
+/SOFT2027-UX-QA-Phase-Copy/
+/qa-artifacts/*/
+/qa-artifacts/*.log
+/qa-artifacts/*.txt

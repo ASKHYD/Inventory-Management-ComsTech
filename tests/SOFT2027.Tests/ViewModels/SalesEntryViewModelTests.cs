@@ -159,7 +159,7 @@ namespace SOFT2027.Tests.ViewModels
             };
             _mockPricingRepo.Setup(repository => repository.GetLatestAsync(2, 101, It.IsAny<CancellationToken>())).ReturnsAsync(previous);
             var sut = CreateSut();
-            sut.SelectedProduct = new Product { ProductId = 101, ProductName = "Tea", BasePurchasePrice = 100m, DefaultSalePrice = 150m };
+            sut.SelectedProduct = new Product { ProductId = 101, ProductName = "Tea", BasePurchasePrice = 100m, DefaultSalePrice = 150m, CurrentStock = 100m };
             sut.SelectedCustomer = new Customer { CustomerId = 2, CustomerName = "Shop" };
 
             sut.UnitPrice.Should().Be(120m);

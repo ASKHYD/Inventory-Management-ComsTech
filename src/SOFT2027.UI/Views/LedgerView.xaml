@@ -1,13 +1,85 @@
-<UserControl x:Class="SOFT2027.UI.Views.LedgerView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
-    <Grid Margin="28"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-        <StackPanel><TextBlock Text="{Binding Title}" FontSize="26" FontWeight="Bold"/><TextBlock Text="Select an account to review its transactions and running balance." Foreground="{StaticResource MutedBrush}" Margin="0,6,0,16"/></StackPanel>
-        <Grid Grid.Row="1" Margin="0,0,0,14"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-            <ComboBox ItemsSource="{Binding Parties}" SelectedItem="{Binding SelectedParty}" DisplayMemberPath="Name" Height="40" AutomationProperties.Name="Choose ledger account"/>
-            <Button Grid.Column="1" Content="Refresh Accounts" Command="{Binding LoadCommand}" Margin="8,0" Padding="14,0"/>
-            <Button Grid.Column="2" Content="View Ledger" Command="{Binding LoadLedgerCommand}" Padding="18,0"/>
-        </Grid>
-        <Grid Grid.Row="2"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><TextBlock Text="{Binding BalanceText}" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
-            <DataGrid Grid.Row="1" ItemsSource="{Binding Entries}" AutoGenerateColumns="True" AutoGeneratingColumn="LedgerGrid_AutoGeneratingColumn" IsReadOnly="True" CanUserAddRows="False" AutomationProperties.Name="Account transaction history"/>
+<UserControl x:Class="SOFT2027.UI.Views.LedgerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="Transparent">
+    <Grid Style="{StaticResource PageRootGridStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="{Binding Title}" FontSize="{StaticResource TypeDisplay}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+            <TextBlock Text="Select an account to review its transactions and running balance." Foreground="{StaticResource MutedBrush}" Margin="{StaticResource Layout_Margin_0_6_0_16}"/>
+        </StackPanel>
+
+        <!-- Account Chooser & Search Row -->
+        <DockPanel Grid.Row="1" LastChildFill="False" Margin="{StaticResource Layout_Margin_0_0_0_14}">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="ACCOUNT:" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ComboBox ItemsSource="{Binding Parties}" SelectedItem="{Binding SelectedParty}" DisplayMemberPath="Name"
+                          Width="280" Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center" AutomationProperties.Name="Choose ledger account"/>
+                <Button Content="Refresh Accounts" Command="{Binding LoadCommand}" Margin="{StaticResource Layout_Margin_8_0}" Padding="{StaticResource Layout_Padding_14_0}" Height="{StaticResource ButtonHeight}"/>
+                <Button Content="View Ledger" Command="{Binding LoadLedgerCommand}" Style="{StaticResource BtnPrimaryStyle}" Padding="{StaticResource Layout_Padding_18_0}" Height="{StaticResource ButtonHeight}"/>
+            </StackPanel>
+
+            <!-- Auto-Clear Search Box -->
+            <Grid DockPanel.Dock="Right" Width="240" Height="{StaticResource Layout_Height_38}">
+                <TextBox x:Name="LedgerSearchBox" Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Search by reference, description or type"
+                         AutomationProperties.Name="Search ledger" Padding="10,0,26,0" />
+                <TextBlock Text="Search ledger entries..." Foreground="{StaticResource MutedBrush}"
+                           Margin="{StaticResource Layout_Margin_13_0_8_0}" VerticalAlignment="Center" IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=LedgerSearchBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <Button Command="{Binding ClearSearchCommand}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Width="22" Height="22" Margin="0,0,5,0"
+                        Background="Transparent" BorderThickness="0"
+                        Foreground="{StaticResource MutedBrush}"
+                        Content="✕" FontSize="11" FontWeight="Bold" Cursor="Hand"
+                        ToolTip="Clear search text" AutomationProperties.Name="Clear search">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=LedgerSearchBox}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </DockPanel>
+
+        <!-- Balance and Transaction Grid -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="{StaticResource Layout_Margin_0_0_0_10}">
+                <TextBlock Text="{Binding BalanceText}" FontWeight="Bold" FontSize="{StaticResource TypeEmphasis}" Foreground="{StaticResource NavyBrush}"/>
+            </Border>
+            <DataGrid Grid.Row="1" ItemsSource="{Binding FilteredEntries}" AutoGenerateColumns="True"
+                      AutoGeneratingColumn="LedgerGrid_AutoGeneratingColumn" IsReadOnly="True" CanUserAddRows="False"
+                      AutomationProperties.Name="Account transaction history"/>
         </Grid>
     </Grid>
 </UserControl>

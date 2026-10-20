@@ -63,8 +63,9 @@ namespace SOFT2027.Presentation.ViewModels
 
         public void SetError(string message)
         {
-            ErrorMessage = message;
-            StatusAnnouncement = $"Error: {message}";
+            var translated = SOFT2027.UI.Services.ExceptionTranslator.Translate(message);
+            ErrorMessage = translated;
+            StatusAnnouncement = $"Error: {translated}";
         }
 
         public void ClearErrors()

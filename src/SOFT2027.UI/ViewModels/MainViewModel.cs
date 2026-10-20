@@ -31,6 +31,20 @@ namespace SOFT2027.Presentation.ViewModels
         private string _fullName = string.Empty;
         private bool _isFirstRunSetup;
         private string _userDisplayName = "Administrator";
+        private bool _isBusy;
+        private string _busyMessage = string.Empty;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
+        }
+
+        public string BusyMessage
+        {
+            get => _busyMessage;
+            set => SetProperty(ref _busyMessage, value);
+        }
 
         public bool IsAuthenticated
         {
@@ -39,6 +53,16 @@ namespace SOFT2027.Presentation.ViewModels
         }
 
         public bool IsAdministrator => _adminSession?.IsAdministrator ?? true;
+
+        private bool _isSidebarVisible = true;
+
+        public bool IsSidebarVisible
+        {
+            get => _isSidebarVisible;
+            set => SetProperty(ref _isSidebarVisible, value);
+        }
+
+        public RelayCommand ToggleSidebarCommand { get; }
 
         public string LoginUsername
         {
@@ -244,6 +268,7 @@ namespace SOFT2027.Presentation.ViewModels
             NavigateToSupplierLedgerCommand = new RelayCommand(() => NavigateToLedger(false));
             NavigateToAdministrationCommand = new RelayCommand(NavigateToAdministration);
             NavigateToLookupsCommand = new RelayCommand(NavigateToLookups);
+            ToggleSidebarCommand = new RelayCommand(() => IsSidebarVisible = !IsSidebarVisible);
             LoginCommand = new AsyncRelayCommand(LoginOrSetupAsync);
             LogoutCommand = new RelayCommand(ExecuteLogout);
         }
@@ -284,7 +309,10 @@ namespace SOFT2027.Presentation.ViewModels
 
             try
             {
+                IsBusy = true;
+                BusyMessage = IsFirstRunSetup ? "Creating administrator account…" : "Signing in…";
                 ClearErrors();
+                await Task.Yield();
                 AdminUser? user;
                 if (IsFirstRunSetup)
                 {
@@ -312,6 +340,11 @@ namespace SOFT2027.Presentation.ViewModels
                 Announce($"Welcome, {user.FullName}.");
             }
             catch (Exception ex) { SetError($"Sign-in could not be completed. {ex.Message}"); }
+            finally
+            {
+                IsBusy = false;
+                BusyMessage = string.Empty;
+            }
         }
 
         public void ExecuteLogout()

@@ -93,6 +93,7 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
     public RelayCommand EnterNewPriceCommand { get; }
     public AsyncRelayCommand LoadCommand { get; }
     public AsyncRelayCommand SaveCommand { get; }
+    public RelayCommand NewBillCommand { get; }
 
     public PurchaseEntryViewModel(ITransactionCoordinator transactions, ISupplierRepository suppliers, IProductRepository products, ISupplierPricingHistoryRepository pricing)
         : this(transactions, suppliers, products, pricing, null)
@@ -119,6 +120,24 @@ public sealed class PurchaseEntryViewModel : ViewModelBase
         EnterNewPriceCommand = new RelayCommand(() => { _pricingLookupVersion++; PricingSource = "New price"; Announce("Enter the negotiated rate in Unit Price. It will be remembered when this bill is saved."); });
         LoadCommand = new AsyncRelayCommand(LoadAsync);
         SaveCommand = new AsyncRelayCommand(SaveAsync, () => !IsBusy);
+        NewBillCommand = new RelayCommand(ClearBill);
+    }
+
+    public void ClearBill()
+    {
+        foreach (var item in Items) item.LineTotalChanged -= RecalculateTotals;
+        Items.Clear();
+        SelectedSupplier = null;
+        SelectedProduct = null;
+        Quantity = 1;
+        UnitPrice = 0;
+        PurchasePercentage = 0;
+        DiscountPercentage = 0;
+        PaidAmount = 0;
+        PaymentSource = "Cash";
+        RecalculateTotals();
+        ClearErrors();
+        Announce("Purchase bill cleared. Ready for new bill.");
     }
 
     private SupplierProductPricingHistory? _latestPrice;

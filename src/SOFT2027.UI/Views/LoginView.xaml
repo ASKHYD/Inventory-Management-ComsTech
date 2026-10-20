@@ -22,128 +22,128 @@
         <Border Grid.Column="0">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#0D1B2A" Offset="0.0" />
-                    <GradientStop Color="#13253A" Offset="0.6" />
-                    <GradientStop Color="#17456E" Offset="1.2" />
+                    <GradientStop Color="{StaticResource ColorNavy}" Offset="0.0" />
+                    <GradientStop Color="{StaticResource ColorNavy2}" Offset="0.6" />
+                    <GradientStop Color="{StaticResource ColorNavy3}" Offset="1.2" />
                 </LinearGradientBrush>
             </Border.Background>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
-                <StackPanel VerticalAlignment="Center" Margin="56,48">
+                <StackPanel VerticalAlignment="Center" Margin="{StaticResource Layout_Margin_56_48}">
 
                     <!-- ALI TRADERS Brand Badge -->
-                    <Border Background="#FFFFFF"
-                            CornerRadius="6"
-                            Padding="20,10"
+                    <Border Background="{StaticResource SurfaceWhiteBrush}"
+                            CornerRadius="{StaticResource Layout_CornerRadius_6}"
+                            Padding="{StaticResource Layout_Padding_20_10}"
                             HorizontalAlignment="Center"
-                            Margin="0,0,0,22"
+                            Margin="{StaticResource Layout_Margin_0_0_0_22}"
                             SnapsToDevicePixels="True">
                         <TextBlock Text="ALI TRADERS"
-                                   Foreground="#000000"
+                                   Foreground="{StaticResource NavyBrush}"
                                    FontWeight="ExtraBold"
-                                   FontSize="26"
+                                   FontSize="{StaticResource TypeDisplay}"
                                    HorizontalAlignment="Center" />
                     </Border>
 
                     <!-- Title -->
                     <TextBlock Text="FMCG Wholesale &amp; Distribution&#x0a;Management System"
-                               FontSize="25"
+                               FontSize="{StaticResource TypeDisplay}"
                                FontWeight="SemiBold"
-                               Foreground="#FFFFFF"
+                               Foreground="{StaticResource SurfaceWhiteBrush}"
                                HorizontalAlignment="Center"
                                TextAlignment="Center"
-                               Margin="0,0,0,12" />
+                               Margin="{StaticResource Layout_Margin_0_0_0_12}" />
 
                     <!-- Subtitle -->
                     <TextBlock TextWrapping="Wrap"
-                               FontSize="14"
-                               Foreground="#B9C7D6"
-                               MaxWidth="480"
+                               FontSize="{StaticResource TypeBody}"
+                               Foreground="{StaticResource SidebarTextBrush}"
+                               MaxWidth="{StaticResource Layout_MaxWidth_480}"
                                HorizontalAlignment="Center"
                                TextAlignment="Center"
-                               Margin="0,0,0,28">
-                        <Bold Foreground="#FFFFFF">SOFT2027</Bold> — the desktop system that remembers your business: previous prices for every customer and supplier, stock, balances and history, all in one place.
+                               Margin="{StaticResource Layout_Margin_0_0_0_28}">
+                        <Bold Foreground="{StaticResource SurfaceWhiteBrush}">SOFT2027</Bold> — the desktop system that remembers your business: previous prices for every customer and supplier, stock, balances and history, all in one place.
                     </TextBlock>
 
                     <!-- 2x2 Feature Highlights Grid -->
-                    <UniformGrid Columns="2" MaxWidth="520" HorizontalAlignment="Center">
+                    <UniformGrid Columns="2" MaxWidth="{StaticResource Layout_MaxWidth_520}" HorizontalAlignment="Center">
                         <!-- Feature 1: Business Memory -->
-                        <Border Background="#10FFFFFF"
-                                BorderBrush="#25FFFFFF"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Padding="14,12"
-                                Margin="0,0,10,12">
+                        <Border Background="{StaticResource OverlayWhite10Brush}"
+                                BorderBrush="{StaticResource OverlayWhite25Brush}"
+                                BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                                Padding="{StaticResource Layout_Padding_14_12}"
+                                Margin="{StaticResource Layout_Margin_0_0_10_12}">
                             <StackPanel>
                                 <TextBlock Text="Business Memory"
                                            FontWeight="Bold"
-                                           FontSize="13.5"
-                                           Foreground="#FFFFFF"
-                                           Margin="0,0,0,4" />
+                                           FontSize="{StaticResource TypeBody}"
+                                           Foreground="{StaticResource SurfaceWhiteBrush}"
+                                           Margin="{StaticResource Layout_Margin_0_0_0_4}" />
                                 <TextBlock Text="Previous customer &amp; supplier prices appear automatically on every invoice."
                                            TextWrapping="Wrap"
-                                           FontSize="12"
-                                           Foreground="#D7E1EC" />
+                                           FontSize="{StaticResource TypeSmall}"
+                                           Foreground="{StaticResource SidebarTextBrush}" />
                             </StackPanel>
                         </Border>
 
                         <!-- Feature 2: Offline Desktop -->
-                        <Border Background="#10FFFFFF"
-                                BorderBrush="#25FFFFFF"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Padding="14,12"
-                                Margin="0,0,0,12">
+                        <Border Background="{StaticResource OverlayWhite10Brush}"
+                                BorderBrush="{StaticResource OverlayWhite25Brush}"
+                                BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                                Padding="{StaticResource Layout_Padding_14_12}"
+                                Margin="{StaticResource Layout_Margin_0_0_0_12}">
                             <StackPanel>
                                 <TextBlock Text="Offline Desktop"
                                            FontWeight="Bold"
-                                           FontSize="13.5"
-                                           Foreground="#FFFFFF"
-                                           Margin="0,0,0,4" />
+                                           FontSize="{StaticResource TypeBody}"
+                                           Foreground="{StaticResource SurfaceWhiteBrush}"
+                                           Margin="{StaticResource Layout_Margin_0_0_0_4}" />
                                 <TextBlock Text="Runs fully on this PC. No internet required for daily operations."
                                            TextWrapping="Wrap"
-                                           FontSize="12"
-                                           Foreground="#D7E1EC" />
+                                           FontSize="{StaticResource TypeSmall}"
+                                           Foreground="{StaticResource SidebarTextBrush}" />
                             </StackPanel>
                         </Border>
 
                         <!-- Feature 3: Complete Control -->
-                        <Border Background="#10FFFFFF"
-                                BorderBrush="#25FFFFFF"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Padding="14,12"
-                                Margin="0,0,10,0">
+                        <Border Background="{StaticResource OverlayWhite10Brush}"
+                                BorderBrush="{StaticResource OverlayWhite25Brush}"
+                                BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                                Padding="{StaticResource Layout_Padding_14_12}"
+                                Margin="{StaticResource Layout_Margin_0_0_10_0}">
                             <StackPanel>
                                 <TextBlock Text="Complete Control"
                                            FontWeight="Bold"
-                                           FontSize="13.5"
-                                           Foreground="#FFFFFF"
-                                           Margin="0,0,0,4" />
+                                           FontSize="{StaticResource TypeBody}"
+                                           Foreground="{StaticResource SurfaceWhiteBrush}"
+                                           Margin="{StaticResource Layout_Margin_0_0_0_4}" />
                                 <TextBlock Text="Sales, purchases, stock, ledgers, cash, bank, expenses &amp; analytics."
                                            TextWrapping="Wrap"
-                                           FontSize="12"
-                                           Foreground="#D7E1EC" />
+                                           FontSize="{StaticResource TypeSmall}"
+                                           Foreground="{StaticResource SidebarTextBrush}" />
                             </StackPanel>
                         </Border>
 
                         <!-- Feature 4: Safe & Audited -->
-                        <Border Background="#10FFFFFF"
-                                BorderBrush="#25FFFFFF"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Padding="14,12"
-                                Margin="0,0,0,0">
+                        <Border Background="{StaticResource OverlayWhite10Brush}"
+                                BorderBrush="{StaticResource OverlayWhite25Brush}"
+                                BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                                Padding="{StaticResource Layout_Padding_14_12}"
+                                Margin="{StaticResource Layout_Margin_0_0_0_0}">
                             <StackPanel>
                                 <TextBlock Text="Safe &amp; Audited"
                                            FontWeight="Bold"
-                                           FontSize="13.5"
-                                           Foreground="#FFFFFF"
-                                           Margin="0,0,0,4" />
+                                           FontSize="{StaticResource TypeBody}"
+                                           Foreground="{StaticResource SurfaceWhiteBrush}"
+                                           Margin="{StaticResource Layout_Margin_0_0_0_4}" />
                                 <TextBlock Text="Admin logins, immutable audit trail, and one-click backup &amp; restore."
                                            TextWrapping="Wrap"
-                                           FontSize="12"
-                                           Foreground="#D7E1EC" />
+                                           FontSize="{StaticResource TypeSmall}"
+                                           Foreground="{StaticResource SidebarTextBrush}" />
                             </StackPanel>
                         </Border>
                     </UniformGrid>
@@ -158,56 +158,56 @@
         <Border Grid.Column="1"
                 Background="{StaticResource BackgroundBrush}">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
-                <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="24">
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="{StaticResource Layout_Margin_24}">
                     <!-- Login Card -->
-                    <Border Background="#FFFFFF"
+                    <Border Background="{StaticResource SurfaceWhiteBrush}"
                             BorderBrush="{StaticResource BorderBrush}"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Width="390"
-                            Padding="36,36"
+                            BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                            CornerRadius="{StaticResource Layout_CornerRadius_12}"
+                            Width="{StaticResource Layout_Width_390}"
+                            Padding="{StaticResource Layout_Padding_36_36}"
                             Effect="{StaticResource CardDropShadow}"
                             SnapsToDevicePixels="True">
                         <StackPanel>
 
                             <!-- Heading -->
                             <TextBlock Text="{Binding LoginHeading}"
-                                       FontSize="22"
+                                       FontSize="{StaticResource TypePageTitle}"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource NavyBrush}"
-                                       Margin="0,0,0,4" />
+                                       Margin="{StaticResource Layout_Margin_0_0_0_4}" />
 
                             <TextBlock Text="{Binding LoginHint}"
-                                       FontSize="12.5"
+                                       FontSize="{StaticResource TypeBody}"
                                        Foreground="{StaticResource MutedBrush}"
-                                       Margin="0,0,0,20" />
+                                       Margin="{StaticResource Layout_Margin_0_0_0_20}" />
 
                             <!-- Error Message Banner -->
-                            <TextBlock Text="{Binding ErrorMessage}"
-                                       Foreground="{StaticResource RedBrush}"
+                            <TextBlock Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}"
+                                       Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}"
                                        FontWeight="SemiBold"
-                                       FontSize="13"
+                                       FontSize="{StaticResource TypeBody}"
                                        TextWrapping="Wrap"
-                                       Margin="0,0,0,12"
+                                       Margin="{StaticResource Layout_Margin_0_0_0_12}"
                                        AutomationProperties.LiveSetting="Assertive" />
 
                             <!-- Username Field -->
                             <TextBlock Text="Username *"
-                                       FontSize="12"
+                                       FontSize="{StaticResource TypeSmall}"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource TextBrush}"
-                                       Margin="0,0,0,6" />
+                                       Margin="{StaticResource Layout_Margin_0_0_0_6}" />
                             <TextBox Text="{Binding LoginUsername, UpdateSourceTrigger=PropertyChanged}"
                                      Tag="Enter username"
                                      FontFamily="Segoe UI"
-                                     FontSize="16"
+                                     FontSize="{StaticResource TypeEmphasis}"
                                      Foreground="Black"
-                                     Padding="8,4"
-                                     Height="40"
-                                     Margin="0,0,0,16"
+                                     Padding="{StaticResource Layout_Padding_8_4}"
+                                     Height="{StaticResource ControlHeight}"
+                                     Margin="{StaticResource Layout_Margin_0_0_0_16}"
                                      AutomationProperties.Name="Username" />
 
-                            <StackPanel Margin="0,0,0,14">
+                            <StackPanel Margin="{StaticResource Layout_Margin_0_0_0_14}">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -218,34 +218,34 @@
                                         </Style.Triggers>
                                     </Style>
                                 </StackPanel.Style>
-                                <TextBlock Text="Your name *" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="0,0,0,6" />
-                                <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" Tag="Enter your name" FontFamily="Segoe UI" FontSize="16" Foreground="{StaticResource TextBrush}" Padding="10,4" Height="46" AutomationProperties.Name="Administrator full name" />
+                                <TextBlock Text="Your name *" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                                <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" Tag="Enter your name" FontFamily="Segoe UI" FontSize="{StaticResource TypeEmphasis}" Foreground="{StaticResource TextBrush}" Padding="{StaticResource Layout_Padding_10_4}" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Administrator full name" />
                             </StackPanel>
 
                             <!-- Password Field -->
                             <TextBlock Text="Password *"
-                                       FontSize="12"
+                                       FontSize="{StaticResource TypeSmall}"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource TextBrush}"
-                                       Margin="0,0,0,6" />
-                            <Grid Margin="0,0,0,22">
+                                       Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                            <Grid Margin="{StaticResource Layout_Margin_0_0_0_22}">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                                 <PasswordBox x:Name="LoginPasswordBox" Grid.Column="0"
-                                             FontFamily="Segoe UI" FontSize="16" Foreground="{StaticResource TextBrush}"
-                                             Background="#FFFFFF" BorderBrush="{StaticResource BorderDarkBrush}"
-                                             BorderThickness="1" Padding="10,6" Height="40"
+                                             FontFamily="Segoe UI" FontSize="{StaticResource TypeEmphasis}" Foreground="{StaticResource TextBrush}"
+                                             Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource BorderDarkBrush}"
+                                             BorderThickness="{StaticResource Layout_BorderThickness_1}" Padding="{StaticResource Layout_Padding_10_6}" Height="{StaticResource ControlHeight}"
                                              AutomationProperties.Name="Password" />
                                 <TextBox x:Name="LoginPasswordTextBox" Grid.Column="0"
                                          Text="{Binding LoginPassword, UpdateSourceTrigger=PropertyChanged}"
                                          Tag="Enter password"
-                                         FontFamily="Segoe UI" FontSize="16" Foreground="{StaticResource TextBrush}"
-                                         Padding="10,6" Height="40" Visibility="Collapsed" AutomationProperties.Name="Password" />
-                                <Button x:Name="PasswordVisibilityToggle" Grid.Column="1" Content="Show" Width="58" Height="40" MinHeight="40"
-                                        Margin="6,0,0,0" Padding="4,0" Click="TogglePasswordVisibility_Click"
+                                         FontFamily="Segoe UI" FontSize="{StaticResource TypeEmphasis}" Foreground="{StaticResource TextBrush}"
+                                         Padding="{StaticResource Layout_Padding_10_6}" Height="{StaticResource ControlHeight}" Visibility="Collapsed" AutomationProperties.Name="Password" />
+                                <Button x:Name="PasswordVisibilityToggle" Grid.Column="1" Content="Show" Width="{StaticResource Layout_Width_58}" Height="{StaticResource ButtonHeight}" MinHeight="{StaticResource Layout_MinHeight_40}"
+                                        Margin="{StaticResource Layout_Margin_6_0_0_0}" Padding="{StaticResource Layout_Padding_4_0}" Click="TogglePasswordVisibility_Click"
                                         AutomationProperties.Name="Show or hide password" />
                             </Grid>
 
-                            <StackPanel Margin="0,0,0,18">
+                            <StackPanel Margin="{StaticResource Layout_Margin_0_0_0_18}">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -256,17 +256,17 @@
                                         </Style.Triggers>
                                     </Style>
                                 </StackPanel.Style>
-                                <TextBlock Text="Confirm password *" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="0,0,0,6" />
-                                <PasswordBox x:Name="ConfirmPasswordBox" FontFamily="Segoe UI" FontSize="14" Foreground="{StaticResource TextBrush}" Background="#FFFFFF" BorderBrush="{StaticResource BorderDarkBrush}" BorderThickness="1" Padding="10,6" Height="40" AutomationProperties.Name="Confirm administrator password" />
+                                <TextBlock Text="Confirm password *" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                                <PasswordBox x:Name="ConfirmPasswordBox" FontFamily="Segoe UI" FontSize="{StaticResource TypeBody}" Foreground="{StaticResource TextBrush}" Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource BorderDarkBrush}" BorderThickness="{StaticResource Layout_BorderThickness_1}" Padding="{StaticResource Layout_Padding_10_6}" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Confirm administrator password" />
                             </StackPanel>
 
-                            <!-- Sign In Submit Button -->
+                            <!-- Sign In Submit Button with Loading State -->
                             <Button Command="{Binding LoginCommand}"
                                     Style="{StaticResource BtnPrimaryStyle}"
                                     IsDefault="True"
-                                    BorderThickness="1"
-                                    Height="42"
-                                    FontSize="14"
+                                    BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                    Height="{StaticResource ButtonHeight}"
+                                    FontSize="{StaticResource TypeBody}"
                                     FontWeight="Bold"
                                     HorizontalAlignment="Stretch"
                                     AutomationProperties.Name="Sign In">
@@ -276,7 +276,7 @@
                                                 Background="{TemplateBinding Background}"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                                CornerRadius="6"
+                                                CornerRadius="{StaticResource Layout_CornerRadius_6}"
                                                 SnapsToDevicePixels="True">
                                             <ContentPresenter HorizontalAlignment="Center"
                                                               VerticalAlignment="Center"
@@ -284,28 +284,65 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsPressed" Value="True">
-                                                <Setter TargetName="ButtonBorder" Property="Background" Value="#16395A" />
+                                                <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource Navy2Brush}" />
                                             </Trigger>
                                             <Trigger Property="IsEnabled" Value="False">
-                                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.55" />
+                                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.7" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Button.Template>
-                                <TextBlock Text="{Binding LoginButtonText}"
-                                           Foreground="#FFFFFF"
-                                           FontSize="14"
-                                           FontWeight="Bold" />
+                                <Grid>
+                                    <!-- Normal State -->
+                                    <TextBlock Text="{Binding LoginButtonText}"
+                                               Foreground="{StaticResource SurfaceWhiteBrush}"
+                                               FontSize="{StaticResource TypeBody}"
+                                               FontWeight="Bold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <!-- Loading State with Spinner -->
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <ProgressBar Style="{StaticResource SpinningIndicatorStyle}"
+                                                     Width="18" Height="18" Foreground="{StaticResource SurfaceWhiteBrush}"
+                                                     Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding BusyMessage}"
+                                                   Foreground="{StaticResource SurfaceWhiteBrush}"
+                                                   FontSize="{StaticResource TypeBody}"
+                                                   FontWeight="SemiBold"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
                             </Button>
 
                             <!-- Credentials Hint Badge -->
                             <Border Background="{StaticResource BlueLightBrush}"
-                                    BorderBrush="#C9DEF0"
-                                    BorderThickness="1"
-                                    CornerRadius="6"
-                                    Padding="10,10"
-                                    Margin="0,18,0,0">
-                                <TextBlock FontSize="12"
+                                    BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                    CornerRadius="{StaticResource Layout_CornerRadius_6}"
+                                    Padding="{StaticResource Layout_Padding_10_10}"
+                                    Margin="{StaticResource Layout_Margin_0_18_0_0}">
+                                <TextBlock FontSize="{StaticResource TypeSmall}"
                                            Foreground="{StaticResource BlueDarkBrush}"
                                            HorizontalAlignment="Center"
                                            TextWrapping="Wrap"
@@ -315,18 +352,29 @@
                             </Border>
 
                             <!-- Footer Attribution -->
-                            <StackPanel Margin="0,24,0,0" HorizontalAlignment="Center">
+                            <StackPanel Margin="{StaticResource Layout_Margin_0_24_0_0}" HorizontalAlignment="Center">
+                                <Border Background="{StaticResource SurfaceWhiteBrush}"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                                        CornerRadius="{StaticResource Layout_CornerRadius_6}"
+                                        Padding="10,6"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,0,0,8"
+                                        SnapsToDevicePixels="True">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Image Source="pack://application:,,,/SOFT2027.UI;component/Assets/COMSTECH-Solutions.jpeg"
+                                               Height="28" MaxWidth="110" Stretch="Uniform" Margin="0,0,8,0"
+                                               RenderOptions.BitmapScalingMode="HighQuality" />
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="Developed by" FontSize="10" Foreground="{StaticResource MutedBrush}" />
+                                            <TextBlock Text="COMSTECH.Solutions" FontSize="12" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
                                 <TextBlock Text="Offline Desktop Application"
-                                           FontSize="11.5"
+                                           FontSize="{StaticResource TypeSmall}"
                                            Foreground="{StaticResource FaintBrush}"
                                            TextAlignment="Center" />
-                                <TextBlock TextAlignment="Center"
-                                           FontSize="11.5"
-                                           Foreground="{StaticResource MutedBrush}"
-                                           Margin="0,3,0,0">
-                                    <Run Text="Developed by " />
-                                    <Run Text="COMSTECH.Solutions" FontWeight="Bold" />
-                                </TextBlock>
                             </StackPanel>
 
                         </StackPanel>

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 
 namespace SOFT2027.UI.Views;
 
@@ -58,6 +59,14 @@ public partial class AppTourWindow : Window, INotifyPropertyChanged
     private void Skip_Click(object sender, RoutedEventArgs e)
     {
         DialogResult = false;
+    }
+
+    private void CloseWindow_Click(object sender, RoutedEventArgs e) => DialogResult = false;
+
+    private void Caption_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2) return;
+        DragMove();
     }
 
     private void NotifyStepChanged()

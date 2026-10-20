@@ -4,6 +4,9 @@
     <Resource Include="..\..\Assets\COMSTECH-Solutions.jpeg">
       <Link>Assets\COMSTECH-Solutions.jpeg</Link>
     </Resource>
+    <Resource Include="..\..\Assets\SOFT2027.ico">
+      <Link>Assets\SOFT2027.ico</Link>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +20,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <EmbeddedResource Include="..\..\docs\DATABASE_SCHEMA.sql">
+      <LogicalName>SOFT2027.UI.DATABASE_SCHEMA.sql</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <PropertyGroup>
@@ -32,6 +38,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>..\..\Assets\SOFT2027.ico</ApplicationIcon>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>

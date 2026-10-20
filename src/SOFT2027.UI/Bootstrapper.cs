@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using SOFT2027.Core.Interfaces;
 using SOFT2027.Data.Repositories;
 using SOFT2027.Data.Services;
@@ -278,7 +279,10 @@ namespace SOFT2027.UI
                 sp.GetRequiredService<ISupplierRepository>(),
                 sp.GetRequiredService<IBusinessLookupRepository>(),
                 sp.GetRequiredService<IAuditLogRepository>(),
-                sp.GetRequiredService<IAdminSession>()));
+                sp.GetRequiredService<IAdminSession>(),
+                sp.GetRequiredService<ICustomerLedgerRepository>(),
+                sp.GetRequiredService<ISupplierLedgerRepository>(),
+                sp.GetRequiredService<IStockMovementRepository>()));
 
             // 5. Delegate Factories for Navigation
             container.RegisterSingleton<Func<SalesEntryViewModel>>(sp => () => sp.GetRequiredService<SalesEntryViewModel>());
@@ -345,6 +349,24 @@ namespace SOFT2027.UI
                 {
                     // Candidate path format is not viable on this platform; continue searching
                 }
+            }
+
+            // Single-file deployments do not reliably publish loose content files.
+            // Keep the schema embedded in the executable and materialize it where
+            // the database initializer can read it as a normal file.
+            var resourceName = "SOFT2027.UI.DATABASE_SCHEMA.sql";
+            using var schemaResource = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+            if (schemaResource != null)
+            {
+                Directory.CreateDirectory(appDataFolder);
+                var extractedSchemaPath = Path.Combine(appDataFolder, "DATABASE_SCHEMA.sql");
+                var temporaryPath = extractedSchemaPath + ".tmp";
+                using (var output = File.Create(temporaryPath))
+                {
+                    schemaResource.CopyTo(output);
+                }
+                File.Move(temporaryPath, extractedSchemaPath, overwrite: true);
+                return extractedSchemaPath;
             }
 
             throw new FileNotFoundException("Could not locate the database schema file (DATABASE_SCHEMA.sql) in any expected directory.");

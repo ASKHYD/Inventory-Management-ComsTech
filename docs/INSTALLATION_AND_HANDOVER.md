@@ -10,7 +10,7 @@
 - 64-bit Windows 10 version 21H2 or Windows 11 on a supported edition. Check Microsoft's current [.NET on Windows support matrix](https://learn.microsoft.com/dotnet/core/install/windows) and Windows lifecycle before deployment.
 - A printer is needed for paper output; the app's normal database and reporting workflows are local.
 - No separate .NET runtime is required for the self-contained package.
-- The package has no customer-approved application icon yet; the executable uses the default Windows icon until Ali Traders supplies or approves one.
+- The executable embeds an icon derived from the ComsTech logo asset. Ali Traders/ComsTech should approve the final icon before production distribution.
 
 ## Install the portable package
 
@@ -49,6 +49,8 @@ dotnet publish src/SOFT2027.UI/SOFT2027.UI.csproj `
 ```
 
 Build a new candidate version only after updating the project version, release notes, test report, and package name. The x64 .NET runtime pack and NuGet dependencies must be available to restore; do not bypass local security policy to run scripts.
+
+For a source-only QA startup using a new empty database, build the solution in Release and run `qa-artifacts\Run-SOFT2027-QA-Fresh.cmd`. This launcher does not restore or seed a dummy database; its QA database is separate from the user's normal local database.
 
 ## Release handover checklist
 

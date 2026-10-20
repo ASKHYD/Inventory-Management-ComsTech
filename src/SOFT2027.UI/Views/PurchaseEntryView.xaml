@@ -7,124 +7,182 @@
              xmlns:vm="clr-namespace:SOFT2027.Presentation.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:PurchaseEntryViewModel}"
-             Background="Transparent" Loaded="View_Loaded">
+             Background="Transparent"
+             PreviewKeyDown="PurchaseEntryView_PreviewKeyDown"
+             Loaded="View_Loaded">
     <UserControl.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveCommand}" />
         <KeyBinding Key="P" Modifiers="Alt" Command="{Binding UsePreviousPriceCommand}" />
         <KeyBinding Key="D" Modifiers="Alt" Command="{Binding UseDefaultPriceCommand}" />
         <KeyBinding Key="N" Modifiers="Alt" Command="{Binding EnterNewPriceCommand}" />
     </UserControl.InputBindings>
-    <Border Style="{StaticResource CardBorderStyle}" Padding="24" Margin="0,0,0,16">
+    <Border Style="{StaticResource PageContentCardStyle}" Margin="{StaticResource Layout_Margin_0_0_0_16}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                <TextBlock Text="New Purchase Bill" FontSize="22" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                <TextBlock Text="Choose a supplier and products, check the saved price memory, then save the bill." FontSize="13" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,0" />
-            </StackPanel>
+            <Grid Grid.Row="0" Margin="{StaticResource Layout_Margin_0_0_0_16}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="New Purchase Bill" FontSize="{StaticResource TypePageTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                    <TextBlock Text="Choose a supplier and products, check the saved price memory, then save the bill." FontSize="{StaticResource TypeBody}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_4_0_0}" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="New Bill [F12]" Command="{Binding NewBillCommand}" Style="{StaticResource BtnStyle}" Height="32" Padding="12,0" VerticalAlignment="Center" ToolTip="Clear current bill and start new purchase" />
+            </Grid>
 
-            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,12">
+            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="{StaticResource Layout_BorderThickness_1}" CornerRadius="{StaticResource Layout_CornerRadius_8}" Padding="{StaticResource Layout_Padding_10}" Margin="{StaticResource Layout_Margin_0_0_0_12}">
                 <DockPanel LastChildFill="False">
-                    <TextBlock Text="Saved bill" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" />
-                    <ComboBox ItemsSource="{Binding SavedBills}" SelectedItem="{Binding SelectedSavedBill}" DisplayMemberPath="DisplayText" Width="330" Height="34" VerticalContentAlignment="Center" Tag="Recent saved purchase bills" AutomationProperties.Name="Choose a saved purchase bill from transaction history" />
-                    <TextBox Text="{Binding DocumentLookupNumber, UpdateSourceTrigger=PropertyChanged}" Width="210" Height="34" VerticalContentAlignment="Center" Tag="Enter bill number" AutomationProperties.Name="Saved purchase bill number" />
-                    <Button Content="Preview / Print" Click="PreviewBill_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Find and preview saved purchase bill" />
-                    <Button Content="Preview latest saved" Click="PreviewLatestBill_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Preview latest saved purchase bill" />
+                    <TextBlock Text="Saved bill" VerticalAlignment="Center" FontWeight="SemiBold" Margin="{StaticResource Layout_Margin_0_0_10_0}" />
+                    <ComboBox ItemsSource="{Binding SavedBills}" SelectedItem="{Binding SelectedSavedBill}" DisplayMemberPath="DisplayText" Width="{StaticResource Layout_Width_330}" Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center" Tag="Recent saved purchase bills" AutomationProperties.Name="Choose a saved purchase bill from transaction history" />
+                    <TextBox Text="{Binding DocumentLookupNumber, UpdateSourceTrigger=PropertyChanged}" Width="{StaticResource Layout_Width_210}" Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center" Tag="Enter bill number" AutomationProperties.Name="Saved purchase bill number" />
+                    <Button Content="Preview / Print" Click="PreviewBill_Click" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_14_5}" AutomationProperties.Name="Find and preview saved purchase bill" />
+                    <Button Content="Preview latest saved" Click="PreviewLatestBill_Click" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_14_5}" AutomationProperties.Name="Preview latest saved purchase bill" />
                 </DockPanel>
             </Border>
 
-            <Border Grid.Row="2" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+            <Border Grid.Row="2" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="{StaticResource Layout_BorderThickness_1}" CornerRadius="{StaticResource Layout_CornerRadius_8}" Padding="{StaticResource Layout_Padding_16}" Margin="{StaticResource Layout_Margin_0_0_0_12}">
                 <WrapPanel Orientation="Horizontal">
-                    <StackPanel Width="195" Margin="0,0,8,10">
-                        <TextBlock Text="SUPPLIER" FontSize="12.5" FontWeight="Bold" Margin="0,0,0,5" />
-                        <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplier}" DisplayMemberPath="SupplierName" Tag="Type or choose a supplier" IsEditable="True" IsTextSearchEnabled="True" Height="38" AutomationProperties.Name="Select supplier" />
+                    <StackPanel Width="{StaticResource Layout_Width_195}" Margin="{StaticResource Layout_Margin_0_0_8_10}">
+                        <TextBlock Text="SUPPLIER [F1 / Ctrl+1]" FontSize="{StaticResource TypeBody}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                        <ComboBox x:Name="SupplierSelector" ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplier}" DisplayMemberPath="SupplierName" Tag="Type or choose supplier [F1 / Ctrl+1]" IsEditable="True" IsTextSearchEnabled="True" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Select supplier" />
                     </StackPanel>
-                    <StackPanel Width="205" Margin="0,0,8,10">
-                        <TextBlock Text="PRODUCT" FontSize="12.5" FontWeight="Bold" Margin="0,0,0,5" />
-                        <ComboBox ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}" DisplayMemberPath="ProductName" Tag="Type or choose a product" IsEditable="True" IsTextSearchEnabled="True" Height="38" AutomationProperties.Name="Select product" />
+                    <StackPanel Width="{StaticResource Layout_Width_205}" Margin="{StaticResource Layout_Margin_0_0_8_10}">
+                        <TextBlock Text="PRODUCT [F2 / Ctrl+2]" FontSize="{StaticResource TypeBody}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                        <ComboBox x:Name="ProductSelector" ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}" DisplayMemberPath="ProductName" Tag="Type or choose product [F2 / Ctrl+2]" IsEditable="True" IsTextSearchEnabled="True" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Select product" />
                     </StackPanel>
-                    <StackPanel Width="100" Margin="0,0,8,10">
-                        <TextBlock Text="QUANTITY" FontSize="12.5" FontWeight="Bold" Margin="0,0,0,5" />
-                        <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. 1" Height="38" behaviors:NumericTextBoxBehavior.IsEnabled="True" HorizontalContentAlignment="Right" AutomationProperties.Name="Enter quantity" />
+                    <StackPanel Width="{StaticResource Layout_Width_100}" Margin="{StaticResource Layout_Margin_0_0_8_10}">
+                        <TextBlock Text="QUANTITY" FontSize="{StaticResource TypeBody}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                        <TextBox x:Name="QuantityInput" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. 1" Height="{StaticResource ControlHeight}" behaviors:NumericTextBoxBehavior.IsEnabled="True" Style="{StaticResource NumericTextBoxStyle}" AutomationProperties.Name="Enter quantity" />
                     </StackPanel>
-                    <StackPanel Width="125" Margin="0,0,8,10">
-                        <TextBlock Text="UNIT PRICE" FontSize="12.5" FontWeight="Bold" Margin="0,0,0,5" />
-                        <TextBox x:Name="UnitPriceInput" Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged}" Tag="Unit price" Height="38" HorizontalContentAlignment="Right" AutomationProperties.Name="Enter purchase price" />
+                    <StackPanel Width="{StaticResource Layout_Width_125}" Margin="{StaticResource Layout_Margin_0_0_8_10}">
+                        <TextBlock Text="UNIT PRICE" FontSize="{StaticResource TypeBody}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                        <TextBox x:Name="UnitPriceInput" Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged}" Tag="Unit price" Height="{StaticResource ControlHeight}" Style="{StaticResource NumericTextBoxStyle}" AutomationProperties.Name="Enter purchase price" />
                     </StackPanel>
-                    <StackPanel Width="105" Margin="0,0,8,10">
-                        <TextBlock Text="DISCOUNT %" FontSize="12.5" FontWeight="Bold" Margin="0,0,0,5" />
-                        <TextBox Text="{Binding DiscountPercentage, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. 0" Height="38" HorizontalContentAlignment="Right" AutomationProperties.Name="Enter line discount percentage" />
+                    <StackPanel Width="{StaticResource Layout_Width_105}" Margin="{StaticResource Layout_Margin_0_0_8_10}">
+                        <TextBlock Text="DISCOUNT %" FontSize="{StaticResource TypeBody}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                        <TextBox x:Name="DiscountInput" Text="{Binding DiscountPercentage, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. 0" Height="{StaticResource ControlHeight}" Style="{StaticResource NumericTextBoxStyle}" AutomationProperties.Name="Enter line discount percentage" />
                     </StackPanel>
-                    <Button Content="Add product" Command="{Binding AddItemCommand}" Style="{StaticResource BtnPrimaryStyle}" VerticalAlignment="Bottom" Height="38" Padding="12,0" Margin="0,0,0,10" AutomationProperties.Name="Add product to purchase" />
+                    <Button x:Name="AddItemButton" Content="Add product [Enter]" Command="{Binding AddItemCommand}" Style="{StaticResource BtnPrimaryStyle}" VerticalAlignment="Bottom" Height="{StaticResource ButtonHeight}" Padding="{StaticResource Layout_Padding_12_0}" Margin="{StaticResource Layout_Margin_0_0_0_10}" AutomationProperties.Name="Add product to purchase" />
                 </WrapPanel>
             </Border>
 
-            <DockPanel Grid.Row="3" Margin="0,0,0,12" LastChildFill="True">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Margin="0,0,12,0">
-                    <Button Content="Use previous rate" Command="{Binding UsePreviousPriceCommand}" Padding="12,7" Margin="0,0,6,0" ToolTip="Use this supplier's most recent rate for the selected product" />
-                    <Button Content="Use product default" Command="{Binding UseDefaultPriceCommand}" Padding="12,7" Margin="0,0,6,0" />
-                    <Button Content="Enter a new rate" Command="{Binding EnterNewPriceCommand}" Click="EnterNewPrice_Click" Padding="12,7" />
+            <DockPanel Grid.Row="3" Margin="{StaticResource Layout_Margin_0_0_0_12}" LastChildFill="True">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Margin="{StaticResource Layout_Margin_0_0_12_0}">
+                    <Button Content="Use previous rate" Command="{Binding UsePreviousPriceCommand}" Padding="{StaticResource Layout_Padding_12_7}" Margin="{StaticResource Layout_Margin_0_0_6_0}" ToolTip="Use this supplier's most recent rate for the selected product" />
+                    <Button Content="Use product default" Command="{Binding UseDefaultPriceCommand}" Padding="{StaticResource Layout_Padding_12_7}" Margin="{StaticResource Layout_Margin_0_0_6_0}" />
+                    <Button Content="Enter a new rate" Command="{Binding EnterNewPriceCommand}" Click="EnterNewPrice_Click" Padding="{StaticResource Layout_Padding_12_7}" />
                 </StackPanel>
                 <StackPanel>
-                    <TextBlock Text="{Binding PricingMessage}" FontSize="12" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding ErrorMessage}" FontSize="12" Foreground="{StaticResource RedBrush}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding PricingMessage}" FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}" FontSize="{StaticResource TypeSmall}" Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" FontWeight="SemiBold" TextWrapping="Wrap" />
                 </StackPanel>
             </DockPanel>
 
-            <DataGrid Grid.Row="4" ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" RowHeaderWidth="0" MinHeight="210" AutomationProperties.Name="Purchase items">
+            <DataGrid Grid.Row="4" ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False"
+                      HeadersVisibility="Column" MinHeight="100"
+                      MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight, Converter={StaticResource ViewportRatioConverter}, ConverterParameter=0.45}"
+                      CanUserResizeColumns="True" AutomationProperties.Name="Purchase items">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="CODE" Binding="{Binding Product.ProductCode}" IsReadOnly="True" Width="110" />
-                    <DataGridTextColumn Header="PRODUCT" Binding="{Binding Product.ProductName}" IsReadOnly="True" Width="*" />
-                    <DataGridTextColumn Header="QTY" Binding="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Width="95">
+                    <DataGridTextColumn Header="CODE" Binding="{Binding Product.ProductCode}" IsReadOnly="True" MinWidth="130" Width="140" />
+                    <DataGridTextColumn Header="PRODUCT" Binding="{Binding Product.ProductName}" IsReadOnly="True" Width="*" MinWidth="160" />
+                    <DataGridTextColumn Header="QTY" Binding="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Width="85">
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox">
                                 <Setter Property="behaviors:NumericTextBoxBehavior.IsEnabled" Value="True" />
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="UNIT PRICE" Binding="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="120" />
-                    <DataGridTextColumn Header="DISC %" Binding="{Binding DiscountPercentage, UpdateSourceTrigger=PropertyChanged}" Width="90" />
-                    <DataGridTextColumn Header="LINE TOTAL" Binding="{Binding LineTotal, StringFormat=N2}" IsReadOnly="True" Width="130" />
-                    <DataGridTemplateColumn Header="ACTION" Width="90">
+                    <DataGridTextColumn Header="UNIT PRICE (PKR)" Binding="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat={StaticResource NumberStringFormat}}" Width="140">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="DISC %" Binding="{Binding DiscountPercentage, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:N0}%'}" Width="85">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="LINE TOTAL (PKR)" Binding="{Binding LineTotal, StringFormat={StaticResource NumberStringFormat}}" IsReadOnly="True" Width="140">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="ACTION" Width="100">
+                        <DataGridTemplateColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
+                                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTemplateColumn.HeaderStyle>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Remove" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Padding="8,4" AutomationProperties.Name="Remove product from purchase" />
+                                <Button Content="Remove" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Padding="8,2" HorizontalAlignment="Center" AutomationProperties.Name="Remove product from purchase" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Grid Grid.Row="5" Margin="0,16,0,0">
+            <Grid Grid.Row="5" Margin="{StaticResource Layout_Margin_0_16_0_0}">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                    <TextBlock Text="Product price memory is saved when this bill is posted." FontSize="12" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding StatusAnnouncement}" FontSize="12" Foreground="{StaticResource GreenBrush}" Margin="0,4,0,0" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="{StaticResource GreenBrush}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HasErrors}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                    <TextBlock Text="Product price memory is saved when this bill is posted." FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}" Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" FontSize="{StaticResource TypeSmall}" FontWeight="SemiBold" Margin="{StaticResource Layout_Margin_0_4_0_0}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive" />
+                    <TextBlock Text="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}}" Foreground="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" FontSize="{StaticResource TypeSmall}" Margin="{StaticResource Layout_Margin_0_4_0_0}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
                 </StackPanel>
-                <StackPanel Grid.Column="1" Width="300" Background="{StaticResource SurfaceSubtleBrush}" Margin="16,0,0,0">
-                    <Grid Margin="12,12,12,5"><TextBlock Text="Subtotal" /><TextBlock Text="{Binding SubTotal, StringFormat=N2}" HorizontalAlignment="Right" /></Grid>
-                    <Grid Margin="12,0,12,5"><TextBlock Text="Discount" /><TextBlock Text="{Binding DiscountAmount, StringFormat=N2}" HorizontalAlignment="Right" /></Grid>
-                    <Grid Margin="12,0,12,5"><TextBlock Text="Bill total" FontWeight="Bold" FontSize="16" /><TextBlock Text="{Binding NetTotal, StringFormat=N2}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" /></Grid>
-                    <Grid Margin="12,0,12,5"><TextBlock Text="Pay from" VerticalAlignment="Center" /><ComboBox ItemsSource="{Binding PaymentSources}" SelectedItem="{Binding PaymentSource}" Width="120" Height="32" HorizontalAlignment="Right" AutomationProperties.Name="Choose cash or bank for this payment" /></Grid>
-                    <Grid Margin="12,0,12,5"><TextBlock Text="Paid now" VerticalAlignment="Center" /><TextBox Text="{Binding PaidAmount, UpdateSourceTrigger=PropertyChanged}" Tag="Amount" Width="120" HorizontalContentAlignment="Right" HorizontalAlignment="Right" /></Grid>
-                    <Grid Margin="12,0,12,12"><TextBlock Text="Supplier balance" FontWeight="SemiBold" /><TextBlock Text="{Binding RemainingBalance, StringFormat=N2}" HorizontalAlignment="Right" FontWeight="SemiBold" /></Grid>
-                    <Button Content="Save Purchase" Command="{Binding SaveCommand}" Style="{StaticResource BtnGreenStyle}" Height="42" Margin="12,0,12,12" FontWeight="Bold" AutomationProperties.Name="Save purchase bill" />
+                <StackPanel Grid.Column="1" Width="{StaticResource Layout_Width_300}" Background="{StaticResource SurfaceSubtleBrush}" Margin="{StaticResource Layout_Margin_16_0_0_0}">
+                    <Grid Margin="{StaticResource Layout_Margin_12_12_12_5}"><TextBlock Text="Subtotal" /><TextBlock Text="{Binding SubTotal, StringFormat={StaticResource CurrencyStringFormat}}" HorizontalAlignment="Right" /></Grid>
+                    <Grid Margin="{StaticResource Layout_Margin_12_0_12_5}"><TextBlock Text="Discount" /><TextBlock Text="{Binding DiscountAmount, StringFormat={StaticResource CurrencyStringFormat}}" HorizontalAlignment="Right" /></Grid>
+                    <Grid Margin="{StaticResource Layout_Margin_12_0_12_5}"><TextBlock Text="Bill total" FontWeight="Bold" FontSize="{StaticResource TypeEmphasis}" /><TextBlock Text="{Binding NetTotal, StringFormat={StaticResource CurrencyStringFormat}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="{StaticResource TypeEmphasis}" /></Grid>
+                    <Grid Margin="{StaticResource Layout_Margin_12_0_12_5}"><TextBlock Text="Pay from" VerticalAlignment="Center" /><ComboBox ItemsSource="{Binding PaymentSources}" SelectedItem="{Binding PaymentSource}" Width="{StaticResource Layout_Width_120}" Height="{StaticResource ControlHeight}" HorizontalAlignment="Right" AutomationProperties.Name="Choose cash or bank for this payment" /></Grid>
+                    <Grid Margin="{StaticResource Layout_Margin_12_0_12_5}"><TextBlock Text="Paid now" VerticalAlignment="Center" /><TextBox Text="{Binding PaidAmount, UpdateSourceTrigger=PropertyChanged}" Tag="Amount" Width="{StaticResource Layout_Width_120}" Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" /></Grid>
+                    <Grid Margin="{StaticResource Layout_Margin_12_0_12_12}"><TextBlock Text="Supplier balance" FontWeight="SemiBold" /><TextBlock Text="{Binding RemainingBalance, StringFormat={StaticResource CurrencyStringFormat}}" HorizontalAlignment="Right" FontWeight="SemiBold" /></Grid>
+                    <Button Content="Save Purchase [Ctrl+S]" Command="{Binding SaveCommand}" Style="{StaticResource BtnPrimaryStyle}" Height="{StaticResource ButtonHeight}" Margin="12,0,12,8" FontWeight="Bold" AutomationProperties.Name="Save purchase bill" />
+                    <Button Content="Save &amp; Print [F4 / Ctrl+S]" Click="SaveAndPrintBill_Click" Style="{StaticResource BtnStyle}" Height="{StaticResource ButtonHeight}" Margin="12,0,12,8" FontWeight="Bold" AutomationProperties.Name="Save and print purchase bill" />
+                    <Button Content="New Bill [F12 / Ctrl+N]" Command="{Binding NewBillCommand}" Style="{StaticResource BtnStyle}" Height="{StaticResource ButtonHeight}" Margin="{StaticResource Layout_Margin_12_0_12_12}" FontWeight="Bold" AutomationProperties.Name="Clear and start new purchase bill" />
                 </StackPanel>
             </Grid>
         </Grid>

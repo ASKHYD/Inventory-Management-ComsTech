@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — 2026-10-13
+
+- Complete and synchronize the shared WPF design system, application shell, automatic master-data loading, invoice preview/zoom, and Report a Bug dialog.
+- Add a rendered XAML smoke project to the solution, including maximize/restore state checks and DataGrid contrast verification.
+- Provide a fresh-database QA launcher; source delivery excludes local databases and dummy records.
+- Record outstanding manual acceptance, the customer-ledger running-balance defect, and unresolved dashboard reconciliation in `docs/FINAL_TEST_REPORT.md`.
+
 ## Unreleased
 
 - Added the supplied COMSTECH Solutions logo to the sidebar developer attribution.

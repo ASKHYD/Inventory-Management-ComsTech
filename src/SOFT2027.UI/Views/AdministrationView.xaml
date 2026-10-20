@@ -1,27 +1,118 @@
-<UserControl x:Class="SOFT2027.UI.Views.AdministrationView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
-    <Grid Margin="28"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-        <StackPanel><TextBlock Text="Administration &amp; Activity" FontSize="26" FontWeight="Bold"/><TextBlock Text="Add employees, control account access, and review actions recorded against each signed-in user." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,6,0,16"/></StackPanel>
+<UserControl x:Class="SOFT2027.UI.Views.AdministrationView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" mc:Ignorable="d">
+    <Grid Style="{StaticResource PageRootGridStyle}"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <Grid Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="Administration &amp; Activity" FontSize="{StaticResource TypeDisplay}" FontWeight="Bold"/>
+                <TextBlock Text="Add employees, control account access, and review actions recorded against each signed-in user." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="{StaticResource Layout_Margin_0_6_0_0}"/>
+            </StackPanel>
+            <Border Grid.Column="1"
+                    Background="{StaticResource SurfaceWhiteBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                    CornerRadius="{StaticResource Layout_CornerRadius_6}"
+                    Padding="10,6"
+                    VerticalAlignment="Center"
+                    SnapsToDevicePixels="True">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="pack://application:,,,/SOFT2027.UI;component/Assets/COMSTECH-Solutions.jpeg"
+                           Height="26" MaxWidth="100" Stretch="Uniform" Margin="0,0,8,0"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Developed by" FontSize="10" Foreground="{StaticResource MutedBrush}" />
+                        <TextBlock Text="COMSTECH.Solutions" FontSize="12" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
         <TabControl Grid.Row="1" SelectionChanged="Tabs_SelectionChanged">
-            <TabItem Header="User Accounts"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                <Grid Margin="0,0,0,12"><Grid.ColumnDefinitions><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="1.2*"/><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="150"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Tag="Username" Height="38" Margin="0,0,8,0" ToolTip="Username"/>
-                    <TextBox Grid.Column="1" Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" Tag="Full name" Height="38" Margin="0,0,8,0" ToolTip="Full name"/>
-                    <PasswordBox x:Name="NewPasswordBox" Grid.Column="2" Height="38" Margin="0,0,8,0" PasswordChanged="NewPasswordBox_PasswordChanged" ToolTip="Password, at least 10 characters"/>
-                    <ComboBox Grid.Column="3" Height="38" Margin="0,0,8,0" ItemsSource="{Binding AvailableRoles}" SelectedItem="{Binding NewUserRole}" ToolTip="Choose whether this account can manage administrators and data safety" AutomationProperties.Name="New user role"/>
-                    <Button Grid.Column="4" Content="Add User" Command="{Binding CreateUserCommand}" Padding="16,0" Style="{StaticResource BtnPrimaryStyle}"/>
+            <TabItem Header="User Accounts"><Grid Margin="{StaticResource Layout_Margin_12}"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <Grid Margin="{StaticResource Layout_Margin_0_0_0_12}">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="1.2*"/><ColumnDefinition Width="1.35*"/><ColumnDefinition Width="{StaticResource Layout_GridWidth_150}"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <TextBlock Text="Username" FontWeight="SemiBold" Margin="{StaticResource Layout_Margin_0_0_0_4}"/>
+                    <TextBlock Grid.Column="1" Text="Full name" FontWeight="SemiBold" Margin="{StaticResource Layout_Margin_0_0_0_4}"/>
+                    <TextBlock Grid.Column="2" Text="Password" FontWeight="SemiBold" Margin="{StaticResource Layout_Margin_0_0_0_4}"/>
+                    <TextBlock Grid.Column="3" Text="Role" FontWeight="SemiBold" Margin="{StaticResource Layout_Margin_0_0_0_4}"/>
+                    <TextBox Grid.Row="1" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_8_0}" AutomationProperties.Name="Username"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_8_0}" AutomationProperties.Name="Full name"/>
+                    <Grid Grid.Row="1" Grid.Column="2" Margin="{StaticResource Layout_Margin_0_0_8_0}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <PasswordBox x:Name="NewPasswordBox" Height="{StaticResource ControlHeight}"
+                                     PasswordChanged="NewPasswordBox_PasswordChanged"
+                                     AutomationProperties.Name="Password, at least 10 characters" />
+                        <TextBox x:Name="PasswordTextBox" Height="{StaticResource ControlHeight}"
+                                 Visibility="Collapsed"
+                                 TextChanged="PasswordTextBox_TextChanged"
+                                 AutomationProperties.Name="Password visible, at least 10 characters" />
+                        <ToggleButton x:Name="PasswordVisibilityToggle" Grid.Column="1" Content="Show"
+                                      Click="PasswordVisibilityToggle_Click"
+                                      Style="{StaticResource BtnSecondaryToggleStyle}"
+                                      Margin="{StaticResource Layout_Margin_0_0_0_0}" Padding="{StaticResource Layout_Padding_10_6}"
+                                      MinWidth="54" VerticalAlignment="Center"
+                                      AutomationProperties.Name="Show or hide password" />
+                    </Grid>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="At least 10 characters" Foreground="{StaticResource MutedBrush}" FontSize="{StaticResource TypeSmall}" Margin="{StaticResource Layout_Margin_0_0_8_0}"/>
+                    <ComboBox Grid.Row="1" Grid.Column="3" Height="{StaticResource ControlHeight}" Margin="{StaticResource Layout_Margin_0_0_8_0}" ItemsSource="{Binding AvailableRoles}" SelectedItem="{Binding NewUserRole}" ToolTip="Choose whether this account can manage administrators and data safety" AutomationProperties.Name="New user role"/>
+                    <Button Grid.Row="1" Grid.Column="4" Grid.RowSpan="2" Command="{Binding CreateUserCommand}" Padding="{StaticResource Layout_Padding_16_0}" Style="{StaticResource BtnPrimaryStyle}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ProgressBar Width="16" Height="16" Foreground="White" Margin="0,0,6,0" VerticalAlignment="Center">
+                                <ProgressBar.Style>
+                                    <Style TargetType="ProgressBar" BasedOn="{StaticResource SpinningIndicatorStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ProgressBar.Style>
+                            </ProgressBar>
+                            <TextBlock Text="Add User" VerticalAlignment="Center" FontWeight="Bold" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}" Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" FontSize="{StaticResource TypeSmall}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive"/>
                 </Grid>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" AutoGenerateColumns="True" AutoGeneratingColumn="UsersGrid_AutoGeneratingColumn" IsReadOnly="True" CanUserAddRows="False"/>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,0">
-                    <Button Content="Refresh" Command="{Binding LoadUsersCommand}" Padding="16,8" Margin="0,0,8,0"/>
-                    <Button Content="Activate / Deactivate Selected" Command="{Binding ToggleUserCommand}" Padding="16,8" Margin="0,0,8,0"/>
-                    <Button Content="Reset Selected Password" Command="{Binding ResetPasswordCommand}" Padding="16,8"/>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Username" Binding="{Binding Username}" MinWidth="120" Width="*" />
+                        <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" MinWidth="150" Width="1.2*" />
+                        <DataGridTextColumn Header="Role" Binding="{Binding Role}" MinWidth="100" Width="*" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" MinWidth="90" Width="*" />
+                        <DataGridTextColumn Header="Created At" Binding="{Binding CreatedAt, StringFormat={StaticResource DateStringFormat}}" MinWidth="120" Width="*" />
+                        <DataGridTextColumn Header="Last Login" Binding="{Binding LastLogin, StringFormat={StaticResource DateTimeStringFormat}}" MinWidth="145" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="{StaticResource Layout_Margin_0_12_0_0}">
+                    <Button Content="Refresh" Command="{Binding LoadUsersCommand}" Padding="{StaticResource Layout_Padding_16_8}" Margin="{StaticResource Layout_Margin_0_0_8_0}"/>
+                    <Button Content="Activate / Deactivate Selected" Command="{Binding ToggleUserCommand}" Padding="{StaticResource Layout_Padding_16_8}" Margin="{StaticResource Layout_Margin_0_0_8_0}"/>
+                    <Button Content="Reset Selected Password" Command="{Binding ResetPasswordCommand}" Padding="{StaticResource Layout_Padding_16_8}"/>
                 </StackPanel>
             </Grid></TabItem>
-            <TabItem Header="Activity Log"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                <Button Content="Refresh Activity" Command="{Binding LoadAuditCommand}" HorizontalAlignment="Left" Padding="16,8" Margin="0,0,0,10"/>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding AuditEntries}" AutoGenerateColumns="True" AutoGeneratingColumn="AuditGrid_AutoGeneratingColumn" IsReadOnly="True" CanUserAddRows="False"/>
+            <TabItem Header="Activity Log"><Grid Margin="{StaticResource Layout_Margin_12}"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                <Button Content="Refresh Activity" Command="{Binding LoadAuditCommand}" HorizontalAlignment="Left" Padding="{StaticResource Layout_Padding_16_8}" Margin="{StaticResource Layout_Margin_0_0_0_10}"/>
+                <Grid Grid.Row="1">
+                    <DataGrid x:Name="ActivityGrid" ItemsSource="{Binding AuditEntries}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Admin Name" Binding="{Binding AdminName}" MinWidth="130" Width="*" />
+                            <DataGridTextColumn Header="Action" Binding="{Binding Action}" MinWidth="135" Width="*" />
+                            <DataGridTextColumn Header="Module Name" Binding="{Binding ModuleName}" MinWidth="125" Width="*" />
+                            <DataGridTextColumn Header="Record Reference" Binding="{Binding RecordReference}" MinWidth="155" Width="*" />
+                            <DataGridTextColumn Header="Previous Value" Binding="{Binding PreviousValue}" MinWidth="160" Width="1.2*" />
+                            <DataGridTextColumn Header="New Value" Binding="{Binding NewValue}" MinWidth="160" Width="1.2*" />
+                            <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp, StringFormat={StaticResource DateTimeStringFormat}}" MinWidth="155" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock x:Name="ActivityLoadStateText" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Background="{StaticResource SurfaceWhiteBrush}" Padding="{StaticResource Layout_Padding_16_8}" IsHitTestVisible="False" Visibility="Collapsed" Text="Loading activity…" />
+                </Grid>
             </Grid></TabItem>
         </TabControl>
-        <StackPanel Grid.Row="2" Margin="0,12,0,0"><TextBlock Text="{Binding StatusAnnouncement}" Foreground="{StaticResource GreenBrush}"/><ItemsControl ItemsSource="{Binding Errors}"><ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Foreground="{StaticResource RedBrush}" TextWrapping="Wrap" Margin="0,4"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl></StackPanel>
+        <TextBlock Grid.Row="2" Margin="{StaticResource Layout_Margin_0_12_0_0}" Text="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}}" Foreground="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}"/>
     </Grid>
 </UserControl>

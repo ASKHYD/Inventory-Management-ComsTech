@@ -17,29 +17,38 @@ namespace SOFT2027.UI.Views
     /// </summary>
     public partial class ReportsDashboardView : UserControl
     {
+        private bool _loadRequestedForActivation;
         public ReportsDashboardView()
         {
             InitializeComponent();
+            IsVisibleChanged += async (_, _) =>
+            {
+                if (IsVisible) await LoadForActivationAsync();
+                else _loadRequestedForActivation = false;
+            };
         }
 
-        private async void ReportsDashboardView_OnLoaded(object sender, RoutedEventArgs e)
+        private async void ReportsDashboardView_OnLoaded(object sender, RoutedEventArgs e) => await LoadForActivationAsync();
+
+        private async Task LoadForActivationAsync()
         {
-            if (DataContext is ReportsDashboardViewModel vm)
+            if (!IsVisible || _loadRequestedForActivation || DataContext is not ReportsDashboardViewModel vm) return;
+            _loadRequestedForActivation = true;
+            try
             {
-                try
-                {
-                    await vm.InitializeReportFiltersAsync();
-                    await vm.LoadReportsCommand.ExecuteAsync(null);
-                }
-                catch (Exception ex) { MessageBox.Show($"Report filters could not be loaded: {ex.Message}", "Reports", MessageBoxButton.OK, MessageBoxImage.Error); }
+                await vm.InitializeReportFiltersAsync();
+                await vm.LoadReportsCommand.ExecuteAsync(null);
             }
-            RefreshOperationalReport();
+            catch (Exception ex) { MessageBox.Show($"Report filters could not be loaded: {ex.Message}", "Reports", MessageBoxButton.OK, MessageBoxImage.Error); }
+            finally { RefreshOperationalReport(); }
         }
 
         private void ReportsDashboardView_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.OldValue is ReportsDashboardViewModel oldVm) oldVm.PropertyChanged -= ViewModel_PropertyChanged;
             if (e.NewValue is ReportsDashboardViewModel newVm) newVm.PropertyChanged += ViewModel_PropertyChanged;
+            _loadRequestedForActivation = false;
+            if (IsVisible) _ = LoadForActivationAsync();
             RefreshOperationalReport();
         }
 

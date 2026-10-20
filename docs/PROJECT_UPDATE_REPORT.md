@@ -1,12 +1,14 @@
 # SOFT2027 Project Update and Deployment Readiness Report
 
-**Review date:** 2026-10-10
+**Review date:** 2026-10-13
 **Repository:** [Inventory-Management-ComsTech](https://github.com/MIbraheemDaudpoto/Inventory-Management-ComsTech)
 **Reviewed source commit:** `753c925` — `Add SOFT2027 inventory management application and docs`
 
 ## Deployment decision
 
-**Not ready for production deployment.** The full test suite now passes and a portable x64 release candidate has been produced, but Windows hardware acceptance and customer approvals remain open. Do not use this readiness review as approval to install over a live business database.
+**Not ready for production deployment.** A prior full test run passed, but it predates the latest UI merge. Windows hardware acceptance, current full-suite rerun, and customer approvals remain open. Do not use this readiness review as approval to install over a live business database.
+
+The latest source and UI verification are summarized in [Final Test Report](FINAL_TEST_REPORT.md). Current source Release build passes; the previous 129-test result is historical and the full suite was not rerun after the latest UI merge. The application starts with an empty user-local database and has no default credentials. No database is included in the GitHub source tree.
 
 ## Work included in the uploaded update
 

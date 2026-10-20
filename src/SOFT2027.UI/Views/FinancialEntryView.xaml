@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:FinancialEntryViewModel}"
              Background="Transparent" Loaded="View_Loaded">
-    <Border Style="{StaticResource CardBorderStyle}" Padding="26" Margin="0,0,0,16" MaxWidth="900" HorizontalAlignment="Stretch">
+    <Border Style="{StaticResource PageContentCardStyle}" Margin="{StaticResource Layout_Margin_0_0_0_16}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -21,55 +21,60 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Margin="0,0,0,18">
-                <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                <TextBlock Text="{Binding HelpText}" FontSize="13" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,0" />
+            <StackPanel Grid.Row="0" Margin="{StaticResource Layout_Margin_0_0_0_18}">
+                <TextBlock Text="{Binding Title}" FontSize="{StaticResource TypePageTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                <TextBlock Text="{Binding HelpText}" FontSize="{StaticResource TypeBody}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_4_0_0}" />
             </StackPanel>
-            <TextBlock Grid.Row="1" Text="{Binding ErrorMessage}" Foreground="{StaticResource RedBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,14" AutomationProperties.LiveSetting="Assertive" />
+            <TextBlock Grid.Row="1" Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}" Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_0_0_14}" AutomationProperties.LiveSetting="Assertive" />
 
-            <StackPanel Grid.Row="2" Margin="0,0,0,14">
+            <StackPanel Grid.Row="2" Margin="{StaticResource Layout_Margin_0_0_0_14}">
                 <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding Kind}" Value="Receipt"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></StackPanel.Style>
-                <TextBlock Text="CUSTOMER *" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" DisplayMemberPath="CustomerName" IsEditable="True" IsTextSearchEnabled="True" Height="40" AutomationProperties.Name="Select customer who paid" />
+                <TextBlock Text="CUSTOMER *" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" DisplayMemberPath="CustomerName" IsEditable="True" IsTextSearchEnabled="True" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Select customer who paid" />
             </StackPanel>
-            <StackPanel Grid.Row="3" Margin="0,0,0,14">
+            <StackPanel Grid.Row="3" Margin="{StaticResource Layout_Margin_0_0_0_14}">
                 <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding Kind}" Value="Payment"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></StackPanel.Style>
-                <TextBlock Text="SUPPLIER *" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplier}" DisplayMemberPath="SupplierName" IsEditable="True" IsTextSearchEnabled="True" Height="40" AutomationProperties.Name="Select supplier paid" />
+                <TextBlock Text="SUPPLIER *" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplier}" DisplayMemberPath="SupplierName" IsEditable="True" IsTextSearchEnabled="True" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Select supplier paid" />
             </StackPanel>
-            <StackPanel Grid.Row="4" Margin="0,0,0,14">
+            <StackPanel Grid.Row="4" Margin="{StaticResource Layout_Margin_0_0_0_14}">
                 <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding Kind}" Value="Expense"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></StackPanel.Style>
-                <TextBlock Text="EXPENSE CATEGORY *" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                <TextBox Text="{Binding ExpenseCategory, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. Transport" Height="40" AutomationProperties.Name="Enter expense category" />
+                <TextBlock Text="EXPENSE CATEGORY *" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                <TextBox Text="{Binding ExpenseCategory, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. Transport" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Enter expense category" />
             </StackPanel>
 
-            <Grid Grid.Row="5" Margin="0,0,0,14">
+            <Grid Grid.Row="5" Margin="{StaticResource Layout_Margin_0_0_0_14}">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                    <TextBlock Text="DATE" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                    <DatePicker SelectedDate="{Binding EntryDate}" Height="40" AutomationProperties.Name="Transaction date" />
+                <StackPanel Grid.Column="0" Margin="{StaticResource Layout_Margin_0_0_10_0}">
+                    <TextBlock Text="DATE" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                    <DatePicker SelectedDate="{Binding EntryDate}" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Transaction date" />
                 </StackPanel>
-                <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                    <TextBlock Text="AMOUNT *" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" Tag="Amount" Height="40" HorizontalContentAlignment="Right" AutomationProperties.Name="Enter amount" />
+                <StackPanel Grid.Column="1" Margin="{StaticResource Layout_Margin_10_0_0_0}">
+                    <TextBlock Text="AMOUNT *" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" Tag="Amount" Height="{StaticResource ControlHeight}" Style="{StaticResource NumericTextBoxStyle}" AutomationProperties.Name="Enter amount" />
                 </StackPanel>
             </Grid>
-            <StackPanel Grid.Row="6" Margin="0,0,0,14">
-                <TextBlock Text="PAYMENT SOURCE" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                <ComboBox ItemsSource="{Binding PaymentOptions}" SelectedItem="{Binding PaymentMode}" Height="40" AutomationProperties.Name="Select payment source" />
+            <StackPanel Grid.Row="6" Margin="{StaticResource Layout_Margin_0_0_0_14}">
+                <TextBlock Text="PAYMENT SOURCE" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                <ComboBox ItemsSource="{Binding PaymentOptions}" SelectedItem="{Binding PaymentMode}" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Select payment source" />
             </StackPanel>
-            <StackPanel Grid.Row="7" Margin="0,0,0,14">
-                <TextBlock Text="DESCRIPTION / REMARKS" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Tag="Describe this transaction" Height="40" AutomationProperties.Name="Enter description" />
+            <StackPanel Grid.Row="7" Margin="{StaticResource Layout_Margin_0_0_0_14}">
+                <TextBlock Text="DESCRIPTION / REMARKS" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Tag="Describe this transaction" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Enter description" />
             </StackPanel>
-            <StackPanel Grid.Row="8" Margin="0,0,0,18">
+            <StackPanel Grid.Row="8" Margin="{StaticResource Layout_Margin_0_0_0_18}">
                 <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Visible" /><Style.Triggers><DataTrigger Binding="{Binding Kind}" Value="Expense"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers></Style></StackPanel.Style>
-                <TextBlock Text="CHEQUE / TRANSFER REFERENCE (OPTIONAL)" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                <TextBox Text="{Binding ReferenceDetails, UpdateSourceTrigger=PropertyChanged}" Tag="Optional reference" Height="40" AutomationProperties.Name="Enter cheque or transfer reference" />
+                <TextBlock Text="CHEQUE / TRANSFER REFERENCE (OPTIONAL)" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                <TextBox Text="{Binding ReferenceDetails, UpdateSourceTrigger=PropertyChanged}" Tag="Optional reference" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Enter cheque or transfer reference" />
             </StackPanel>
             <StackPanel Grid.Row="9">
-                <Button Content="{Binding SaveButtonText}" Command="{Binding SaveCommand}" Style="{StaticResource BtnGreenStyle}" Height="44" FontSize="15" FontWeight="Bold" AutomationProperties.Name="Save financial entry" />
-                <TextBlock Text="{Binding StatusAnnouncement}" Foreground="{StaticResource GreenBrush}" TextWrapping="Wrap" Margin="0,10,0,0" AutomationProperties.LiveSetting="Polite" />
+                <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnPrimaryStyle}" Height="{StaticResource ButtonHeight}" FontSize="{StaticResource TypeBody}" FontWeight="Bold" AutomationProperties.Name="Save financial entry">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconCheckGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" Width="14" Height="14" Margin="0,0,8,0" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding SaveButtonText}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <TextBlock Text="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}}" Foreground="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_10_0_0}" AutomationProperties.LiveSetting="Polite" />
             </StackPanel>
         </Grid>
     </Border>

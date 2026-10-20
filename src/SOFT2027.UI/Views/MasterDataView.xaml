@@ -7,29 +7,106 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:MasterDataViewModel}"
              Background="Transparent">
-    <Border Style="{StaticResource CardBorderStyle}" Padding="24" Margin="0,0,0,16">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <ControlTemplate x:Key="StatusFilterButtonTemplate" TargetType="Button">
+            <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="5" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  TextElement.Foreground="{TemplateBinding Foreground}"
+                                  RecognizesAccessKey="False" />
+            </Border>
+        </ControlTemplate>
 
-            <StackPanel Grid.Row="0" Margin="0,0,0,18">
-                <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                <TextBlock Text="{Binding HelpText}" FontSize="13" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,0" />
+        <Style x:Key="AllFilterBtnStyle" TargetType="Button">
+            <Setter Property="Template" Value="{StaticResource StatusFilterButtonTemplate}" />
+            <Setter Property="Background" Value="#F8FAFC" />
+            <Setter Property="BorderBrush" Value="#CBD5E1" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#334155" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="12,0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsAllFilterSelected}" Value="True">
+                    <Setter Property="Background" Value="#17194A" />
+                    <Setter Property="BorderBrush" Value="#17194A" />
+                    <Setter Property="Foreground" Value="#FFFFFF" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ActiveFilterBtnStyle" TargetType="Button">
+            <Setter Property="Template" Value="{StaticResource StatusFilterButtonTemplate}" />
+            <Setter Property="Background" Value="#F8FAFC" />
+            <Setter Property="BorderBrush" Value="#CBD5E1" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#334155" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="12,0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsActiveFilterSelected}" Value="True">
+                    <Setter Property="Background" Value="#15803D" />
+                    <Setter Property="BorderBrush" Value="#15803D" />
+                    <Setter Property="Foreground" Value="#FFFFFF" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="InactiveFilterBtnStyle" TargetType="Button">
+            <Setter Property="Template" Value="{StaticResource StatusFilterButtonTemplate}" />
+            <Setter Property="Background" Value="#F8FAFC" />
+            <Setter Property="BorderBrush" Value="#CBD5E1" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#334155" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="12,0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsInactiveFilterSelected}" Value="True">
+                    <Setter Property="Background" Value="#DC2626" />
+                    <Setter Property="BorderBrush" Value="#DC2626" />
+                    <Setter Property="Foreground" Value="#FFFFFF" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Border Style="{StaticResource PageContentCardStyle}" Margin="{StaticResource Layout_Margin_0_0_0_16}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" /> <!-- 0: Header -->
+                    <RowDefinition Height="Auto" /> <!-- 1: Search & Primary Actions -->
+                    <RowDefinition Height="Auto" /> <!-- 2: Quick Filter Chips & Dropdowns (Work Order 6) -->
+                    <RowDefinition Height="Auto" /> <!-- 3: Status and Error Banners -->
+                    <RowDefinition Height="*" />    <!-- 4: DataGrid -->
+                    <RowDefinition Height="Auto" /> <!-- 5: Footer Actions -->
+                </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="{StaticResource Layout_Margin_0_0_0_18}">
+                <TextBlock Text="{Binding Title}" FontSize="{StaticResource TypePageTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                <TextBlock Text="{Binding HelpText}" FontSize="{StaticResource TypeBody}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_4_0_0}" />
             </StackPanel>
 
-            <DockPanel Grid.Row="1" LastChildFill="False" Margin="0,0,0,12">
-                <Grid Width="260" Height="38">
-                    <TextBox x:Name="RecordsSearchBox" Height="38" VerticalContentAlignment="Center"
+            <DockPanel Grid.Row="1" LastChildFill="False" Margin="{StaticResource Layout_Margin_0_0_0_12}">
+                <Grid Width="{StaticResource Layout_Width_260}" Height="{StaticResource Layout_Height_38}">
+                    <TextBox x:Name="RecordsSearchBox" Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                              ToolTip="Search by code, name, contact details, or status"
-                             AutomationProperties.Name="Search records" />
+                             AutomationProperties.Name="Search records" Padding="10,0,26,0" />
                     <TextBlock Text="Search by name or code..." Foreground="{StaticResource MutedBrush}"
-                               Margin="13,0,8,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                               Margin="{StaticResource Layout_Margin_13_0_8_0}" VerticalAlignment="Center" IsHitTestVisible="False">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -41,31 +118,728 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
+                    <!-- Auto-Clear Search Button '✕' (Work Order 6) -->
+                    <Button Command="{Binding ClearSearchCommand}"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Width="22" Height="22" Margin="0,0,5,0"
+                            Background="Transparent" BorderThickness="0"
+                            Foreground="{StaticResource MutedBrush}"
+                            Content="✕" FontSize="11" FontWeight="Bold" Cursor="Hand"
+                            ToolTip="Clear search text" AutomationProperties.Name="Clear search">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=RecordsSearchBox}" Value="">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </Grid>
-                <Button Content="Refresh" Command="{Binding LoadCommand}" Margin="8,0,0,0" Padding="14,0" Height="38" />
-                <Button Content="{Binding AddLabel}" Command="{Binding AddCommand}" Style="{StaticResource BtnPrimaryStyle}" Margin="8,0,0,0" Padding="16,0" Height="38" />
-                <Button Content="Save Changes" Command="{Binding SaveCommand}" Style="{StaticResource BtnGreenStyle}" Margin="8,0,0,0" Padding="16,0" Height="38"
-                        AutomationProperties.Name="Save changes" />
+                <Button Command="{Binding RefreshSearchCommand}" Style="{StaticResource BtnPrimaryStyle}" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_14_0}" Height="{StaticResource ButtonHeight}"
+                        ToolTip="Search records" AutomationProperties.Name="Search records">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconSearchGeometry}" Stroke="White" StrokeThickness="1.8" Width="13" Height="13" Margin="0,0,6,0" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="Search" VerticalAlignment="Center" FontWeight="Bold" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding LoadCommand}" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_14_0}" Height="{StaticResource ButtonHeight}"
+                        ToolTip="Refresh list" AutomationProperties.Name="Refresh list">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <ProgressBar Width="14" Height="14" Margin="0,0,6,0" VerticalAlignment="Center">
+                            <ProgressBar.Style>
+                                <Style TargetType="ProgressBar" BasedOn="{StaticResource SpinningIndicatorStyle}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ProgressBar.Style>
+                        </ProgressBar>
+                        <Path Data="{StaticResource IconRefreshGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Width="14" Height="14" Margin="0,0,6,0" Stretch="Uniform" VerticalAlignment="Center">
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                        </Path>
+                        <TextBlock Text="Refresh" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding AddCommand}" Style="{StaticResource BtnPrimaryStyle}" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_16_0}" Height="{StaticResource ButtonHeight}"
+                        ToolTip="Add a new record" AutomationProperties.Name="Add record">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconPlusGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" Width="13" Height="13" Margin="0,0,6,0" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding AddLabel}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnPrimaryStyle}" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_16_0}" Height="{StaticResource ButtonHeight}"
+                        ToolTip="Save changes to database" AutomationProperties.Name="Save changes">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconCheckGeometry}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" Width="14" Height="14" Margin="0,0,6,0" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="Save Changes" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
             </DockPanel>
 
-            <TextBlock Grid.Row="2" Text="{Binding ErrorMessage}" Foreground="{StaticResource RedBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,10"
-                       AutomationProperties.LiveSetting="Assertive" />
+            <!-- Quick Filter Chips & Dropdowns (Work Order 6) -->
+            <WrapPanel Grid.Row="2" Margin="0,0,0,12" VerticalAlignment="Center">
+                <!-- Status Filter Buttons -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,4">
+                    <TextBlock Text="STATUS:" FontWeight="Bold" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <Button Content="{Binding AllChipLabel}"
+                            Command="{Binding SetStatusFilterCommand}" CommandParameter="All"
+                            Style="{StaticResource AllFilterBtnStyle}" Margin="0,0,6,0"
+                            ToolTip="Show all records" AutomationProperties.Name="Filter all records" />
+                    <Button Content="{Binding ActiveChipLabel}"
+                            Command="{Binding SetStatusFilterCommand}" CommandParameter="Active"
+                            Style="{StaticResource ActiveFilterBtnStyle}" Margin="0,0,6,0"
+                            ToolTip="Show active records only" AutomationProperties.Name="Filter active records" />
+                    <Button Content="{Binding InactiveChipLabel}"
+                            Command="{Binding SetStatusFilterCommand}" CommandParameter="Inactive"
+                            Style="{StaticResource InactiveFilterBtnStyle}" Margin="0,0,6,0"
+                            ToolTip="Show inactive records only" AutomationProperties.Name="Filter inactive records" />
+                </StackPanel>
 
-            <DataGrid x:Name="RecordsGrid" Grid.Row="3" ItemsSource="{Binding FilteredRecords}"
-                      SelectedItem="{Binding SelectedRecord, Mode=TwoWay}"
-                      AutoGenerateColumns="True" AutoGeneratingColumn="RecordsGrid_AutoGeneratingColumn"
-                      CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False"
-                      SelectionMode="Single" SelectionUnit="FullRow"
-                      HeadersVisibility="Column" RowHeaderWidth="0"
-                      GridLinesVisibility="Horizontal" MinHeight="260"
-                      AutomationProperties.Name="Master data records" />
+                <!-- Product Category Filter -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,4">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Title}" Value="Products">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="CATEGORY:" FontWeight="Bold" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                    <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategoryFilter}"
+                              DisplayMemberPath="Name" Width="140" Height="28" VerticalContentAlignment="Center"
+                              ToolTip="Filter by Category" AutomationProperties.Name="Filter by category" />
+                </StackPanel>
 
-            <DockPanel Grid.Row="4" Margin="0,14,0,0" LastChildFill="False">
+                <!-- Product Brand Filter -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,4">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Title}" Value="Products">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="BRAND:" FontWeight="Bold" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                    <ComboBox ItemsSource="{Binding Brands}" SelectedItem="{Binding SelectedBrandFilter}"
+                              DisplayMemberPath="Name" Width="140" Height="28" VerticalContentAlignment="Center"
+                              ToolTip="Filter by Brand" AutomationProperties.Name="Filter by brand" />
+                </StackPanel>
+
+                <!-- Customer Area / Territory Filter -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,4">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Title}" Value="Customers">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="AREA:" FontWeight="Bold" FontSize="11" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                    <ComboBox ItemsSource="{Binding AvailableAreas}" SelectedItem="{Binding SelectedAreaFilter}"
+                              Width="150" Height="28" VerticalContentAlignment="Center"
+                              ToolTip="Filter by Area / Territory" AutomationProperties.Name="Filter by Area" />
+                </StackPanel>
+
+                <!-- Reset / Clear All Filters -->
+                <Button Command="{Binding ClearFiltersCommand}" Content="Reset Filters"
+                        Height="28" Padding="10,0" Margin="0,0,0,4"
+                        Background="Transparent" BorderBrush="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource MutedBrush}" FontSize="12" ToolTip="Reset all filters and search" />
+            </WrapPanel>
+
+            <!-- Status and Error Notification Banners -->
+            <StackPanel Grid.Row="3" Margin="{StaticResource Layout_Margin_0_0_0_12}">
+                <!-- Success / Info Announcement Banner -->
+                <Border x:Name="StatusBanner" Background="{StaticResource GreenLightBrush}" BorderBrush="{StaticResource GreenBrush}"
+                        BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,8">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding HasErrors}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <DockPanel LastChildFill="True">
+                        <TextBlock Text="✓" FontWeight="Bold" Foreground="{StaticResource GreenBrush}" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding StatusAnnouncement}" Foreground="{StaticResource GreenDarkBrush}" FontWeight="SemiBold"
+                                   FontSize="{StaticResource TypeBody}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                   AutomationProperties.LiveSetting="Polite" />
+                    </DockPanel>
+                </Border>
+
+                <!-- Error Banner -->
+                <Border x:Name="ErrorBanner" Background="{StaticResource RedLightBrush}" BorderBrush="{StaticResource RedBrush}"
+                        BorderThickness="1" CornerRadius="6" Padding="14,10">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasErrors}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <DockPanel LastChildFill="True">
+                        <TextBlock Text="⚠" FontWeight="Bold" Foreground="{StaticResource RedBrush}" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource RedDarkBrush}" FontWeight="SemiBold"
+                                   FontSize="{StaticResource TypeBody}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                   AutomationProperties.LiveSetting="Assertive" />
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+
+            <Grid Grid.Row="4">
+                <DataGrid x:Name="RecordsGrid" ItemsSource="{Binding FilteredRecords}"
+                          SelectedItem="{Binding SelectedRecord, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False"
+                          SelectionMode="Single" SelectionUnit="FullRow"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal" MinHeight="{StaticResource Layout_MinHeight_260}"
+                          AutomationProperties.Name="Master data records">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy Record Details" Command="{Binding CopySelectedDetailsCommand}">
+                                <MenuItem.Icon>
+                                    <Path Data="{StaticResource IconCopyGeometry}" Stroke="{StaticResource NavyBrush}" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="{Binding StatusActionLabel}" Command="{Binding ToggleStatusCommand}">
+                                <MenuItem.Icon>
+                                    <Path Data="{StaticResource IconRefreshGeometry}" Stroke="{StaticResource NavyBrush}" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Delete Selected Record" Command="{Binding DeleteSelectedCommand}">
+                                <MenuItem.Icon>
+                                    <Path Data="{StaticResource IconTrashGeometry}" Stroke="{StaticResource RedBrush}" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+
+                <!-- Loading State Overlay with Active Spinner -->
+                <Border x:Name="LoadingStateBorder" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="20,12" Effect="{StaticResource CardDropShadow}"
+                        IsHitTestVisible="False" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <ProgressBar Style="{StaticResource SpinningIndicatorStyle}" Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <TextBlock x:Name="LoadingStateText" Foreground="{StaticResource NavyBrush}" FontSize="{StaticResource TypeBody}" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Text="Loading records…" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Empty State Overlay (No records yet) -->
+                <Border x:Name="EmptyStateBorder" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="24,16" Effect="{StaticResource CardDropShadow}"
+                        IsHitTestVisible="False" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconBoxGeometry}" Stroke="{StaticResource MutedBrush}" StrokeThickness="1.5"
+                              Width="20" Height="20" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <TextBlock x:Name="EmptyStateText" Foreground="{StaticResource MutedBrush}" FontSize="{StaticResource TypeBody}"
+                                   VerticalAlignment="Center" Text="No records yet." />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <DockPanel Grid.Row="5" Margin="{StaticResource Layout_Margin_0_14_0_0}" LastChildFill="False">
                 <TextBlock Text="Changes are saved to this computer. Inactive records remain available in transaction history."
-                           Foreground="{StaticResource MutedBrush}" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap" />
-                <Button Content="{Binding StatusActionLabel}" Command="{Binding ToggleStatusCommand}" Margin="16,0,0,0" Padding="12,0" Height="36"
-                        ToolTip="Select one row, change its status, then save changes." />
+                           Foreground="{StaticResource MutedBrush}" FontSize="{StaticResource TypeSmall}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                <Button Content="Copy Details" Command="{Binding CopySelectedDetailsCommand}" Margin="{StaticResource Layout_Margin_16_0_0_0}" Padding="{StaticResource Layout_Padding_12_0}" Height="{StaticResource ButtonHeight}"
+                        ToolTip="Copy details of the selected row to clipboard" />
+                <!-- Primary Action: Set Inactive / Active (Work Order 3 soft-delete default) -->
+                <Button Content="{Binding StatusActionLabel}" Command="{Binding ToggleStatusCommand}" Style="{StaticResource BtnPrimaryStyle}" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_16_0}" Height="{StaticResource ButtonHeight}"
+                        ToolTip="Primary safety action: Set status to Inactive instead of deleting." />
+                <!-- Secondary Action: Delete with 2-step protection -->
+                <Button Content="Delete Record..." Command="{Binding DeleteSelectedCommand}" Margin="{StaticResource Layout_Margin_8_0_0_0}" Padding="{StaticResource Layout_Padding_12_0}" Height="{StaticResource ButtonHeight}"
+                        Background="#FDECEC" Foreground="{StaticResource RedBrush}" BorderBrush="{StaticResource RedBrush}"
+                        ToolTip="Safely delete record if zero financial or inventory transactions exist." />
             </DockPanel>
         </Grid>
     </Border>
+
+        <!-- ========================================================================= -->
+        <!-- ADD RECORD MODAL DIALOG OVERLAY                                           -->
+        <!-- ========================================================================= -->
+        <Grid Panel.ZIndex="1000">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsAddFormOpen}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <!-- Semi-transparent Dimmed Backdrop -->
+                <Border Background="#88000000" />
+
+                <!-- Centered Modal Form Card (MaxHeight 85vh with ViewportRatioConverter) -->
+                <Border Width="640" MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight, Converter={StaticResource ViewportRatioConverter}, ConverterParameter=0.85}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12" Effect="{StaticResource PopupDropShadow}"
+                        Padding="28,24" SnapsToDevicePixels="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" /> <!-- Header -->
+                            <RowDefinition Height="Auto" /> <!-- Error banner -->
+                            <RowDefinition Height="*" />    <!-- Form fields -->
+                            <RowDefinition Height="Auto" /> <!-- Action buttons -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Modal Header -->
+                        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+                            <Button DockPanel.Dock="Right" Command="{Binding CancelAddCommand}"
+                                    Content="×" FontFamily="Segoe UI Symbol" FontSize="18"
+                                    Width="36" Height="36" MinHeight="0" Padding="0"
+                                    Background="Transparent" BorderThickness="0" Foreground="{StaticResource MutedBrush}"
+                                    ToolTip="Close form without saving" AutomationProperties.Name="Cancel add record">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BtnStyle}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#FDECEC" />
+                                                <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding AddFormTitle}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                                <TextBlock Text="Fill in the required information below and choose Save to register immediately." FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0" />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- Error Message in Dialog -->
+                        <Border Grid.Row="1" Background="{StaticResource RedLightBrush}" BorderBrush="{StaticResource RedBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,14">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasErrors}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <DockPanel LastChildFill="True">
+                                <TextBlock Text="⚠" FontWeight="Bold" Foreground="{StaticResource RedBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource RedDarkBrush}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Form Fields ScrollViewer (Internal scroll to prevent button cut-off) -->
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,18" Focusable="False">
+                            <StackPanel DataContext="{Binding NewRecordDraft}">
+                                <!-- PRODUCT FIELDS (Visible when section == Products) -->
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding DataContext.Title, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="Products">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Product Code *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding ProductCode, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Barcode" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Margin="0,0,0,12">
+                                        <TextBlock Text="Product Name *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                    </StackPanel>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                            <TextBlock Text="Category" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <ComboBox ItemsSource="{Binding DataContext.Categories, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding CategoryId}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="3,0,3,0">
+                                            <TextBlock Text="Brand" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <ComboBox ItemsSource="{Binding DataContext.Brands, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding BrandId}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Margin="6,0,0,0">
+                                            <TextBlock Text="Unit" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <ComboBox ItemsSource="{Binding DataContext.Units, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding UnitId}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Base Purchase Price (PKR) *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding BasePurchasePrice, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NumericTextBoxStyle}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Default Sale Price (PKR) *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding DefaultSalePrice, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NumericTextBoxStyle}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Minimum Stock Alert" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding MinimumStock, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NumericTextBoxStyle}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Initial Stock Quantity" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding CurrentStock, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NumericTextBoxStyle}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- CUSTOMER FIELDS (Visible when section == Customers) -->
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding DataContext.Title, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="Customers">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Customer Code *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding CustomerCode, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Contact Person" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding ContactPerson, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Margin="0,0,0,12">
+                                        <TextBlock Text="Customer Name *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding CustomerName, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                    </StackPanel>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Phone Number" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Area / Territory" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding AreaTerritory, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Margin="0,0,0,12">
+                                        <TextBlock Text="Shop / Billing Address" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                    </StackPanel>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Opening Balance (PKR)" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding OpeningBalance, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NumericTextBoxStyle}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Credit Limit (PKR)" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding CreditLimit, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NumericTextBoxStyle}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- SUPPLIER FIELDS (Visible when section == Suppliers) -->
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding DataContext.Title, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="Suppliers">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Supplier Code *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding SupplierCode, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Contact Person" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding ContactPerson, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Margin="0,0,0,12">
+                                        <TextBlock Text="Supplier Name *" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding SupplierName, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                    </StackPanel>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <TextBlock Text="Phone Number" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="Opening Balance (PKR)" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                            <TextBox Text="{Binding OpeningBalance, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource NumericTextBoxStyle}" Height="{StaticResource ControlHeight}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Margin="0,0,0,12">
+                                        <TextBlock Text="Office / Warehouse Address" FontWeight="SemiBold" FontSize="{StaticResource TypeSmall}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" Height="{StaticResource ControlHeight}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- Modal Actions -->
+                        <DockPanel Grid.Row="3" LastChildFill="False">
+                            <Button DockPanel.Dock="Left" Content="Cancel" Command="{Binding CancelAddCommand}"
+                                    Padding="{StaticResource Layout_Padding_18_8}" Height="{StaticResource ButtonHeight}" />
+                            <Button DockPanel.Dock="Right" Command="{Binding SaveNewRecordCommand}"
+                                    Style="{StaticResource BtnPrimaryStyle}" Padding="{StaticResource Layout_Padding_24_8}" Height="{StaticResource ButtonHeight}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ProgressBar Width="16" Height="16" Foreground="White" Margin="0,0,8,0" VerticalAlignment="Center">
+                                        <ProgressBar.Style>
+                                            <Style TargetType="ProgressBar" BasedOn="{StaticResource SpinningIndicatorStyle}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ProgressBar.Style>
+                                    </ProgressBar>
+                                    <TextBlock Text="{Binding SaveNewActionLabel}" VerticalAlignment="Center" FontWeight="Bold" />
+                                </StackPanel>
+                            </Button>
+                        </DockPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- ========================================================================= -->
+            <!-- 2-STEP CONFIRMATION MODAL FOR DESTRUCTIVE ACTIONS (WORK ORDER 3)          -->
+            <!-- ========================================================================= -->
+            <Grid Panel.ZIndex="1100">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsDeleteConfirmOpen}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <!-- Semi-transparent Dimmed Backdrop -->
+                <Border Background="#99000000" />
+
+                <!-- Centered Modal Form Card (MaxHeight 80vh for 1366x768 screens) -->
+                <Border Width="560" MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight, Converter={StaticResource ViewportRatioConverter}, ConverterParameter=0.80}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12" Effect="{StaticResource PopupDropShadow}"
+                        Padding="28,24" SnapsToDevicePixels="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" /> <!-- Header -->
+                            <RowDefinition Height="*" />    <!-- Content / Explanation (Scrollable if needed) -->
+                            <RowDefinition Height="Auto" /> <!-- Action buttons -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Modal Header -->
+                        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+                            <Button DockPanel.Dock="Right" Command="{Binding CancelDeleteConfirmCommand}"
+                                    Content="×" FontFamily="Segoe UI Symbol" FontSize="18"
+                                    Width="36" Height="36" MinHeight="0" Padding="0"
+                                    Background="Transparent" BorderThickness="0" Foreground="{StaticResource MutedBrush}"
+                                    ToolTip="Cancel and close dialog" AutomationProperties.Name="Cancel delete">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BtnStyle}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#FDECEC" />
+                                                <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DeleteConfirmTitle}" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                                <TextBlock Text="Safety confirmation required to protect transaction ledger integrity." FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0" />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- Scrollable Message & Guards -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,20">
+                            <StackPanel>
+                                <!-- SCENARIO A: Has Transactions (RelatedTransactionCount > 0) -->
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CanPermanentlyDelete}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    <Border Background="{StaticResource AmberLightBrush}" BorderBrush="{StaticResource AmberBrush}"
+                                            BorderThickness="1" CornerRadius="8" Padding="16,14" Margin="0,0,0,14">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <TextBlock Text="⛔" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                                <TextBlock Text="Permanent Deletion Blocked" FontWeight="Bold" Foreground="{StaticResource AmberDarkBrush}" FontSize="{StaticResource TypeEmphasis}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding DeleteConfirmMessage}" Foreground="{StaticResource TextBrush}" FontSize="{StaticResource TypeBody}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <TextBlock Text="Why is this blocked? Ali Traders preserves all financial and inventory history for audit consistency. To remove this entity from everyday searches and billing dropdowns without damaging past records, click 'Deactivate Instead' below."
+                                               Foreground="{StaticResource MutedBrush}" FontSize="{StaticResource TypeSmall}" TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <!-- SCENARIO B: Zero Transactions (CanPermanentlyDelete == True) -->
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CanPermanentlyDelete}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    <Border Background="{StaticResource RedLightBrush}" BorderBrush="{StaticResource RedBrush}"
+                                            BorderThickness="1" CornerRadius="8" Padding="16,14" Margin="0,0,0,16">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <TextBlock Text="⚠" FontSize="16" Foreground="{StaticResource RedBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                                <TextBlock Text="High-Risk Action: Permanent Deletion" FontWeight="Bold" Foreground="{StaticResource RedDarkBrush}" FontSize="{StaticResource TypeEmphasis}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding DeleteConfirmMessage}" Foreground="{StaticResource RedDarkBrush}" FontSize="{StaticResource TypeBody}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <TextBlock Text="This record has 0 past transactions and can be safely deleted. To confirm permanent removal from the database, type CONFIRM in the box below:"
+                                               Foreground="{StaticResource TextBrush}" FontSize="{StaticResource TypeBody}" TextWrapping="Wrap" Margin="0,0,0,8" />
+
+                                    <TextBox Text="{Binding ConfirmDeleteText, UpdateSourceTrigger=PropertyChanged}"
+                                             Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center"
+                                             FontSize="{StaticResource TypeBody}" FontWeight="Bold" Foreground="{StaticResource RedDarkBrush}"
+                                             Padding="10,0" ToolTip="Type CONFIRM to enable the delete button" AutomationProperties.Name="Type CONFIRM to delete" />
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- Modal Action Buttons (Fixed Footer) -->
+                        <DockPanel Grid.Row="2" LastChildFill="False">
+                            <Button DockPanel.Dock="Left" Content="Cancel" Command="{Binding CancelDeleteConfirmCommand}"
+                                    Padding="{StaticResource Layout_Padding_18_8}" Height="{StaticResource ButtonHeight}" />
+
+                            <!-- Button when Has Transactions: Deactivate Instead -->
+                            <Button DockPanel.Dock="Right" Command="{Binding ConfirmDeactivateCommand}"
+                                    Padding="{StaticResource Layout_Padding_24_8}" Height="{StaticResource ButtonHeight}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BtnPrimaryStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CanPermanentlyDelete}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconRefreshGeometry}" Stroke="White" StrokeThickness="1.5" Width="14" Height="14" Margin="0,0,8,0" Stretch="Uniform" VerticalAlignment="Center" />
+                                    <TextBlock Text="Deactivate Instead" FontWeight="Bold" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Button when Zero Transactions: Permanently Delete (Requires CONFIRM) -->
+                            <Button DockPanel.Dock="Right" Command="{Binding ConfirmPermanentDeleteCommand}"
+                                    Background="{StaticResource RedBrush}" Foreground="White" BorderBrush="{StaticResource RedDarkBrush}"
+                                    Padding="{StaticResource Layout_Padding_24_8}" Height="{StaticResource ButtonHeight}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource BtnStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CanPermanentlyDelete}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Opacity" Value="0.45" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="{StaticResource IconTrashGeometry}" Stroke="White" StrokeThickness="1.5" Width="14" Height="14" Margin="0,0,8,0" Stretch="Uniform" VerticalAlignment="Center" />
+                                    <TextBlock Text="Permanently Delete" FontWeight="Bold" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </DockPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
 </UserControl>

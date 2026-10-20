@@ -8,20 +8,23 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:SalesEntryViewModel}"
              Background="Transparent"
+             PreviewKeyDown="SalesEntryView_PreviewKeyDown"
              Loaded="View_Loaded">
 
     <UserControl.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveSaleCommand}" />
         <KeyBinding Key="P" Modifiers="Alt" Command="{Binding UsePreviousPriceCommand}" />
         <KeyBinding Key="D" Modifiers="Alt" Command="{Binding UseDefaultPriceCommand}" />
         <KeyBinding Key="N" Modifiers="Alt" Command="{Binding EnterNewPriceCommand}" />
     </UserControl.InputBindings>
 
+    <Grid>
     <!-- Main Card Border (8px radius, white background, shadow from CardBorderStyle) -->
-    <Border Style="{StaticResource CardBorderStyle}"
+    <Border Style="{StaticResource PageContentCardStyle}"
             HorizontalAlignment="Stretch"
-            MaxWidth="1200"
-            Padding="24"
-            Margin="0,0,0,16">
+            MaxWidth="{StaticResource Layout_MaxWidth_1200}"
+            Padding="{StaticResource Layout_Padding_24}"
+            Margin="{StaticResource Layout_Margin_0_0_0_16}">
         <Grid>
             <Grid.RowDefinitions>
                 <!-- Row 0: View Header Title & Subtitle -->
@@ -34,7 +37,7 @@
                 <!-- Row 3: Customer/product pricing memory -->
                 <RowDefinition Height="Auto" />
                 <!-- Row 4: Items DataGrid -->
-                <RowDefinition Height="*" MinHeight="260" />
+                <RowDefinition Height="Auto" />
                 <!-- Row 5: Invoice Summary & Action Buttons -->
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -42,7 +45,7 @@
             <!-- ================================================================= -->
             <!-- ROW 0: CARD HEADER (Prototype .page-head & Title)                  -->
             <!-- ================================================================= -->
-            <Grid Grid.Row="0" Margin="0,0,0,18">
+            <Grid Grid.Row="0" Margin="{StaticResource Layout_Margin_0_0_0_18}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -50,56 +53,73 @@
 
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="New Sale Invoice"
-                               FontSize="20"
+                               FontSize="{StaticResource TypeSectionTitle}"
                                FontWeight="Bold"
                                Foreground="{StaticResource NavyBrush}" />
                     <TextBlock Text="Customer → Product → Price Memory → Quantity → Save Invoice"
-                               FontSize="13"
+                               FontSize="{StaticResource TypeBody}"
                                Foreground="{StaticResource MutedBrush}"
-                               Margin="0,3,0,0" />
+                               Margin="{StaticResource Layout_Margin_0_3_0_0}" />
                 </StackPanel>
 
-                <Border Grid.Column="1"
-                        Background="{StaticResource SurfaceSubtleBrush}"
-                        BorderBrush="{StaticResource BorderBrush}"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Padding="12,6"
-                        VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Mode: "
-                                   FontSize="12"
-                                   Foreground="{StaticResource MutedBrush}" />
-                        <TextBlock Text="Offline Wholesale POS"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"
-                                   Foreground="{StaticResource BlueBrush}" />
-                    </StackPanel>
-                </Border>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="⌨ Hotkeys [F1-F12 / Alt+H]"
+                            Command="{Binding OpenHotkeysModalCommand}"
+                            Style="{StaticResource BtnStyle}"
+                            Height="32"
+                            Padding="10,0"
+                            Margin="0,0,8,0"
+                            ToolTip="View keyboard navigation cheat-sheet"
+                            AutomationProperties.Name="Global Hotkeys Cheat Sheet" />
+                    <Button Content="New Bill [F12 / Ctrl+N]"
+                            Command="{Binding NewBillCommand}"
+                            Style="{StaticResource BtnStyle}"
+                            Height="32"
+                            Padding="10,0"
+                            Margin="0,0,8,0"
+                            ToolTip="Clear current invoice and start new bill"
+                            AutomationProperties.Name="New Bill" />
+                    <Border Background="{StaticResource SurfaceSubtleBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                            CornerRadius="{StaticResource Layout_CornerRadius_6}"
+                            Padding="{StaticResource Layout_Padding_12_6}"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Mode: "
+                                       FontSize="{StaticResource TypeSmall}"
+                                       Foreground="{StaticResource MutedBrush}" />
+                            <TextBlock Text="Offline Wholesale POS"
+                                       FontSize="{StaticResource TypeSmall}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource BlueBrush}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
             </Grid>
 
             <!-- ================================================================= -->
             <!-- ROW 1: ACCESSIBILITY & ERROR NOTIFICATION BANNER                   -->
             <!-- ================================================================= -->
-            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="10" Margin="0,0,0,12">
-                <DockPanel LastChildFill="False">
-                    <TextBlock Text="Saved invoice" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0" />
-                    <ComboBox ItemsSource="{Binding SavedInvoices}" SelectedItem="{Binding SelectedSavedInvoice}" DisplayMemberPath="DisplayText" Width="330" Height="34" VerticalContentAlignment="Center" Tag="Recent saved invoices" AutomationProperties.Name="Choose a saved invoice from transaction history" />
-                    <TextBox Text="{Binding DocumentLookupNumber, UpdateSourceTrigger=PropertyChanged}" Width="210" Height="34" VerticalContentAlignment="Center" Tag="Enter invoice number" AutomationProperties.Name="Saved invoice number" />
-                    <Button Content="Preview / Print" Click="PreviewInvoice_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Find and preview saved invoice" />
-                    <Button Content="Preview latest saved" Click="PreviewLatestInvoice_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Preview latest saved invoice" />
-                    <Button Content="Print recent 4-up A4" Click="PreviewRecentInvoiceSheet_Click" Margin="8,0,0,0" Padding="14,5" AutomationProperties.Name="Preview up to four recent saved invoices on an A4 sheet" />
-                </DockPanel>
+            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="{StaticResource Layout_BorderThickness_1}" CornerRadius="{StaticResource Layout_CornerRadius_7}" Padding="12,8" Margin="{StaticResource Layout_Margin_0_0_0_12}">
+                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                    <TextBlock Text="Saved invoice" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,4,10,4" />
+                    <ComboBox ItemsSource="{Binding SavedInvoices}" SelectedItem="{Binding SelectedSavedInvoice}" DisplayMemberPath="DisplayText" Width="280" Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center" Tag="Recent saved invoices" AutomationProperties.Name="Choose a saved invoice from transaction history" Margin="0,4,8,4" />
+                    <TextBox Text="{Binding DocumentLookupNumber, UpdateSourceTrigger=PropertyChanged}" Width="160" Height="{StaticResource ControlHeight}" VerticalContentAlignment="Center" Tag="Enter invoice number" AutomationProperties.Name="Saved invoice number" Margin="0,4,8,4" />
+                    <Button Content="Preview / Print" Click="PreviewInvoice_Click" Height="{StaticResource ControlHeight}" Margin="0,4,8,4" Padding="{StaticResource Layout_Padding_14_5}" AutomationProperties.Name="Find and preview saved invoice" />
+                    <Button Content="Preview latest saved" Click="PreviewLatestInvoice_Click" Height="{StaticResource ControlHeight}" Margin="0,4,8,4" Padding="{StaticResource Layout_Padding_14_5}" AutomationProperties.Name="Preview latest saved invoice" />
+                    <Button Content="Print recent 4-up A4" Click="PreviewRecentInvoiceSheet_Click" Height="{StaticResource ControlHeight}" Margin="0,4,8,4" Padding="{StaticResource Layout_Padding_14_5}" AutomationProperties.Name="Preview up to four recent saved invoices on an A4 sheet" />
+                </WrapPanel>
             </Border>
 
             <TextBlock Grid.Row="2"
-                       Text="{Binding ErrorMessage}"
-                       Foreground="{StaticResource RedBrush}"
+                       Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}"
+                       Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}"
                        FontWeight="SemiBold"
-                       FontSize="13.5"
+                       FontSize="{StaticResource TypeBody}"
                        AutomationProperties.LiveSetting="Assertive"
                        AutomationProperties.Name="{Binding StatusAnnouncement}"
-                       Margin="0,0,0,14" />
+                       Margin="{StaticResource Layout_Margin_0_0_0_14}" />
 
             <!-- ================================================================= -->
             <!-- ROW 2: FORM ROW (Customer & Product ComboBoxes 250px+ Height 40)   -->
@@ -107,122 +127,243 @@
             <Border Grid.Row="3"
                     Background="{StaticResource SurfaceSubtleBrush}"
                     BorderBrush="{StaticResource BorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="16,16,16,6"
-                    Margin="0,0,0,18">
-                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                    <!-- Customer Selection (MinWidth 250, Height 40, Stretch) -->
-                    <StackPanel Width="270" Margin="0,0,16,12">
-                        <TextBlock Text="CUSTOMER *"
-                                   FontSize="12.5"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   Margin="0,0,0,6" />
-                        <ComboBox ItemsSource="{Binding Customers}"
-                                  SelectedItem="{Binding SelectedCustomer}"
-                                  DisplayMemberPath="CustomerName"
-                                  Tag="Type or choose a customer"
-                                  MinWidth="250"
-                                  Height="40"
-                                  IsEditable="True"
-                                  IsTextSearchEnabled="True"
-                                  HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="Select Customer" />
-                    </StackPanel>
+                    BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                    CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                    Padding="{StaticResource Layout_Padding_16_16_16_6}"
+                    Margin="{StaticResource Layout_Margin_0_0_0_18}">
+                <StackPanel>
+                    <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <!-- Customer Selection (MinWidth 250, Height 40, Stretch) -->
+                        <StackPanel Width="{StaticResource Layout_Width_270}" Margin="{StaticResource Layout_Margin_0_0_16_12}">
+                            <TextBlock Text="CUSTOMER * [F1 / Ctrl+1]"
+                                       FontSize="{StaticResource TypeBody}"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"
+                                       Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                            <ComboBox x:Name="CustomerSelector"
+                                      ItemsSource="{Binding Customers}"
+                                      SelectedItem="{Binding SelectedCustomer}"
+                                      DisplayMemberPath="CustomerName"
+                                      Tag="Type or choose customer [F1 / Ctrl+1]"
+                                      MinWidth="{StaticResource Layout_MinWidth_250}"
+                                      Height="{StaticResource ControlHeight}"
+                                      IsEditable="True"
+                                      IsTextSearchEnabled="True"
+                                      HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="Select Customer" />
+                        </StackPanel>
 
-                    <!-- Product Selection (MinWidth 250, Height 40, Stretch) -->
-                    <StackPanel Width="290" Margin="0,0,16,12">
-                        <TextBlock Text="PRODUCT *"
-                                   FontSize="12.5"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   Margin="0,0,0,6" />
-                        <ComboBox ItemsSource="{Binding Products}"
-                                  SelectedItem="{Binding SelectedProduct}"
-                                  DisplayMemberPath="ProductName"
-                                  Tag="Type or choose a product"
-                                  MinWidth="250"
-                                  Height="40"
-                                  IsEditable="True"
-                                  IsTextSearchEnabled="True"
-                                  HorizontalAlignment="Stretch"
-                                  AutomationProperties.Name="Select Product" />
-                    </StackPanel>
+                        <!-- Product Selection (MinWidth 250, Height 40, Stretch) -->
+                        <StackPanel Width="{StaticResource Layout_Width_290}" Margin="{StaticResource Layout_Margin_0_0_16_12}">
+                            <TextBlock Text="PRODUCT * [F2 / Ctrl+2]"
+                                       FontSize="{StaticResource TypeBody}"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"
+                                       Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                            <ComboBox x:Name="ProductSelector"
+                                      ItemsSource="{Binding Products}"
+                                      SelectedItem="{Binding SelectedProduct}"
+                                      DisplayMemberPath="ProductName"
+                                      Tag="Type or choose product [F2 / Ctrl+2]"
+                                      MinWidth="{StaticResource Layout_MinWidth_250}"
+                                      Height="{StaticResource ControlHeight}"
+                                      IsEditable="True"
+                                      IsTextSearchEnabled="True"
+                                      HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="Select Product" />
+                        </StackPanel>
 
-                    <!-- Quantity (Height 40) -->
-                    <StackPanel Width="100" Margin="0,0,16,12">
-                        <TextBlock Text="QUANTITY *"
-                                   FontSize="12.5"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
-                                 Tag="e.g. 1"
-                                 Height="40"
-                                 behaviors:NumericTextBoxBehavior.IsEnabled="True"
-                                 HorizontalAlignment="Stretch"
-                                 HorizontalContentAlignment="Right"
-                                 AutomationProperties.Name="Enter Quantity" />
-                    </StackPanel>
+                        <!-- Quantity with Live Stock Badge (Work Order 4) -->
+                        <StackPanel Width="160" Margin="{StaticResource Layout_Margin_0_0_16_12}">
+                            <DockPanel Margin="{StaticResource Layout_Margin_0_0_0_6}">
+                                <TextBlock Text="QTY *" FontSize="{StaticResource TypeBody}" FontWeight="Bold" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" />
+                                <Border CornerRadius="4" Padding="5,1" Margin="6,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Setter Property="Background" Value="{StaticResource SurfaceSubtleBrush}" />
+                                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                            <Setter Property="BorderThickness" Value="1" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StockStatusBadgeText}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsOutOfStock}" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource RedLightBrush}" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource RedBrush}" />
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsLowStock}" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource AmberLightBrush}" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AmberBrush}" />
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding IsOutOfStock}" Value="False" />
+                                                        <Condition Binding="{Binding IsLowStock}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Background" Value="{StaticResource BlueLightBrush}" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{Binding StockStatusBadgeText}" FontSize="{StaticResource TypeSmall}" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOutOfStock}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource RedDarkBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsLowStock}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource AmberDarkBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                            </DockPanel>
+                            <TextBox x:Name="QuantityInput"
+                                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="e.g. 1"
+                                     Height="{StaticResource ControlHeight}"
+                                     behaviors:NumericTextBoxBehavior.IsEnabled="True"
+                                     HorizontalAlignment="Stretch"
+                                     Style="{StaticResource NumericTextBoxStyle}"
+                                     AutomationProperties.Name="Enter Quantity" />
+                        </StackPanel>
 
-                    <!-- Unit Price (Height 40) -->
-                    <StackPanel Width="130" Margin="0,0,16,12">
-                        <TextBlock Text="UNIT PRICE *"
-                                   FontSize="12.5"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged}"
-                                 Tag="Unit price"
-                                 x:Name="UnitPriceInput"
-                                 Height="40"
-                                 HorizontalAlignment="Stretch"
-                                 HorizontalContentAlignment="Right"
-                                 AutomationProperties.Name="Enter Unit Price" />
-                    </StackPanel>
+                        <!-- Unit Price (Height 40) -->
+                        <StackPanel Width="{StaticResource Layout_Width_130}" Margin="{StaticResource Layout_Margin_0_0_16_12}">
+                            <TextBlock Text="UNIT PRICE *"
+                                       FontSize="{StaticResource TypeBody}"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"
+                                       Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                            <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="Unit price"
+                                     x:Name="UnitPriceInput"
+                                     Height="{StaticResource ControlHeight}"
+                                     HorizontalAlignment="Stretch"
+                                     Style="{StaticResource NumericTextBoxStyle}"
+                                     AutomationProperties.Name="Enter Unit Price" />
+                        </StackPanel>
 
-                    <!-- Discount % (Height 40) -->
-                    <StackPanel Width="100" Margin="0,0,16,12">
-                        <TextBlock Text="DISC %"
-                                   FontSize="12.5"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   Margin="0,0,0,6" />
-                        <TextBox Text="{Binding DiscountPercentage, UpdateSourceTrigger=PropertyChanged}"
-                                 Tag="e.g. 0"
-                                 Height="40"
-                                 HorizontalAlignment="Stretch"
-                                 HorizontalContentAlignment="Right"
-                                 AutomationProperties.Name="Enter Discount Percentage" />
-                    </StackPanel>
+                        <!-- Discount % (Height 40) -->
+                        <StackPanel Width="{StaticResource Layout_Width_100}" Margin="{StaticResource Layout_Margin_0_0_16_12}">
+                            <TextBlock Text="DISC %"
+                                       FontSize="{StaticResource TypeBody}"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"
+                                       Margin="{StaticResource Layout_Margin_0_0_0_6}" />
+                            <TextBox x:Name="DiscountInput"
+                                     Text="{Binding DiscountPercentage, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="e.g. 0"
+                                     Height="{StaticResource ControlHeight}"
+                                     HorizontalAlignment="Stretch"
+                                     Style="{StaticResource NumericTextBoxStyle}"
+                                     AutomationProperties.Name="Enter Discount Percentage" />
+                        </StackPanel>
 
-                    <!-- Add Item Button (Height 40) -->
-                    <StackPanel VerticalAlignment="Bottom" Margin="0,0,0,12">
-                        <Button Command="{Binding AddItemCommand}"
-                                Content="Add Item"
-                                Style="{StaticResource BtnPrimaryStyle}"
-                                Height="40"
-                                Padding="22,0"
-                                AutomationProperties.Name="Add item to sale" />
-                    </StackPanel>
-                </WrapPanel>
+                        <!-- Add Item Button (Height 40) -->
+                        <StackPanel VerticalAlignment="Bottom" Margin="{StaticResource Layout_Margin_0_0_0_12}">
+                            <Button x:Name="AddItemButton"
+                                    Command="{Binding AddItemCommand}"
+                                    Content="Add item [Enter]"
+                                    Style="{StaticResource BtnPrimaryStyle}"
+                                    Height="{StaticResource ButtonHeight}"
+                                    Padding="{StaticResource Layout_Padding_22_0}"
+                                    AutomationProperties.Name="Add item to sale" />
+                        </StackPanel>
+                    </WrapPanel>
+
+                    <!-- Customer Snapshot Card (Work Order 5) -->
+                    <Border Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,4,0,8">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedCustomer}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <DockPanel LastChildFill="True">
+                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Customer Credit Snapshot:" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,0,16,0" VerticalAlignment="Center" />
+
+                                <TextBlock Text="Current Balance: " Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding CustomerCurrentBalance, Converter={StaticResource PkrCurrencyConverter}}" FontWeight="Bold" Margin="0,0,16,0" VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCustomerBalanceZero}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource GreenBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCustomerOverLimit}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <TextBlock Text="Credit Limit: " Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding CustomerCreditLimit, Converter={StaticResource PkrCurrencyConverter}}" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" Margin="0,0,16,0" VerticalAlignment="Center" />
+
+                                <TextBlock Text="Available Credit: " Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding CustomerAvailableCredit, Converter={StaticResource PkrCurrencyConverter}}" FontWeight="Bold" VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCustomerOverLimit}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <Border HorizontalAlignment="Right" VerticalAlignment="Center" CornerRadius="4" Padding="8,3" Background="{StaticResource RedLightBrush}" BorderBrush="{StaticResource RedBrush}" BorderThickness="1">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCustomerOverLimit}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="⚠ OVER CREDIT LIMIT" FontWeight="Bold" FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource RedDarkBrush}" />
+                            </Border>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
             </Border>
 
             <!-- ================================================================= -->
             <!-- ROW 3: CLEAN DATAGRID BOUND TO Items (.tbl styling)               -->
             <!-- ================================================================= -->
-            <Border Grid.Row="4" Background="{StaticResource BlueLightBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="12" Margin="0,0,0,14">
+            <Border Grid.Row="4" Background="{StaticResource BlueLightBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="{StaticResource Layout_BorderThickness_1}" CornerRadius="{StaticResource Layout_CornerRadius_7}" Padding="{StaticResource Layout_Padding_12}" Margin="{StaticResource Layout_Margin_0_0_0_14}">
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
                         <TextBlock Text="Customer price memory" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                        <TextBlock Text="{Binding PricingMessage}" FontSize="12" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,3,8,0" />
+                        <TextBlock Text="{Binding PricingMessage}" FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_3_8_0}" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Content="Use previous" Command="{Binding UsePreviousPriceCommand}" Padding="12,7" Margin="0,0,6,0" ToolTip="Use this customer's most recent price for the selected product" />
-                        <Button Content="Use default" Command="{Binding UseDefaultPriceCommand}" Padding="12,7" Margin="0,0,6,0" />
-                        <Button Content="Enter new price" Command="{Binding EnterNewPriceCommand}" Click="EnterNewPrice_Click" Padding="12,7" />
+                        <Button Content="Use previous rate" Command="{Binding UsePreviousPriceCommand}" Padding="{StaticResource Layout_Padding_12_7}" Margin="{StaticResource Layout_Margin_0_0_6_0}" ToolTip="Use this customer's most recent price for the selected product" />
+                        <Button Content="Use default rate" Command="{Binding UseDefaultPriceCommand}" Padding="{StaticResource Layout_Padding_12_7}" Margin="{StaticResource Layout_Margin_0_0_6_0}" />
+                        <Button Content="Enter new rate" Command="{Binding EnterNewPriceCommand}" Click="EnterNewPrice_Click" Padding="{StaticResource Layout_Padding_12_7}" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -232,30 +373,34 @@
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       HeadersVisibility="Column"
-                      RowHeaderWidth="0"
+                      MinHeight="100"
+                      MaxHeight="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualHeight, Converter={StaticResource ViewportRatioConverter}, ConverterParameter=0.45}"
+                      CanUserResizeColumns="True"
                       AutomationProperties.Name="Sales Line Items">
                 <DataGrid.Columns>
                     <!-- Product Code -->
                     <DataGridTextColumn Header="CODE"
                                         Binding="{Binding Product.ProductCode}"
-                                        Width="120" />
+                                        MinWidth="130"
+                                        Width="140" />
 
                     <!-- Product Name -->
                     <DataGridTextColumn Header="PRODUCT NAME"
                                         Binding="{Binding Product.ProductName}"
+                                        MinWidth="160"
                                         Width="*" />
 
                     <!-- Quantity (Numeric Right Aligned) -->
                     <DataGridTextColumn Header="QTY"
                                         Binding="{Binding Quantity}"
-                                        Width="90">
+                                        Width="85">
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox">
                                 <Setter Property="behaviors:NumericTextBoxBehavior.IsEnabled" Value="True" />
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                 <Setter Property="HorizontalContentAlignment" Value="Right" />
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
@@ -268,11 +413,11 @@
                     </DataGridTextColumn>
 
                     <!-- Unit Price (Numeric Right Aligned) -->
-                    <DataGridTextColumn Header="UNIT PRICE"
-                                        Binding="{Binding UnitPrice, StringFormat=C}"
-                                        Width="130">
+                    <DataGridTextColumn Header="UNIT PRICE (PKR)"
+                                        Binding="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat={StaticResource NumberStringFormat}}"
+                                        Width="140">
                         <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                 <Setter Property="HorizontalContentAlignment" Value="Right" />
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
@@ -287,9 +432,9 @@
                     <!-- Discount % (Numeric Right Aligned) -->
                     <DataGridTextColumn Header="DISC %"
                                         Binding="{Binding DiscountPercentage, StringFormat='{}{0:N0}%'}"
-                                        Width="90">
+                                        Width="85">
                         <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                 <Setter Property="HorizontalContentAlignment" Value="Right" />
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
@@ -302,11 +447,11 @@
                     </DataGridTextColumn>
 
                     <!-- Line Total (Numeric Right Aligned, Bold) -->
-                    <DataGridTextColumn Header="LINE TOTAL"
-                                        Binding="{Binding LineTotal, StringFormat=C}"
+                    <DataGridTextColumn Header="LINE TOTAL (PKR)"
+                                        Binding="{Binding LineTotal, StringFormat={StaticResource NumberStringFormat}}"
                                         Width="150">
                         <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                 <Setter Property="HorizontalContentAlignment" Value="Right" />
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
@@ -321,9 +466,9 @@
                     </DataGridTextColumn>
 
                     <!-- Remove Action Button -->
-                    <DataGridTemplateColumn Header="ACTIONS" Width="80">
+                    <DataGridTemplateColumn Header="ACTIONS" Width="90">
                         <DataGridTemplateColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SharedDataGridColumnHeaderStyle}">
                                 <Setter Property="HorizontalContentAlignment" Value="Center" />
                             </Style>
                         </DataGridTemplateColumn.HeaderStyle>
@@ -333,9 +478,9 @@
                                         CommandParameter="{Binding}"
                                         Content="✕"
                                         Style="{StaticResource BtnDangerStyle}"
-                                        Padding="8,3"
-                                        MinHeight="26"
-                                        FontSize="12"
+                                        Padding="{StaticResource Layout_Padding_8_3}"
+                                        MinHeight="{StaticResource Layout_MinHeight_26}"
+                                        FontSize="{StaticResource TypeSmall}"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         ToolTip="Remove item from invoice"
@@ -349,10 +494,10 @@
             <!-- ================================================================= -->
             <!-- ROW 4: PROTOTYPE .inv-summary BLOCK & SAVE ACTIONS                 -->
             <!-- ================================================================= -->
-            <Grid Grid.Row="6" Margin="0,20,0,0">
+            <Grid Grid.Row="6" Margin="{StaticResource Layout_Margin_0_20_0_0}">
                 <Grid.ColumnDefinitions>
                     <!-- Left Spacer / Informational Hint -->
-                    <ColumnDefinition Width="*" MinWidth="180" />
+                    <ColumnDefinition Width="*" MinWidth="{StaticResource Layout_MinWidth_180}" />
                     <!-- Right Summary Card -->
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
@@ -361,20 +506,20 @@
                 <Border Grid.Column="0"
                         VerticalAlignment="Bottom"
                         Background="{StaticResource BlueLightBrush}"
-                        BorderBrush="#C9DEF0"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Padding="14,12"
-                        Margin="0,0,24,0">
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                        CornerRadius="{StaticResource Layout_CornerRadius_6}"
+                        Padding="{StaticResource Layout_Padding_14_12}"
+                        Margin="{StaticResource Layout_Margin_0_0_24_0}">
                     <StackPanel>
                         <TextBlock Text="Automatic Pricing Memory Active"
                                    FontWeight="Bold"
-                                   FontSize="12.5"
+                                   FontSize="{StaticResource TypeBody}"
                                    Foreground="{StaticResource BlueDarkBrush}" />
                         <TextBlock Text="Historical customer rates and wholesale tiers are automatically captured upon invoice confirmation."
-                                   FontSize="12"
+                                   FontSize="{StaticResource TypeSmall}"
                                    Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,2,0,0" />
+                                   Margin="{StaticResource Layout_Margin_0_2_0_0}" />
                     </StackPanel>
                 </Border>
 
@@ -382,19 +527,19 @@
                 <Border Grid.Column="1"
                         Background="{StaticResource SurfaceSubtleBrush}"
                         BorderBrush="{StaticResource BorderBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20,16"
-                        MinWidth="360">
+                        BorderThickness="{StaticResource Layout_BorderThickness_1}"
+                        CornerRadius="{StaticResource Layout_CornerRadius_8}"
+                        Padding="{StaticResource Layout_Padding_20_16}"
+                        MinWidth="{StaticResource Layout_MinWidth_360}">
                     <StackPanel>
                         <!-- Subtotal -->
-                        <Grid Margin="0,0,0,8">
+                        <Grid Margin="{StaticResource Layout_Margin_0_0_0_8}">
                             <TextBlock Text="Subtotal"
-                                       FontSize="13.5"
+                                       FontSize="{StaticResource TypeBody}"
                                        Foreground="{StaticResource MutedBrush}"
                                        VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding SubTotal, StringFormat=C}"
-                                       FontSize="13.5"
+                            <TextBlock Text="{Binding SubTotal, StringFormat={StaticResource CurrencyStringFormat}}"
+                                       FontSize="{StaticResource TypeBody}"
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource TextBrush}"
                                        HorizontalAlignment="Right"
@@ -402,13 +547,13 @@
                         </Grid>
 
                         <!-- Discount -->
-                        <Grid Margin="0,0,0,8">
+                        <Grid Margin="{StaticResource Layout_Margin_0_0_0_8}">
                             <TextBlock Text="Discount Amount"
-                                       FontSize="13.5"
+                                       FontSize="{StaticResource TypeBody}"
                                        Foreground="{StaticResource MutedBrush}"
                                        VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding DiscountAmount, StringFormat=C}"
-                                       FontSize="13.5"
+                            <TextBlock Text="{Binding DiscountAmount, StringFormat={StaticResource CurrencyStringFormat}}"
+                                       FontSize="{StaticResource TypeBody}"
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource RedDarkBrush}"
                                        HorizontalAlignment="Right"
@@ -416,19 +561,19 @@
                         </Grid>
 
                         <!-- Divider -->
-                        <Border Height="1"
+                        <Border Height="{StaticResource Layout_Height_1}"
                                 Background="{StaticResource BorderBrush}"
-                                Margin="0,4,0,10" />
+                                Margin="{StaticResource Layout_Margin_0_4_0_10}" />
 
                         <!-- Net Total (Large Green Text) -->
-                        <Grid Margin="0,0,0,10">
+                        <Grid Margin="{StaticResource Layout_Margin_0_0_0_10}">
                             <TextBlock Text="Net Total"
-                                       FontSize="16"
+                                       FontSize="{StaticResource TypeEmphasis}"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource NavyBrush}"
                                        VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding NetTotal, StringFormat=C}"
-                                       FontSize="22"
+                            <TextBlock Text="{Binding NetTotal, StringFormat={StaticResource CurrencyStringFormat}}"
+                                       FontSize="{StaticResource TypePageTitle}"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource GreenBrush}"
                                        HorizontalAlignment="Right"
@@ -437,51 +582,323 @@
                         </Grid>
 
                         <!-- Paid Amount Input Row -->
-                        <Grid Margin="0,0,0,8">
+                        <Grid Margin="{StaticResource Layout_Margin_0_0_0_8}">
                             <TextBlock Text="Paid Amount"
-                                       FontSize="13.5"
+                                       FontSize="{StaticResource TypeBody}"
                                        Foreground="{StaticResource TextBrush}"
                                        VerticalAlignment="Center" />
                             <TextBox Text="{Binding PaidAmount, UpdateSourceTrigger=PropertyChanged}"
                                      Tag="Amount"
-                                     Width="140"
+                                     Width="{StaticResource Layout_Width_140}"
                                      HorizontalAlignment="Right"
-                                     HorizontalContentAlignment="Right"
+                                     Style="{StaticResource NumericTextBoxStyle}"
                                      AutomationProperties.Name="Enter Paid Amount" />
                         </Grid>
 
-                        <Grid Margin="0,0,0,8">
-                            <TextBlock Text="Received To" FontSize="13.5" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" />
-                            <ComboBox ItemsSource="{Binding PaymentSources}" SelectedItem="{Binding PaymentSource}" Width="140" Height="34" HorizontalAlignment="Right" AutomationProperties.Name="Choose where payment was received" />
+                        <Grid Margin="{StaticResource Layout_Margin_0_0_0_8}">
+                            <TextBlock Text="Received To" FontSize="{StaticResource TypeBody}" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" />
+                            <ComboBox ItemsSource="{Binding PaymentSources}" SelectedItem="{Binding PaymentSource}" Width="{StaticResource Layout_Width_140}" Height="{StaticResource ControlHeight}" HorizontalAlignment="Right" AutomationProperties.Name="Choose where payment was received" />
                         </Grid>
 
                         <!-- Remaining Balance Due -->
-                        <Grid Margin="0,0,0,16">
+                        <Grid Margin="{StaticResource Layout_Margin_0_0_0_16}">
                             <TextBlock Text="Balance Due"
-                                       FontSize="14"
+                                       FontSize="{StaticResource TypeBody}"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource NavyBrush}"
                                        VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding RemainingBalance, StringFormat=C}"
-                                       FontSize="16"
+                            <TextBlock Text="{Binding RemainingBalance, StringFormat={StaticResource CurrencyStringFormat}}"
+                                       FontSize="{StaticResource TypeEmphasis}"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource RedBrush}"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center" />
                         </Grid>
 
-                        <!-- Save Invoice Button -->
-                        <Button Command="{Binding SaveSaleCommand}"
-                                Content="Save Invoice"
-                                Style="{StaticResource BtnGreenStyle}"
-                                Height="44"
-                                FontSize="15"
-                                FontWeight="Bold"
-                                HorizontalAlignment="Stretch"
-                                AutomationProperties.Name="Save Sale Invoice" />
+                        <!-- Action Buttons -->
+                        <Grid Margin="0,4,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Row="0" Grid.Column="0"
+                                    Command="{Binding SaveSaleCommand}"
+                                    Content="Save Invoice [Ctrl+S]"
+                                    Style="{StaticResource BtnPrimaryStyle}"
+                                    Height="{StaticResource ButtonHeight}"
+                                    Margin="0,0,4,6"
+                                    FontSize="{StaticResource TypeSmall}"
+                                    FontWeight="Bold"
+                                    AutomationProperties.Name="Save Sale Invoice" />
+
+                            <Button Grid.Row="0" Grid.Column="1"
+                                    Command="{Binding SaveCreditBillCommand}"
+                                    Content="Save Credit [F5]"
+                                    Style="{StaticResource BtnStyle}"
+                                    Height="{StaticResource ButtonHeight}"
+                                    Margin="4,0,0,6"
+                                    FontSize="{StaticResource TypeSmall}"
+                                    FontWeight="Bold"
+                                    AutomationProperties.Name="Save credit sale invoice" />
+
+                            <Button Grid.Row="1" Grid.Column="0"
+                                    Content="Thermal Slip (80mm)"
+                                    Click="PrintThermalSlip_Click"
+                                    Style="{StaticResource BtnStyle}"
+                                    Height="{StaticResource ButtonHeight}"
+                                    Margin="0,0,4,0"
+                                    FontSize="{StaticResource TypeSmall}"
+                                    FontWeight="Bold"
+                                    AutomationProperties.Name="Print thermal slip 80mm" />
+
+                            <Button Grid.Row="1" Grid.Column="1"
+                                    Content="Save &amp; Print A4 [F4 / Ctrl+S]"
+                                    Click="SaveAndPrintInvoice_Click"
+                                    Style="{StaticResource BtnPrimaryStyle}"
+                                    Height="{StaticResource ButtonHeight}"
+                                    Margin="4,0,0,0"
+                                    FontSize="{StaticResource TypeSmall}"
+                                    FontWeight="Bold"
+                                    AutomationProperties.Name="Save and print sale invoice A4" />
+                        </Grid>
+                        <TextBlock Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}"
+                                   Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"
+                                   Margin="0,8,0,0"
+                                   AutomationProperties.LiveSetting="Assertive" />
+                        <TextBlock Text="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}}"
+                                   Foreground="{Binding StatusAnnouncement, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0"
+                                   AutomationProperties.LiveSetting="Polite" />
                     </StackPanel>
                 </Border>
             </Grid>
         </Grid>
     </Border>
+
+    <!-- ========================================================================= -->
+    <!-- OVER-SELL WARNING MODAL (WORK ORDER 4)                                    -->
+    <!-- ========================================================================= -->
+    <Grid Panel.ZIndex="1000">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsOverSellWarningOpen}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <!-- Backdrop -->
+        <Border Background="#88000000" />
+        <!-- Dialog Box -->
+        <Border Width="500"
+                MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ViewportRatioConverter}, ConverterParameter=0.8}"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource RedBrush}"
+                BorderThickness="2" CornerRadius="10" Effect="{StaticResource PopupDropShadow}"
+                Padding="24" SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Margin="0,0,0,14">
+                    <TextBlock Text="⛔" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Text="Stock Insufficient / Over-Sell Warning" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource RedDarkBrush}" VerticalAlignment="Center" />
+                </DockPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{Binding OverSellWarningMessage}"
+                                   FontSize="{StaticResource TypeBody}" TextWrapping="Wrap" Foreground="{StaticResource TextBrush}" Margin="0,0,0,12" />
+                        <TextBlock Text="Selling more than available inventory will result in negative stock. Please select how you want to proceed:"
+                                   FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancel Line [Esc]"
+                            Command="{Binding CancelOverSellLineCommand}"
+                            Style="{StaticResource BtnStyle}"
+                            Height="{StaticResource ButtonHeight}"
+                            Padding="14,0" Margin="0,0,8,0" />
+                    <Button Content="Adjust Qty to Available"
+                            Command="{Binding AdjustQuantityToAvailableCommand}"
+                            Style="{StaticResource BtnPrimaryStyle}"
+                            Height="{StaticResource ButtonHeight}"
+                            Padding="14,0" Margin="0,0,8,0" />
+                    <Button Content="Allow Negative (Override)"
+                            Command="{Binding AllowNegativeStockOverrideCommand}"
+                            Style="{StaticResource BtnDangerStyle}"
+                            Height="{StaticResource ButtonHeight}"
+                            Padding="14,0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+
+    <!-- ========================================================================= -->
+    <!-- CUSTOMER CREDIT LIMIT WARNING MODAL (WORK ORDER 5)                        -->
+    <!-- ========================================================================= -->
+    <Grid Panel.ZIndex="1000">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsCreditLimitWarningOpen}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <!-- Backdrop -->
+        <Border Background="#88000000" />
+        <!-- Dialog Box -->
+        <Border Width="500"
+                MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ViewportRatioConverter}, ConverterParameter=0.8}"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource RedBrush}"
+                BorderThickness="2" CornerRadius="10" Effect="{StaticResource PopupDropShadow}"
+                Padding="24" SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Margin="0,0,0,14">
+                    <TextBlock Text="⚠" FontSize="20" FontWeight="Bold" Foreground="{StaticResource RedBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Text="Customer Credit Limit Exceeded" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource RedDarkBrush}" VerticalAlignment="Center" />
+                </DockPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{Binding CreditLimitWarningMessage}"
+                                   FontSize="{StaticResource TypeBody}" TextWrapping="Wrap" Foreground="{StaticResource TextBrush}" Margin="0,0,0,12" />
+                        <TextBlock Text="This customer has exceeded their approved credit limit. Do you still wish to authorize this credit invoice?"
+                                   FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancel [Esc]"
+                            Command="{Binding CancelCreditBillCommand}"
+                            Style="{StaticResource BtnStyle}"
+                            Height="{StaticResource ButtonHeight}"
+                            Padding="18,0" Margin="0,0,8,0" />
+                    <Button Content="Authorize &amp; Proceed"
+                            Command="{Binding ProceedWithCreditBillCommand}"
+                            Style="{StaticResource BtnDangerStyle}"
+                            Height="{StaticResource ButtonHeight}"
+                            Padding="18,0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+
+    <!-- ========================================================================= -->
+    <!-- GLOBAL HOTKEYS CHEAT-SHEET MODAL (WORK ORDER 1)                           -->
+    <!-- ========================================================================= -->
+    <Grid Panel.ZIndex="1000">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsHotkeysModalOpen}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <!-- Backdrop -->
+        <Border Background="#88000000" />
+        <!-- Dialog Box -->
+        <Border Width="560"
+                MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ViewportRatioConverter}, ConverterParameter=0.8}"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="{StaticResource SurfaceWhiteBrush}" BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1" CornerRadius="10" Effect="{StaticResource PopupDropShadow}"
+                Padding="24" SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Margin="0,0,0,14">
+                    <TextBlock Text="⌨" FontSize="20" Foreground="{StaticResource NavyBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Text="Global Keyboard Shortcuts &amp; POS Chaining" FontSize="{StaticResource TypeSectionTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                </DockPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Use the Numpad and Enter key to rapidly enter invoices without touching the mouse." Foreground="{StaticResource MutedBrush}" Margin="0,0,0,12" />
+                        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Background="{StaticResource SurfaceSubtleBrush}" Padding="12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="F1 / Ctrl+1 / Alt+C" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="Jump focus to Customer Selection" Margin="0,4" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="F2 / Ctrl+2 / Alt+P" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="Jump focus to Product Selection / Search" Margin="0,4" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Enter" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="Step next: Product → Qty → Price → Disc% → Add Line" Margin="0,4" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="F3 / Ctrl+3 / Alt+A" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="Commit line item to bill immediately" Margin="0,4" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="F4 / Ctrl+S / Ctrl+Enter" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="Save Invoice &amp; Print (Cash Bill)" Margin="0,4" />
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="F5 / Alt+B" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="Save Credit Invoice (Checks customer credit limit)" Margin="0,4" />
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="F12 / Ctrl+N" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="Clear / New Bill" Margin="0,4" />
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Alt+H / Ctrl+H" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="Toggle this Hotkeys cheat-sheet" Margin="0,4" />
+
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Esc" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" Margin="0,4" />
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="Dismiss warning modal / Close dialog" Margin="0,4" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Button Grid.Row="2" Content="Close [Esc]"
+                        Command="{Binding CloseHotkeysModalCommand}"
+                        Style="{StaticResource BtnPrimaryStyle}"
+                        Height="{StaticResource ButtonHeight}"
+                        Padding="24,0" HorizontalAlignment="Right" />
+            </Grid>
+        </Border>
+    </Grid>
+    </Grid>
 </UserControl>

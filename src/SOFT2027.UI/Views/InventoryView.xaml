@@ -8,42 +8,43 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:InventoryViewModel}"
              Background="Transparent" Loaded="View_Loaded">
-    <Border Style="{StaticResource CardBorderStyle}" Padding="24" Margin="0,0,0,16">
+    <Border Style="{StaticResource PageContentCardStyle}" Margin="{StaticResource Layout_Margin_0_0_0_16}">
         <Grid>
             <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="0,0,0,14">
+            <Grid Grid.Row="0" Margin="{StaticResource Layout_Margin_0_0_0_14}">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Inventory" FontSize="22" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                    <TextBlock Text="View current stock, spot low items, and record a reasoned stock adjustment." FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" />
+                    <TextBlock Text="Inventory" FontSize="{StaticResource TypePageTitle}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                    <TextBlock Text="View current stock, spot low items, and record a reasoned stock adjustment." FontSize="{StaticResource TypeBody}" Foreground="{StaticResource MutedBrush}" Margin="{StaticResource Layout_Margin_0_4_0_0}" />
                 </StackPanel>
-                <Button Grid.Column="1" Content="Refresh" Command="{Binding LoadCommand}" Height="36" Padding="14,0" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Content="Refresh" Command="{Binding LoadCommand}" Height="{StaticResource ButtonHeight}" Padding="{StaticResource Layout_Padding_14_0}" VerticalAlignment="Center" />
             </Grid>
-            <DockPanel Grid.Row="1" Margin="0,0,0,14">
-                <Border Background="{StaticResource AmberLightBrush}" CornerRadius="6" Padding="12,7" DockPanel.Dock="Left">
+            <DockPanel Grid.Row="1" Margin="{StaticResource Layout_Margin_0_0_0_14}">
+                <Border Background="{StaticResource AmberLightBrush}" CornerRadius="{StaticResource Layout_CornerRadius_6}" Padding="{StaticResource Layout_Padding_12_7}" DockPanel.Dock="Left">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Low or minimum stock items: " Foreground="{StaticResource AmberBrush}" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding LowStockCount, Mode=OneWay}" Foreground="{StaticResource AmberBrush}" FontWeight="SemiBold" />
                     </StackPanel>
                 </Border>
-                <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource RedBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="12,0,0,0" VerticalAlignment="Center" AutomationProperties.LiveSetting="Assertive" />
+                <TextBlock Text="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Error}" Foreground="{Binding ErrorMessage, Converter={StaticResource StatusMessageConverter}, ConverterParameter=Color}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_12_0_0_0}" VerticalAlignment="Center" AutomationProperties.LiveSetting="Assertive" />
             </DockPanel>
             <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="1.25*" /><ColumnDefinition Width="0.95*" /></Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="1.05*" /><ColumnDefinition Width="1.05*" /></Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                 <DataGrid ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}" AutoGenerateColumns="False"
-                          CanUserAddRows="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow" HeadersVisibility="Column" RowHeaderWidth="0"
+                          CanUserAddRows="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow" HeadersVisibility="Column"
+                          CanUserResizeColumns="True" HorizontalScrollBarVisibility="Auto"
                           AutomationProperties.Name="Current stock levels">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="CODE" Binding="{Binding ProductCode}" Width="95" />
-                        <DataGridTextColumn Header="PRODUCT" Binding="{Binding ProductName}" Width="*" />
-                        <DataGridTextColumn Header="IN STOCK" Binding="{Binding CurrentStock, StringFormat=N2}" Width="95" />
-                        <DataGridTextColumn Header="MINIMUM" Binding="{Binding MinimumStock, StringFormat=N2}" Width="90" />
+                        <DataGridTextColumn Header="CODE" Binding="{Binding ProductCode}" Width="125" MinWidth="110" />
+                        <DataGridTextColumn Header="PRODUCT" Binding="{Binding ProductName}" Width="*" MinWidth="140" />
+                        <DataGridTextColumn Header="IN STOCK" Binding="{Binding CurrentStock, StringFormat=N2}" Width="105" MinWidth="90" />
+                        <DataGridTextColumn Header="MINIMUM" Binding="{Binding MinimumStock, StringFormat=N2}" Width="100" MinWidth="85" />
                     </DataGrid.Columns>
                 </DataGrid>
                 <TextBlock Text="No active products yet. Add a product in Master Data to see stock here."
                            Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" TextAlignment="Center"
-                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24" IsHitTestVisible="False">
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{StaticResource Layout_Margin_24}" IsHitTestVisible="False">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -54,27 +55,27 @@
                     </TextBlock.Style>
                 </TextBlock>
                 </Grid>
-                <Grid Grid.Column="1" Margin="16,0,0,0">
+                <Grid Grid.Column="1" Margin="{StaticResource Layout_Margin_16_0_0_0}">
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-                    <Border Grid.Row="0" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                    <Border Grid.Row="0" Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="{StaticResource Layout_BorderThickness_1}" CornerRadius="{StaticResource Layout_CornerRadius_8}" Padding="{StaticResource Layout_Padding_14}" Margin="{StaticResource Layout_Margin_0_0_0_12}">
                         <StackPanel>
-                            <TextBlock Text="Adjust selected product" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                            <TextBlock Text="Use a positive quantity to add stock or a minus sign to remove it." FontSize="12" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,12" />
-                            <TextBlock Text="QUANTITY CHANGE" FontSize="11" FontWeight="Bold" Margin="0,0,0,5" />
-                            <TextBox Text="{Binding QuantityChange, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. 5 or -2" Height="38" behaviors:NumericTextBoxBehavior.IsEnabled="True" behaviors:NumericTextBoxBehavior.AllowNegative="True" HorizontalContentAlignment="Right" AutomationProperties.Name="Enter positive or negative stock change" />
-                            <TextBlock Text="REASON" FontSize="11" FontWeight="Bold" Margin="0,12,0,5" />
-                            <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" Tag="Why is stock changing?" Height="38" AutomationProperties.Name="Reason for stock adjustment" />
-                            <Button Content="Save stock adjustment" Command="{Binding AdjustCommand}" Style="{StaticResource BtnPrimaryStyle}" Height="40" Margin="0,12,0,0" AutomationProperties.Name="Save stock adjustment" />
+                            <TextBlock Text="Adjust selected product" FontSize="{StaticResource TypeEmphasis}" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Use a positive quantity to add stock or a minus sign to remove it." FontSize="{StaticResource TypeSmall}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="{StaticResource Layout_Margin_0_4_0_12}" />
+                            <TextBlock Text="QUANTITY CHANGE" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_5}" />
+                            <TextBox Text="{Binding QuantityChange, UpdateSourceTrigger=PropertyChanged}" Tag="e.g. 5 or -2" Height="{StaticResource ControlHeight}" behaviors:NumericTextBoxBehavior.IsEnabled="True" behaviors:NumericTextBoxBehavior.AllowNegative="True" Style="{StaticResource NumericTextBoxStyle}" AutomationProperties.Name="Enter positive or negative stock change" />
+                            <TextBlock Text="REASON" FontSize="{StaticResource TypeSmall}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_12_0_5}" />
+                            <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" Tag="Why is stock changing?" Height="{StaticResource ControlHeight}" AutomationProperties.Name="Reason for stock adjustment" />
+                            <Button Content="Save stock adjustment" Command="{Binding AdjustCommand}" Style="{StaticResource BtnPrimaryStyle}" Height="{StaticResource ButtonHeight}" Margin="{StaticResource Layout_Margin_0_12_0_0}" AutomationProperties.Name="Save stock adjustment" />
                         </StackPanel>
                     </Border>
-                    <TextBlock Grid.Row="1" Text="Recent stock movements" FontSize="14" FontWeight="Bold" Margin="0,0,0,8" />
-                    <DataGrid Grid.Row="2" ItemsSource="{Binding MovementHistory}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column" RowHeaderWidth="0" MinHeight="180" AutomationProperties.Name="Selected product stock movement history">
+                    <TextBlock Grid.Row="1" Text="Recent stock movements" FontSize="{StaticResource TypeBody}" FontWeight="Bold" Margin="{StaticResource Layout_Margin_0_0_0_8}" />
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding MovementHistory}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column" CanUserResizeColumns="True" HorizontalScrollBarVisibility="Auto" MinHeight="{StaticResource Layout_MinHeight_180}" AutomationProperties.Name="Selected product stock movement history">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="DATE" Binding="{Binding MovementDate, StringFormat=d}" Width="85" />
-                            <DataGridTextColumn Header="TYPE" Binding="{Binding MovementType}" Width="95" />
-                            <DataGridTextColumn Header="IN" Binding="{Binding QuantityIn, StringFormat=N2}" Width="70" />
-                            <DataGridTextColumn Header="OUT" Binding="{Binding QuantityOut, StringFormat=N2}" Width="70" />
-                            <DataGridTextColumn Header="BALANCE" Binding="{Binding BalanceQuantity, StringFormat=N2}" Width="85" />
+                            <DataGridTextColumn Header="DATE" Binding="{Binding MovementDate, StringFormat={StaticResource DateStringFormat}}" Width="115" MinWidth="105" />
+                            <DataGridTextColumn Header="TYPE" Binding="{Binding MovementType}" Width="115" MinWidth="105" />
+                            <DataGridTextColumn Header="IN" Binding="{Binding QuantityIn, StringFormat={StaticResource QuantityStringFormat}}" Width="{StaticResource Layout_DataGridWidth_70}" />
+                            <DataGridTextColumn Header="OUT" Binding="{Binding QuantityOut, StringFormat={StaticResource QuantityStringFormat}}" Width="{StaticResource Layout_DataGridWidth_70}" />
+                            <DataGridTextColumn Header="BALANCE" Binding="{Binding BalanceQuantity, StringFormat=N2}" Width="{StaticResource Layout_DataGridWidth_85}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

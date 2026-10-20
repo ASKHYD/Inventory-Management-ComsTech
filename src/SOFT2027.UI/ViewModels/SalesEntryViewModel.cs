@@ -61,7 +61,15 @@ namespace SOFT2027.Presentation.ViewModels
             get => _selectedCustomer;
             set
             {
-                if (SetProperty(ref _selectedCustomer, value)) _ = LoadPairPricingAsync();
+                if (SetProperty(ref _selectedCustomer, value))
+                {
+                    OnPropertyChanged(nameof(CustomerCurrentBalance));
+                    OnPropertyChanged(nameof(CustomerCreditLimit));
+                    OnPropertyChanged(nameof(CustomerAvailableCredit));
+                    OnPropertyChanged(nameof(IsCustomerOverLimit));
+                    OnPropertyChanged(nameof(IsCustomerBalanceZero));
+                    _ = LoadPairPricingAsync();
+                }
             }
         }
 
@@ -170,6 +178,32 @@ namespace SOFT2027.Presentation.ViewModels
         public string DocumentLookupNumber { get => _documentLookupNumber; set => SetProperty(ref _documentLookupNumber, value); }
         public string? LastSavedDocumentNumber { get; private set; }
 
+        public decimal CustomerCurrentBalance => SelectedCustomer?.OutstandingBalance ?? 0m;
+        public decimal CustomerCreditLimit => SelectedCustomer?.CreditLimit ?? 0m;
+        public decimal CustomerAvailableCredit => (SelectedCustomer?.CreditLimit ?? 0m) - (SelectedCustomer?.OutstandingBalance ?? 0m);
+        public bool IsCustomerOverLimit => SelectedCustomer != null && SelectedCustomer.CreditLimit > 0m && SelectedCustomer.OutstandingBalance > SelectedCustomer.CreditLimit;
+        public bool IsCustomerBalanceZero => SelectedCustomer != null && SelectedCustomer.OutstandingBalance == 0m;
+
+        public decimal AvailableStock => SelectedProduct?.CurrentStock ?? 0m;
+        public bool IsOutOfStock => SelectedProduct != null && SelectedProduct.CurrentStock <= 0m;
+        public bool IsLowStock => SelectedProduct != null && SelectedProduct.CurrentStock > 0m && SelectedProduct.CurrentStock <= SelectedProduct.MinimumStock;
+        public string StockStatusBadgeText => SelectedProduct == null ? string.Empty : SelectedProduct.CurrentStock <= 0m ? "⛔ Out of Stock" : SelectedProduct.CurrentStock <= SelectedProduct.MinimumStock ? $"⚠ Low Stock: {SelectedProduct.CurrentStock:N0} left" : $"✓ Stock: {SelectedProduct.CurrentStock:N0}";
+
+        private bool _isOverSellWarningOpen;
+        public bool IsOverSellWarningOpen { get => _isOverSellWarningOpen; set => SetProperty(ref _isOverSellWarningOpen, value); }
+        private string _overSellWarningMessage = string.Empty;
+        public string OverSellWarningMessage { get => _overSellWarningMessage; set => SetProperty(ref _overSellWarningMessage, value); }
+        public Product? PendingOverSellProduct { get; private set; }
+        public decimal RequestedOverSellQuantity { get; private set; }
+
+        private bool _isCreditLimitWarningOpen;
+        public bool IsCreditLimitWarningOpen { get => _isCreditLimitWarningOpen; set => SetProperty(ref _isCreditLimitWarningOpen, value); }
+        private string _creditLimitWarningMessage = string.Empty;
+        public string CreditLimitWarningMessage { get => _creditLimitWarningMessage; set => SetProperty(ref _creditLimitWarningMessage, value); }
+
+        private bool _isHotkeysModalOpen;
+        public bool IsHotkeysModalOpen { get => _isHotkeysModalOpen; set => SetProperty(ref _isHotkeysModalOpen, value); }
+
         public RelayCommand AddItemCommand { get; }
         public RelayCommand RemoveItemCommand { get; }
         public AsyncRelayCommand SaveSaleCommand { get; }
@@ -177,6 +211,16 @@ namespace SOFT2027.Presentation.ViewModels
         public RelayCommand UsePreviousPriceCommand { get; }
         public RelayCommand UseDefaultPriceCommand { get; }
         public RelayCommand EnterNewPriceCommand { get; }
+
+        public RelayCommand AdjustQuantityToAvailableCommand { get; }
+        public RelayCommand CancelOverSellLineCommand { get; }
+        public RelayCommand AllowNegativeStockOverrideCommand { get; }
+        public AsyncRelayCommand SaveCreditBillCommand { get; }
+        public AsyncRelayCommand ProceedWithCreditBillCommand { get; }
+        public RelayCommand CancelCreditBillCommand { get; }
+        public RelayCommand NewBillCommand { get; }
+        public RelayCommand OpenHotkeysModalCommand { get; }
+        public RelayCommand CloseHotkeysModalCommand { get; }
 
         public SalesEntryViewModel(
             ITransactionCoordinator transactionCoordinator,
@@ -219,9 +263,23 @@ namespace SOFT2027.Presentation.ViewModels
             UsePreviousPriceCommand = new RelayCommand(() => ApplyCustomerPrice(usePrevious: true), () => _latestCustomerPrice != null);
             UseDefaultPriceCommand = new RelayCommand(() => ApplyCustomerPrice(usePrevious: false), () => SelectedProduct != null);
             EnterNewPriceCommand = new RelayCommand(() => { _pricingLookupVersion++; Announce("Enter the negotiated rate in Unit Price. It will be remembered when this invoice is saved."); });
+
+            AdjustQuantityToAvailableCommand = new RelayCommand(AdjustQuantityToAvailable);
+            CancelOverSellLineCommand = new RelayCommand(() => IsOverSellWarningOpen = false);
+            AllowNegativeStockOverrideCommand = new RelayCommand(() => { IsOverSellWarningOpen = false; AddItemInternal(allowOverride: true); });
+
+            SaveCreditBillCommand = new AsyncRelayCommand(SaveCreditBillAsync);
+            ProceedWithCreditBillCommand = new AsyncRelayCommand(async () => { IsCreditLimitWarningOpen = false; await SaveSaleAsync(); });
+            CancelCreditBillCommand = new RelayCommand(() => IsCreditLimitWarningOpen = false);
+
+            NewBillCommand = new RelayCommand(ClearBill);
+            OpenHotkeysModalCommand = new RelayCommand(() => IsHotkeysModalOpen = true);
+            CloseHotkeysModalCommand = new RelayCommand(() => IsHotkeysModalOpen = false);
         }
 
-        public void AddItem()
+        public void AddItem() => AddItemInternal(allowOverride: false);
+
+        public void AddItemInternal(bool allowOverride)
         {
             if (SelectedProduct == null)
             {
@@ -232,6 +290,18 @@ namespace SOFT2027.Presentation.ViewModels
             if (Quantity <= 0 || UnitPrice < 0 || DiscountPercentage is < 0 or > 100)
             {
                 SetError("Quantity must be above zero. Price must be zero or higher, and discount must be between 0 and 100%.");
+                return;
+            }
+
+            if (!allowOverride && Quantity > SelectedProduct.CurrentStock)
+            {
+                PendingOverSellProduct = SelectedProduct;
+                RequestedOverSellQuantity = Quantity;
+                IsOverSellWarningOpen = true;
+                OverSellWarningMessage = SelectedProduct.CurrentStock <= 0
+                    ? $"Product '{SelectedProduct.ProductName}' is completely OUT OF STOCK (0 units available)."
+                    : $"You requested {Quantity:N0} units of '{SelectedProduct.ProductName}', but only {SelectedProduct.CurrentStock:N0} units are currently available.";
+                SetError(OverSellWarningMessage);
                 return;
             }
 
@@ -263,6 +333,64 @@ namespace SOFT2027.Presentation.ViewModels
             CostPrice = 0m;
             SellingPercentage = 0m;
             DiscountPercentage = 0m;
+            IsOverSellWarningOpen = false;
+        }
+
+        private void AdjustQuantityToAvailable()
+        {
+            if (PendingOverSellProduct == null) return;
+            var available = Math.Max(0, PendingOverSellProduct.CurrentStock);
+            IsOverSellWarningOpen = false;
+            if (available > 0)
+            {
+                Quantity = available;
+                AddItemInternal(allowOverride: false);
+            }
+            else
+            {
+                SetError($"Cannot adjust quantity: '{PendingOverSellProduct.ProductName}' has 0 available stock.");
+            }
+        }
+
+        public async Task SaveCreditBillAsync()
+        {
+            if (SelectedCustomer == null)
+            {
+                SetError("Validation Error: Please select a customer before saving a credit bill.");
+                return;
+            }
+
+            PaidAmount = 0m;
+            RecalculateTotals();
+
+            var newTotalDebt = SelectedCustomer.OutstandingBalance + NetTotal;
+            if (SelectedCustomer.CreditLimit > 0m && newTotalDebt > SelectedCustomer.CreditLimit)
+            {
+                var exceededBy = newTotalDebt - SelectedCustomer.CreditLimit;
+                CreditLimitWarningMessage = $"Warning: Customer '{SelectedCustomer.CustomerName}' has exceeded their credit limit by PKR {exceededBy:N2}. Do you want to proceed?";
+                IsCreditLimitWarningOpen = true;
+                SetError(CreditLimitWarningMessage);
+                return;
+            }
+
+            await SaveSaleAsync();
+        }
+
+        public void ClearBill()
+        {
+            foreach (var item in Items) item.LineTotalChanged -= RecalculateTotals;
+            Items.Clear();
+            SelectedProduct = null;
+            SelectedCustomer = null;
+            PaidAmount = 0m;
+            PaymentSource = "Cash";
+            Remarks = null;
+            IsOverSellWarningOpen = false;
+            IsCreditLimitWarningOpen = false;
+            IsHotkeysModalOpen = false;
+            RecalculateTotals();
+            ClearErrors();
+            Announce("Started a new sales invoice. Ready for entry.");
         }
 
         public void RemoveItem(SalesLineItemViewModel? item)
@@ -403,7 +531,7 @@ namespace SOFT2027.Presentation.ViewModels
             return new TransactionDocumentData
             {
                 Title = "Cash Memo", Number = sale.InvoiceNumber, Date = sale.SaleDate,
-                PartyLabel = "Customer", PartyName = customer.CustomerName, PartyCode = customer.CustomerCode, ContactPerson = customer.ContactPerson, Phone = customer.Phone, Address = customer.Address,
+                PartyLabel = "Customer", PartyName = customer.CustomerName, PartyCode = customer.CustomerCode, AreaTerritory = customer.AreaTerritory, ContactPerson = customer.ContactPerson, Phone = customer.Phone, Address = customer.Address,
                 Lines = lines, SubTotal = sale.SubTotal, Discount = sale.DiscountAmount, Total = sale.NetTotal,
                 Paid = sale.PaidAmount, Balance = sale.RemainingBalance, PaymentSource = sale.PaymentSource, Remarks = sale.Remarks
             };
